@@ -28,7 +28,7 @@ public class RequisicaoServlet extends HttpServlet{
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        List<RequisicaoMolde> requisicoes = requisicaoDAO.consultarRequisicoes();
+        List<RequisicaoMolde> requisicoes = requisicaoDAO.listarRequisicoes();
 
         request.setAttribute("requisicoes", requisicoes);
 

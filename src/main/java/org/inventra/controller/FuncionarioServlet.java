@@ -7,10 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FuncionarioDAO;
 import org.inventra.model.FuncionarioMolde;
+import org.inventra.utils.FuncionarioREGEX;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet(name = "FuncionarioServlet", value = "/funcionario")
@@ -22,6 +25,7 @@ public class FuncionarioServlet extends HttpServlet {
     public void init() {
         funcionarioDAO = new FuncionarioDAO();
     }
+
 
     @Override
     protected void doGet(
@@ -67,6 +71,7 @@ public class FuncionarioServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String acao = request.getParameter("acao");
+        boolean valoresValidos;
 
         //Validando ação para evitar erro por ser NULL
         if (acao == null){
@@ -90,6 +95,26 @@ public class FuncionarioServlet extends HttpServlet {
             String coluna = request.getParameter("coluna");
             String novoValor = request.getParameter("novoValor");
 
+            boolean valorValido;
+
+            switch (coluna){
+                case "cpf" -> {
+                    valorValido = FuncionarioREGEX.validarCpf(novoValor);
+                } case "telefone" -> {
+                    valorValido = FuncionarioREGEX.validarTelefone(novoValor);
+                } case "email" -> {
+                    valorValido = FuncionarioREGEX.validarEmail(novoValor);
+                } default -> {
+                    //Caso passe uma coluna que não precisa de validação ela passa TRUE (ex: nome)
+                    valorValido = true;
+                }
+            }
+
+            if(!valorValido){
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "O valor informado para " + coluna + " é inválido");
+                return;
+            }
+
             funcionarioDAO.atualizarColunaFuncionario(coluna, novoValor, id);
 
             response.sendRedirect(request.getContextPath() + "/funcionario");
@@ -101,6 +126,7 @@ public class FuncionarioServlet extends HttpServlet {
 //        Atualizar todas as colunas de uma vez
         else if (acao.equals("atualizar_completo")){
             int id = Integer.parseInt(request.getParameter("id_funcionario"));
+
 
             String nome =
                     request.getParameter("nome");
@@ -130,6 +156,15 @@ public class FuncionarioServlet extends HttpServlet {
             String status =
                     request.getParameter("status");
 
+            //APLICANDO REGEX
+            valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
+
+            if (!valoresValidos){
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
+                return;
+            }
+
+            //INSTANCIANDO OBJETO FUNCIONARIO
             FuncionarioMolde atualizandoTudo = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor);
             funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
 
@@ -172,6 +207,14 @@ public class FuncionarioServlet extends HttpServlet {
         String status =
                 request.getParameter("status");
 
+        //APLICANDO REGEX
+        valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
+
+        if (!valoresValidos){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
+            return;
+        }
+
         FuncionarioMolde novoFuncionario = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor);
 
         funcionarioDAO.inserirFuncionario(novoFuncionario);
@@ -181,9 +224,4 @@ public class FuncionarioServlet extends HttpServlet {
         );
 
     }
-
-    //FILTROS:
-
-
-
 }
