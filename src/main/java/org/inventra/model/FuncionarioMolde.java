@@ -31,10 +31,9 @@ public class FuncionarioMolde {
 
 
     //SOBRECARGA PARA USAR O JOIN E SUBSTITUIR A FK
-    public FuncionarioMolde(int id_funcionario, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, String setor, boolean isAdmin) {
+    public FuncionarioMolde(int id_funcionario, String nome, String email, String telefone, String cpf, LocalDate dt_admissao, String status, String setor, boolean isAdmin) {
         this.id_funcionario = id_funcionario;
         this.nome = nome;
-        this.senha = senha;
         this.setor = setor;
         this.email = email;
         this.telefone = telefone;
@@ -42,6 +41,7 @@ public class FuncionarioMolde {
         this.dt_admissao = dt_admissao;
         this.status = status;
         this.isAdmin = isAdmin;
+        this.senha = null;
     }
 
 
@@ -135,6 +135,6 @@ public class FuncionarioMolde {
 
     @Override
     public String toString(){
-        return "id: "+ id_funcionario + " nome: " + nome + " senha: " + senha + " email: " + email + " telefone: " + telefone + " cpf: " + cpf + "dt_adimissao" + dt_admissao + " status" + status + " fk_setor: " + fk_setor;
+        return "id: "+ id_funcionario + " nome: " + nome + " email: " + email + " telefone: " + telefone + " cpf: " + cpf + "dt_adimissao" + dt_admissao + " status" + status + " fk_setor: " + fk_setor + " isAdmin: "+ isAdmin;
     }
 }
