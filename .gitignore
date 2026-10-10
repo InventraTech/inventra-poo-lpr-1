@@ -39,3 +39,8 @@ build/
 
 ### Mac OS ###
 .DS_Store.idea/vcs.xml
+
+
+### Build e arquivos locais ###
+out/
+*.zip

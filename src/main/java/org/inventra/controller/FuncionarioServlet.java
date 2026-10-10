@@ -156,6 +156,9 @@ public class FuncionarioServlet extends HttpServlet {
             String status =
                     request.getParameter("status");
 
+            boolean isAdmin =
+                    Boolean.parseBoolean(request.getParameter("is_admin"));
+
             //APLICANDO REGEX
             valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
 
@@ -165,7 +168,7 @@ public class FuncionarioServlet extends HttpServlet {
             }
 
             //INSTANCIANDO OBJETO FUNCIONARIO
-            FuncionarioMolde atualizandoTudo = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor);
+            FuncionarioMolde atualizandoTudo = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor, isAdmin);
             funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
 
             response.sendRedirect(request.getContextPath() + "/funcionario");
@@ -207,6 +210,9 @@ public class FuncionarioServlet extends HttpServlet {
         String status =
                 request.getParameter("status");
 
+        boolean isAdmin =
+                Boolean.parseBoolean(request.getParameter("is_admin"));
+
         //APLICANDO REGEX
         valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
 
@@ -215,7 +221,7 @@ public class FuncionarioServlet extends HttpServlet {
             return;
         }
 
-        FuncionarioMolde novoFuncionario = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor);
+        FuncionarioMolde novoFuncionario = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor, isAdmin);
 
         funcionarioDAO.inserirFuncionario(novoFuncionario);
 

@@ -12,11 +12,12 @@ public class FuncionarioMolde {
     private String cpf;
     private LocalDate dt_admissao;
     private String status;
+    private boolean isAdmin;
 
     //VÁRIAVEL PARA SUBSTITUIR A FK
     private String setor;
 
-    public FuncionarioMolde(String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, int fk_setor) {
+    public FuncionarioMolde(String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, int fk_setor, boolean isAdmin) {
         this.nome = nome;
         this.senha = senha;
         this.fk_setor = fk_setor;
@@ -25,22 +26,12 @@ public class FuncionarioMolde {
         this.cpf = cpf;
         this.dt_admissao = dt_admissao;
         this.status = status;
+        this.isAdmin = isAdmin;
     }
 
-    public FuncionarioMolde(int id_funcionario, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, int fk_setor) {
-        this.id_funcionario = id_funcionario;
-        this.nome = nome;
-        this.senha = senha;
-        this.fk_setor = fk_setor;
-        this.email = email;
-        this.telefone = telefone;
-        this.cpf = cpf;
-        this.dt_admissao = dt_admissao;
-        this.status = status;
-    }
 
     //SOBRECARGA PARA USAR O JOIN E SUBSTITUIR A FK
-    public FuncionarioMolde(int id_funcionario, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, String setor) {
+    public FuncionarioMolde(int id_funcionario, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, String setor, boolean isAdmin) {
         this.id_funcionario = id_funcionario;
         this.nome = nome;
         this.senha = senha;
@@ -50,6 +41,7 @@ public class FuncionarioMolde {
         this.cpf = cpf;
         this.dt_admissao = dt_admissao;
         this.status = status;
+        this.isAdmin = isAdmin;
     }
 
 
@@ -127,6 +119,18 @@ public class FuncionarioMolde {
 
     public String getSetor() {
         return setor;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setSetor(String setor) {
+        this.setor = setor;
     }
 
     @Override
