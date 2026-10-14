@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fornecedores</title>
+  <link rel="stylesheet" href="../../utils/css/base.css" />
+  <link rel="stylesheet" href="../../utils/css/fornecedores.css" />
+</head>
+<body>
+
+  <header class="barra-topo">
+    <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
+    <div class="usuario">
+      <span>Nelson Junior</span>
+      <div class="avatar"></div>
+    </div>
+  </header>
+
+  <div class="conteudo">
+
+    <section class="cabecalho-pagina">
+
+      <div class="titulo-com-logo">
+    <img src="imagens/logo_inventra_sem_escrita.svg" alt="Logo da Inventra">
+
+      <div class="titulo-pagina">
+        <h1>Fornecedores</h1>
+        <p>Gerencie quem abastece o seu estoque</p>
+      </div>
+
+      <div class="acoes-pagina">
+        <a class="botao" href="#modal-fornecedor">
+          <img src="imagens/adicionar.png" alt="" class="icone-adicionar">
+          Novo fornecedor</a>
+      </div>
+    </section>
+
+    <section class="bignumeros">
+      <div class="bignumero">
+        <div class="bignumero-icone"></div>
+        <div class="bignumero-info">
+          <span class="bignumero-rotulo">Fornecedores</span>
+          <strong class="bignumero-valor">4</strong>
+        </div>
+      </div>
+
+      <div class="bignumero">
+        <div class="bignumero-icone"></div>
+        <div class="bignumero-info">
+          <span class="bignumero-rotulo">Ativos</span>
+          <strong class="bignumero-valor">4</strong>
+        </div>
+      </div>
+
+      <div class="bignumero">
+        <div class="bignumero-icone"></div>
+        <div class="bignumero-info">
+          <span class="bignumero-rotulo">Produtos vinculados</span>
+          <strong class="bignumero-valor">4</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="filtros">
+      <input
+        type="search"
+        class="busca"
+        placeholder="Buscar por nome, CNPJ, contato ou cidade..."
+      />
+
+      <select class="ordenacao">
+        <option>Ordenar por ID</option>
+        <option>Nome (A-Z)</option>
+        <option>Nome (Z-A)</option>
+      </select>
+    </section>
+
+    <!-- ---------- Lista de cards dos fornecedores ---------- -->
+    <section class="lista-cartoes">
+
+      <!-- Card 1 (ativo) -->
+      <article class="cartao">
+        <header class="cartao-topo">
+          <div class="cartao-logo">LO</div>
+
+          <div class="cartao-identificacao">
+            <h2 class="cartao-nome">LogParts</h2>
+            <p class="cartao-cnpj">23.456.789/0001-01</p>
+          </div>
+
+          <span class="selo-status">Ativo</span>
+        </header>
+
+        <ul class="cartao-contatos">
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <path d="M3 7l9 6 9-6"/>
+            </svg>
+            <span>contato@logparts.com.br</span>
+          </li>
+
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>
+            </svg>
+            <span>(11)99999-9999</span>
+          </li>
+        </ul>
+
+        <footer class="cartao-rodape">
+          <div class="cartao-info">
+            <p class="cartao-responsavel">Ana Souza - Curitiba/PR</p>
+            <p class="cartao-produtos">0 produtos</p>
+          </div>
+
+          <div class="cartao-acoes">
+            <button class="botao-cartao botao-cartao-editar" type="button" aria-label="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/>
+                <path d="M14 7l3 3"/>
+              </svg>
+            </button>
+
+            <button class="botao-cartao botao-cartao-excluir" type="button" aria-label="Excluir">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/>
+              </svg>
+            </button>
+          </div>
+        </footer>
+      </article>
+
+      <!-- Card 2 (ativo) -->
+      <article class="cartao">
+        <header class="cartao-topo">
+          <div class="cartao-logo">LO</div>
+
+          <div class="cartao-identificacao">
+            <h2 class="cartao-nome">LogParts</h2>
+            <p class="cartao-cnpj">23.456.789/0001-01</p>
+          </div>
+
+          <span class="selo-status">Ativo</span>
+        </header>
+
+        <ul class="cartao-contatos">
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <path d="M3 7l9 6 9-6"/>
+            </svg>
+            <span>contato@logparts.com.br</span>
+          </li>
+
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>
+            </svg>
+            <span>(11)99999-9999</span>
+          </li>
+        </ul>
+
+        <footer class="cartao-rodape">
+          <div class="cartao-info">
+            <p class="cartao-responsavel">Ana Souza - Curitiba/PR</p>
+            <p class="cartao-produtos">0 produtos</p>
+          </div>
+
+          <div class="cartao-acoes">
+            <button class="botao-cartao botao-cartao-editar" type="button" aria-label="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/>
+                <path d="M14 7l3 3"/>
+              </svg>
+            </button>
+
+            <button class="botao-cartao botao-cartao-excluir" type="button" aria-label="Excluir">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/>
+              </svg>
+            </button>
+          </div>
+        </footer>
+      </article>
+
+      <!-- Card 3 (ativo) -->
+      <article class="cartao">
+        <header class="cartao-topo">
+          <div class="cartao-logo">LO</div>
+
+          <div class="cartao-identificacao">
+            <h2 class="cartao-nome">LogParts</h2>
+            <p class="cartao-cnpj">23.456.789/0001-01</p>
+          </div>
+
+          <span class="selo-status">Ativo</span>
+        </header>
+
+        <ul class="cartao-contatos">
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <path d="M3 7l9 6 9-6"/>
+            </svg>
+            <span>contato@logparts.com.br</span>
+          </li>
+
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>
+            </svg>
+            <span>(11)99999-9999</span>
+          </li>
+        </ul>
+
+        <footer class="cartao-rodape">
+          <div class="cartao-info">
+            <p class="cartao-responsavel">Ana Souza - Curitiba/PR</p>
+            <p class="cartao-produtos">0 produtos</p>
+          </div>
+
+          <div class="cartao-acoes">
+            <button class="botao-cartao botao-cartao-editar" type="button" aria-label="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/>
+                <path d="M14 7l3 3"/>
+              </svg>
+            </button>
+
+            <button class="botao-cartao botao-cartao-excluir" type="button" aria-label="Excluir">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/>
+              </svg>
+            </button>
+          </div>
+        </footer>
+      </article>
+
+      <!-- Card 4 (inativo) -->
+      <article class="cartao">
+        <header class="cartao-topo">
+          <div class="cartao-logo">LO</div>
+
+          <div class="cartao-identificacao">
+            <h2 class="cartao-nome">LogParts</h2>
+            <p class="cartao-cnpj">23.456.789/0001-01</p>
+          </div>
+
+          <span class="selo-status selo-inativo">Inativo</span>
+        </header>
+
+        <ul class="cartao-contatos">
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <path d="M3 7l9 6 9-6"/>
+            </svg>
+            <span>contato@logparts.com.br</span>
+          </li>
+
+          <li class="cartao-contato">
+            <svg class="cartao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>
+            </svg>
+            <span>(11)99999-9999</span>
+          </li>
+        </ul>
+
+        <footer class="cartao-rodape">
+          <div class="cartao-info">
+            <p class="cartao-responsavel">Ana Souza - Curitiba/PR</p>
+            <p class="cartao-produtos">0 produtos</p>
+          </div>
+
+          <div class="cartao-acoes">
+            <button class="botao-cartao botao-cartao-editar" type="button" aria-label="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/>
+                <path d="M14 7l3 3"/>
+              </svg>
+            </button>
+
+            <button class="botao-cartao botao-cartao-excluir" type="button" aria-label="Excluir">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/>
+              </svg>
+            </button>
+          </div>
+        </footer>
+      </article>
+
+    </section>
+
+  </div>
+
+  <!-- ---------- Menu lateral ---------- -->
+  <div class="menu-lateral" id="modal-menu">
+    <a href="#" class="menu-fundo" aria-label="Fechar menu"></a>
+
+    <nav class="menu-painel">
+      <a href="#" class="menu-fechar" aria-label="Fechar menu">☰</a>
+
+      <ul class="menu-itens">
+        <li><a href="index.html" class="menu-item">Página inicial</a></li>
+        <li><a href="estoque.html" class="menu-item">Estoque</a></li>
+        <li><a href="fornecedores.html" class="menu-item ativo">Fornecedores</a></li>
+        <li><a href="requisicoes.html" class="menu-item">Requisições</a></li>
+        <li><a href="lotes.html" class="menu-item">Lotes</a></li>
+        <li><a href="pre-listas.html" class="menu-item">Pré Listas</a></li>
+      </ul>
+
+      <a href="#" class="menu-saida">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Saída
+      </a>
+    </nav>
+  </div>
+
+  <!-- ---------- Popup: Novo Fornecedor ---------- -->
+  <div class="modal" id="modal-fornecedor">
+    <a href="#" class="modal-fundo" aria-label="Fechar"></a>
+
+    <form class="formulario" action="#aviso-sucesso" method="get">
+      <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
+      <h2 class="modal-titulo">Novo Fornecedor</h2>
+
+      <label class="campo">
+        Nome do fornecedor
+        <input type="text" name="nome" placeholder="Ex: Distribuidora Alfa" required />
+      </label>
+
+      <div class="linha-campos">
+        <label class="campo">
+          CNPJ
+          <input type="text" name="cnpj" placeholder="00.000.000/0000-00" required />
+        </label>
+
+        <label class="campo">
+          Contato principal
+          <input type="text" name="contato" placeholder="Nome do contato" required />
+        </label>
+      </div>
+
+      <div class="linha-campos">
+        <label class="campo">
+          Categoria
+          <select name="categoria" required>
+            <option value="" disabled selected>Selecionar</option>
+            <option>Grãos e cereais</option>
+            <option>Laticínios</option>
+            <option>Carnes e ovos</option>
+            <option>Hortifrúti</option>
+          </select>
+        </label>
+
+        <label class="campo">
+          E-mail
+          <input type="email" name="email" placeholder="exemplo@fornecedor.com" required />
+        </label>
+      </div>
+
+      <label class="campo">
+        Descrição
+        <input type="text" name="descricao" placeholder="Detalhes adicionais sobre o fornecedor" />
+      </label>
+
+      <label class="interruptor">
+        <input type="checkbox" name="ativo" checked />
+        <span class="trilho"></span>
+        Fornecedor ativo
+      </label>
+
+      <div class="modal-botoes">
+        <a href="#" class="botao-cancelar">Cancelar</a>
+        <button type="submit" class="botao">Salvar Fornecedor</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ---------- Mensagem de sucesso ---------- -->
+  <div class="aviso" id="aviso-sucesso" role="status">
+    <div class="aviso-icone">✓</div>
+    <div class="aviso-texto">
+      <strong>Fornecedor cadastrado com sucesso!</strong>
+      <span>O novo fornecedor foi adicionado à lista e já está disponível para gerenciamento.</span>
+    </div>
+    <a href="#" class="aviso-fechar" aria-label="Fechar">✕</a>
+  </div>
+
+</body>
+</html>
