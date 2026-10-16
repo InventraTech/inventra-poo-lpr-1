@@ -17,55 +17,41 @@ public class ProdutoMolde {
     private String categoria;
     private String fornecedor;
 
-    public ProdutoMolde (String nome, int fk_marca, int fk_categoria, String unidadeMedida, int estoqueMin, int estoqueMax, int fk_fornecedor, String descricao, boolean ativo) {
-        this.nome = nome;
+    public ProdutoMolde (int fk_fornecedor, int fk_marca, int fk_categoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
+        this.fk_fornecedor = fk_fornecedor;
         this.fk_marca = fk_marca;
         this.fk_categoria = fk_categoria;
+        this.nome = nome;
         this.unidadeMedida = unidadeMedida;
         this.estoqueMin = estoqueMin;
         this.estoqueMax = estoqueMax;
-        this.fk_fornecedor = fk_fornecedor;
         this.descricao = descricao;
         this.ativo = ativo;
     }
 
-    public ProdutoMolde(int idProduto, String nome, int fk_marca, int fk_categoria, String unidadeMedida, int estoqueMin, int estoqueMax, int fk_fornecedor, String descricao, boolean ativo) {
+    public ProdutoMolde(int idProduto, int fk_fornecedor, int fk_marca, int fk_categoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
         this.idProduto = idProduto;
-        this.nome = nome;
+        this.fk_fornecedor = fk_fornecedor;
         this.fk_marca = fk_marca;
         this.fk_categoria = fk_categoria;
+        this.nome = nome;
         this.unidadeMedida = unidadeMedida;
         this.estoqueMin = estoqueMin;
         this.estoqueMax = estoqueMax;
-        this.fk_fornecedor = fk_fornecedor;
         this.descricao = descricao;
         this.ativo = ativo;
-    }
-
-
-
-    public String getNomeCategoria() {
-        return categoria;
-    }
-
-    public String getNomeFornecedor() {
-        return fornecedor;
-    }
-
-    public String getNomeMarca() {
-        return marca;
     }
 
     //CONSTRUTOR PARA SER USADO PARA OS JOINS
-    public ProdutoMolde(int idProduto, String nome, String marca, String categoria, String unidadeMedida, int estoqueMin, int estoqueMax, String fornecedor, String descricao, boolean ativo){
+    public ProdutoMolde(int idProduto, String fornecedor, String marca, String categoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo){
         this.idProduto = idProduto;
-        this.nome = nome;
+        this.fornecedor = fornecedor;
         this.marca = marca;
         this.categoria = categoria;
+        this.nome = nome;
         this.unidadeMedida = unidadeMedida;
         this.estoqueMin = estoqueMin;
         this.estoqueMax = estoqueMax;
-        this.fornecedor = fornecedor;
         this.descricao = descricao;
         this.ativo = ativo;
     }
@@ -144,6 +130,18 @@ public class ProdutoMolde {
 
     public boolean isAtivo() {
         return ativo;
+    }
+
+    public String getNomeCategoria() {
+        return categoria;
+    }
+
+    public String getNomeFornecedor() {
+        return fornecedor;
+    }
+
+    public String getNomeMarca() {
+        return marca;
     }
 
     public void setAtivo(boolean ativo) {

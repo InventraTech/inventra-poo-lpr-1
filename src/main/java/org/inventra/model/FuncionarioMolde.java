@@ -17,7 +17,7 @@ public class FuncionarioMolde {
     //VÁRIAVEL PARA SUBSTITUIR A FK
     private String setor;
 
-    public FuncionarioMolde(String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, int fk_setor, boolean isAdmin) {
+    public FuncionarioMolde(int fk_setor, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, boolean isAdmin) {
         this.nome = nome;
         this.senha = senha;
         this.fk_setor = fk_setor;
