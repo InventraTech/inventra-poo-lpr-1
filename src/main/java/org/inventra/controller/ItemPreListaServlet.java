@@ -96,6 +96,8 @@ public class ItemPreListaServlet extends HttpServlet {
         else if (acao.equals("atualizar_completo")) {
             int id = Integer.parseInt(request.getParameter("id_fornecedor"));
 
+            int fk_pre_lista =
+                    Integer.parseInt(request.getParameter("fk_pre_lista"));
             int fk_fornecedor =
                     Integer.parseInt(request.getParameter("fk_fornecedor"));
             int fk_produto =
@@ -104,7 +106,7 @@ public class ItemPreListaServlet extends HttpServlet {
                     Integer.parseInt(request.getParameter("quantidade"));
 
 
-            ItemPreListaMolde atualizarItemPreLista = new ItemPreListaMolde(fk_fornecedor, fk_produto, qtd);
+            ItemPreListaMolde atualizarItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
 
             itemPreListaDAO.atualizarItemPreListaCompleto(atualizarItemPreLista, id);
 
@@ -115,6 +117,8 @@ public class ItemPreListaServlet extends HttpServlet {
             return;
         }
 
+        int fk_pre_lista =
+                Integer.parseInt(request.getParameter("fk_pre_lista"));
         int fk_fornecedor =
                 Integer.parseInt(request.getParameter("fk_fornecedor"));
         int fk_produto =
@@ -123,7 +127,7 @@ public class ItemPreListaServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("quantidade"));
 
 
-        ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(fk_fornecedor, fk_produto, qtd);
+        ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
 
         itemPreListaDAO.inserirItemPreLista(novoItemPreLista);
 

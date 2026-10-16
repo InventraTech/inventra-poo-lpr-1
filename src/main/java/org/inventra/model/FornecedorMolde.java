@@ -2,43 +2,39 @@ package org.inventra.model;
 
 public class FornecedorMolde {
     private int id_fornecedor;
+    private int fk_endereco;
     private String nome_juridico;
     private String cnpj;
     private String email;
-    private String telefone;
     private int nota_vpq;
-    private int fk_regiao;
 
     //VÁRIAVEL PARA SUBSTITUIR A FK
-    private String regiao;
+    private String endereco;
 
-    public FornecedorMolde(int id_fornecedor, String nome_juridico, String cnpj, String email, String telefone, int nota_vpq, int fk_regiao) {
+    public FornecedorMolde(int id_fornecedor, int fk_endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
+        this.id_fornecedor = id_fornecedor;
+        this.fk_endereco = fk_endereco;
+        this.nome_juridico = nome_juridico;
+        this.cnpj = cnpj;
+        this.email = email;
+        this.nota_vpq = nota_vpq;
+    }
+
+    public FornecedorMolde(int fk_endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
+        this.nome_juridico = nome_juridico;
+        this.fk_endereco = fk_endereco;
+        this.cnpj = cnpj;
+        this.email = email;
+        this.nota_vpq = nota_vpq;
+    }
+
+    public FornecedorMolde(int id_fornecedor, String endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
         this.id_fornecedor = id_fornecedor;
         this.nome_juridico = nome_juridico;
         this.cnpj = cnpj;
         this.email = email;
-        this.telefone = telefone;
         this.nota_vpq = nota_vpq;
-        this.fk_regiao = fk_regiao;
-    }
-
-    public FornecedorMolde(String nome_juridico, String cnpj, String email, String telefone, int nota_vpq, int fk_regiao) {
-        this.nome_juridico = nome_juridico;
-        this.cnpj = cnpj;
-        this.email = email;
-        this.telefone = telefone;
-        this.nota_vpq = nota_vpq;
-        this.fk_regiao = fk_regiao;
-    }
-
-    public FornecedorMolde(int id_fornecedor, String nome_juridico, String cnpj, String email, String telefone, int nota_vpq, String regiao) {
-        this.id_fornecedor = id_fornecedor;
-        this.nome_juridico = nome_juridico;
-        this.cnpj = cnpj;
-        this.email = email;
-        this.telefone = telefone;
-        this.nota_vpq = nota_vpq;
-        this.regiao = regiao;
+        this.endereco = endereco;
     }
 
 
@@ -71,14 +67,6 @@ public class FornecedorMolde {
         this.email = email;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public int getNota_vpq() {
         return nota_vpq;
     }
@@ -87,16 +75,16 @@ public class FornecedorMolde {
         this.nota_vpq = nota_vpq;
     }
 
-    public int getFk_regiao() {
-        return fk_regiao;
+    public int getFk_endereco() {
+        return fk_endereco;
     }
 
-    public void setFk_regiao(int fk_regiao) {
-        this.fk_regiao = fk_regiao;
+    public void setFk_endereco(int fk_endereco) {
+        this.fk_endereco = fk_endereco;
     }
 
-    public String getRegiao() {
-        return regiao;
+    public String getEndereco() {
+        return endereco;
     }
 }
 

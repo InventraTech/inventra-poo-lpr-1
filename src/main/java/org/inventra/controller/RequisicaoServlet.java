@@ -28,7 +28,7 @@ public class RequisicaoServlet extends HttpServlet{
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        List<RequisicaoMolde> requisicoes = requisicaoDAO.consultarRequisicoes();
+        List<RequisicaoMolde> requisicoes = requisicaoDAO.listarRequisicoes();
 
         request.setAttribute("requisicoes", requisicoes);
 
@@ -107,7 +107,7 @@ public class RequisicaoServlet extends HttpServlet{
                     Integer.parseInt(request.getParameter("fkProduto"));
 
 
-            RequisicaoMolde atualizarRequisicao = new RequisicaoMolde(idTipoRequisicao, quantidadeProduto, motivo, status, dataHoraRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto );
+            RequisicaoMolde atualizarRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
 
             requisicaoDAO.atualizarRequisicaoCompleta(atualizarRequisicao, id);
 
@@ -149,7 +149,7 @@ public class RequisicaoServlet extends HttpServlet{
                 Integer.parseInt(request.getParameter("fkProduto"));
 
 
-        RequisicaoMolde novaRequisicao = new RequisicaoMolde(idTipoRequisicao, quantidadeProduto, motivo, status, dataHoraRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto );
+        RequisicaoMolde novaRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
 
         requisicaoDAO.inserirRequisicao(novaRequisicao);
 

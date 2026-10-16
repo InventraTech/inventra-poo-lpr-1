@@ -19,7 +19,7 @@ public class RequisicaoMolde {
     private String funcionarioAprovador;
     private String produto;
 
-    public RequisicaoMolde(int id_tipoRequisicao, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto) {
+    public RequisicaoMolde(int id_tipoRequisicao, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora) {
         this.idTipoRequisicao = id_tipoRequisicao;
         this.quantidadeProduto = quantidadeProduto;
         this.motivo = motivo;
@@ -30,7 +30,7 @@ public class RequisicaoMolde {
         this.fkProduto = fkProduto;
     }
 
-    public RequisicaoMolde(int idRequisicao, String tipoRequisicao, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora, String funcionarioSolicitante, String funcionarioAprovador, String produto) {
+    public RequisicaoMolde(int idRequisicao, String tipoRequisicao, String funcionarioSolicitante, String funcionarioAprovador, String produto, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora) {
         this.idRequisicao = idRequisicao;
         this.tipoRequisicao = tipoRequisicao;
         this.quantidadeProduto = quantidadeProduto;
@@ -42,7 +42,7 @@ public class RequisicaoMolde {
         this.produto = produto;
     }
 
-    public RequisicaoMolde(int idRequisicao, int idTipoRequisicao, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto) {
+    public RequisicaoMolde(int idRequisicao, int idTipoRequisicao, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora) {
         this.idRequisicao = idRequisicao;
         this.idTipoRequisicao = idTipoRequisicao;
         this.quantidadeProduto = quantidadeProduto;

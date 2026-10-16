@@ -121,7 +121,7 @@ public class ProdutoServlet extends HttpServlet {
             boolean ativo =
                     Boolean.parseBoolean(request.getParameter("ativo"));
 
-            ProdutoMolde atualizandoProduto = new ProdutoMolde(nome, fk_marca, fk_categoria, unidadeMedida, estoqueMin, estoqueMax, fk_fornecedor, descricao, ativo);
+            ProdutoMolde atualizandoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
 
             produtoDAO.atualizarProdutoCompleto(atualizandoProduto, id);
 
@@ -151,7 +151,7 @@ public class ProdutoServlet extends HttpServlet {
         boolean ativo =
                 Boolean.parseBoolean(request.getParameter("ativo"));
 
-        ProdutoMolde novoProduto = new ProdutoMolde(nome, fk_marca, fk_categoria, unidadeMedida, estoqueMin, estoqueMax, fk_fornecedor, descricao, ativo);
+        ProdutoMolde novoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
 
         produtoDAO.inserirProduto(novoProduto);
 
