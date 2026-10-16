@@ -19,14 +19,14 @@ public class FuncionarioDAO {
     public void inserirFuncionario(FuncionarioMolde funcionario){
 
         //String sql: É o código SQL que será enviado para ser executado no banco.
-        String sql = "INSERT INTO funcionario (nome, senha, fk_setor, email, telefone, cpf, dt_admissao, status, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO funcionario (fk_setor, nome, senha, email, telefone, cpf, dt_admissao, status, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setString(1, funcionario.getNome());
-            stmt.setString(2, SenhaUtil.gerarHash(funcionario.getSenha()));
-            stmt.setInt(3, funcionario.getFk_setor());
+            stmt.setInt(1, funcionario.getFk_setor());
+            stmt.setString(2, funcionario.getNome());
+            stmt.setString(3, SenhaUtil.gerarHash(funcionario.getSenha()));
             stmt.setString(4, funcionario.getEmail());
             stmt.setString(5, funcionario.getTelefone());
             stmt.setString(6, funcionario.getCpf() );
@@ -92,9 +92,9 @@ public class FuncionarioDAO {
         if (alterarSenha){
         sql = """
                 UPDATE funcionario
-                SET nome = ?,
+                SET fk_setor = ?,
+                	nome = ?,
                 	senha = ?,
-                	fk_setor = ?,
                 	email = ?,
                 	telefone = ?,
                 	cpf = ?,
@@ -106,8 +106,8 @@ public class FuncionarioDAO {
         } else {
             sql = """
                 UPDATE funcionario
-                SET nome = ?,
-                	fk_setor = ?,
+                SET fk_setor = ?,
+                	nome = ?,
                 	email = ?,
                 	telefone = ?,
                 	cpf = ?,
@@ -124,11 +124,11 @@ public class FuncionarioDAO {
             //Precisaremos usar index aqui pois o indice vai variar de acordo com a String sql
             int index = 1;
 
+            stmt.setInt(index++, funcionario.getFk_setor());
             stmt.setString(index++, funcionario.getNome());
             if (alterarSenha) {
                 stmt.setString(index++, SenhaUtil.gerarHash(funcionario.getSenha()));
             }
-            stmt.setInt(index++, funcionario.getFk_setor());
             stmt.setString(index++, funcionario.getEmail());
             stmt.setString(index++, funcionario.getTelefone());
             stmt.setString(index++, funcionario.getCpf() );

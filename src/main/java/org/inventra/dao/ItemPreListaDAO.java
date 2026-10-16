@@ -15,14 +15,15 @@ public class ItemPreListaDAO {
     //CREATE
     public void inserirItemPreLista(ItemPreListaMolde itemPreLista){
 
-        String sql = "INSERT INTO item_pre_lista (fk_fornecedor, fk_produto, qtd) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO item_pre_lista (fk_pre_lista, fk_fornecedor, fk_produto, qtd) VALUES(?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreLista.getFk_fornecedor());
-            stmt.setInt(2, itemPreLista.getFk_produto());
-            stmt.setInt(3, itemPreLista.getQtd());
+            stmt.setInt(1, itemPreLista.getFk_pre_lista());
+            stmt.setInt(2, itemPreLista.getFk_fornecedor());
+            stmt.setInt(3, itemPreLista.getFk_produto());
+            stmt.setInt(4, itemPreLista.getQtd());
 
             stmt.executeUpdate();
 
@@ -36,7 +37,7 @@ public class ItemPreListaDAO {
     public static final String sqlBase = """
             SELECT i.id_item_lista, f.nome_juridico AS fornecedor, p.nome AS produto, i.qtd AS quantidade
             FROM Item_pre_lista i
-            JOIN fornecedor f ON i.fk_pre_lista = f.id_fornecedor
+            JOIN fornecedor f ON i.fk_fornecedor = f.id_fornecedor
             JOIN produto p ON i.fk_produto = p.id_produto
             """;
 
@@ -69,7 +70,8 @@ public class ItemPreListaDAO {
 
         String sql = """
                 UPDATE item_pre_lista
-                SET fk_fornecedor = ?,
+                SET fk_pre_lista = ?,
+                	fk_fornecedor = ?,
                 	fk_produto = ?,
                 	qtd = ?
                 WHERE id_item_lista = ?
@@ -78,11 +80,12 @@ public class ItemPreListaDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreListaMolde.getFk_fornecedor());
-            stmt.setInt(2, itemPreListaMolde.getFk_produto());
-            stmt.setInt(3, itemPreListaMolde.getQtd());
+            stmt.setInt(1, itemPreListaMolde.getFk_pre_lista());
+            stmt.setInt(2, itemPreListaMolde.getFk_fornecedor());
+            stmt.setInt(3, itemPreListaMolde.getFk_produto());
+            stmt.setInt(4, itemPreListaMolde.getQtd());
 
-            stmt.setInt(4, id_itemPreLista);
+            stmt.setInt(5, id_itemPreLista);
 
             stmt.executeUpdate();
 
@@ -98,7 +101,7 @@ public class ItemPreListaDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            if (NomeColuna.equalsIgnoreCase("fk_preLista")) {
+            if (NomeColuna.equalsIgnoreCase("fk_pre_lista")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
             else if (NomeColuna.equalsIgnoreCase("fk_fornecedor")) {
