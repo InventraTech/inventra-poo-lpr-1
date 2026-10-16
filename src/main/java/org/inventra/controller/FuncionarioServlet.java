@@ -168,7 +168,7 @@ public class FuncionarioServlet extends HttpServlet {
             }
 
             //INSTANCIANDO OBJETO FUNCIONARIO
-            FuncionarioMolde atualizandoTudo = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor, isAdmin);
+            FuncionarioMolde atualizandoTudo = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
             funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
 
             response.sendRedirect(request.getContextPath() + "/funcionario");
@@ -221,7 +221,7 @@ public class FuncionarioServlet extends HttpServlet {
             return;
         }
 
-        FuncionarioMolde novoFuncionario = new FuncionarioMolde(nome, senha, email, telefone, cpf, dataAdimissao, status, fk_setor, isAdmin);
+        FuncionarioMolde novoFuncionario = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
 
         funcionarioDAO.inserirFuncionario(novoFuncionario);
 

@@ -35,7 +35,8 @@ public class FiltroAutenticacao implements Filter {
 
         boolean paginasPublicas = PUBLICAS.contains(caminho) ||
                 caminho.startsWith("/css/") ||
-                caminho.startsWith("/js/");
+                caminho.startsWith("/js/") ||
+                caminho.startsWith("/utils/");
 
         if (paginasPublicas) {
             chain.doFilter(request, response);

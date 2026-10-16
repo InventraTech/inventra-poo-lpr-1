@@ -118,6 +118,8 @@ public class FornecedorServlet extends HttpServlet{
         else if (acao.equals("atualizar_completo")){
             int id = Integer.parseInt(request.getParameter("id_fornecedor"));
 
+            int fk_endereco =
+                    Integer.parseInt(request.getParameter("fk_endereco"));
             String nome =
                     request.getParameter("nome");
             String cnpj =
@@ -128,8 +130,6 @@ public class FornecedorServlet extends HttpServlet{
                     request.getParameter("telefone");
             int nota_vpq =
                     Integer.parseInt(request.getParameter("nota_vpq"));
-            int fk_regiao =
-                    Integer.parseInt(request.getParameter("fk_regiao"));
 
             valoresValidos = FornecedorREGEX.validandoTodos(cnpj, email, telefone);
 
@@ -138,7 +138,7 @@ public class FornecedorServlet extends HttpServlet{
                 return;
             }
 
-            FornecedorMolde atualizarFornecedor = new FornecedorMolde(nome, cnpj, email, telefone, nota_vpq, fk_regiao);
+            FornecedorMolde atualizarFornecedor = new FornecedorMolde(fk_endereco, nome, cnpj, email, nota_vpq);
 
             fornecedorDAO.atualizarFornecedorCompleto(atualizarFornecedor, id);
 
@@ -168,7 +168,7 @@ public class FornecedorServlet extends HttpServlet{
             return;
         }
 
-        FornecedorMolde novoFornecedor = new FornecedorMolde(nome, cnpj, email, telefone, nota_vpq, fk_regiao);
+        FornecedorMolde novoFornecedor = new FornecedorMolde(fk_regiao, nome, cnpj, email, nota_vpq);
 
         fornecedorDAO.inserirFornecedor(novoFornecedor);
 
