@@ -1,0 +1,407 @@
+.main-content {
+    width: 100%;
+    padding-bottom: 30px;
+}
+
+
+.page-header {
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 81px 0 34px;
+}
+
+.titulo-pagina {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.pagina-Logo {
+    width: 125px;
+    height: 110px;
+    object-fit: contain;
+}
+
+.titulo-pagina-texto h1 {
+    color: #5000B8;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    font-family: Arial;
+}
+
+.titulo-pagina-texto p {
+    color: #8B788F;
+    font-size: 18px;
+    font-family: Arial;
+}
+
+.page-header .adicionar {
+    height: 45px;
+    min-width: 160px;
+    padding: 0 12px;
+
+    border: none;
+    border-radius: 9px;
+
+    background-color: #5600B8;
+    color: white;
+    text-decoration: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    font-size: 15px;
+    font-family: Arial;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.page-header .adicionar:hover {
+    background-color: #7A22D4;
+}
+
+.page-header .adicionar svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+
+.big-numbers {
+    display: flex;
+    justify-content: center;
+    gap: 250px;
+    padding: 0 88px 0 65px;
+}
+
+.big-numbers .resumo {
+    width: 300px;
+    height: 92px;
+
+    border: 1px solid #E5E0E8;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 12px;
+}
+
+.big-numbers .icone {
+    width: 60px;
+    height: 60px;
+
+    background-color: #5600B8;
+    color: white;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.big-numbers .icone svg {
+    width: 28px;
+    height: 28px;
+}
+
+.big-numbers .infos {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    font-family: Arial;
+}
+
+.big-numbers .infos span {
+    color: #8B788F;
+    font-size: 18px;
+    margin-bottom: 3px;
+}
+
+.big-numbers .infos strong {
+    color: #111;
+    font-size: 25px;
+    font-weight: 400;
+}
+
+
+
+.filtros-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    padding: 0 60px;
+    margin-top: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.filtro-status {
+    height: 38px;
+    padding: 0 15px;
+
+    border: 1px solid #DED9E5;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #5F5870;
+    background-color: transparent;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.filtro-status:hover,
+.filtro-status:focus,
+.filtro-status.ativo {
+    background-color: #5600B8;
+    border-color: #5600B8;
+    color: white;
+}
+
+
+
+.lista-requisicoes {
+    margin: 46px 90px 0 60px;
+
+    padding: 28px 32px;
+
+    background-color: #FAF9FC;
+
+    border: 1px solid #E8E3ED;
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 31px;
+}
+
+.requisicao {
+    padding: 18px;
+
+    background-color: white;
+
+    border: 1px solid #DED9E5;
+    border-radius: 10px;
+
+    font-family: Arial;
+}
+
+.requisicao-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.requisicao-topo strong {
+    color: #17131A;
+    font-size: 18px;
+    font-family: Arial;
+}
+
+.requisicao-topo p {
+    color: #A5A0B1;
+    font-size: 12px;
+    margin-top: 5px;
+    font-family: Arial;
+}
+
+
+.status {
+    height: 28px;
+    padding: 0 13px;
+
+    border-radius: 7px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 12px;
+    font-family: Arial;
+    white-space: nowrap;
+}
+
+.status.pendente {
+    background-color: #E6B800;
+    color: #17131A;
+}
+
+.status.aprovada {
+    background-color: #5600B8;
+}
+
+.status.recusada {
+    background-color: #D9364F;
+}
+
+
+
+.itens-requisicao {
+    margin-top: 14px;
+
+    border: 1px solid #DED9E5;
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.itens-requisicao div {
+    min-height: 36px;
+    padding: 7px 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    color: #17131A;
+    font-size: 14px;
+    font-family: Arial;
+}
+
+.itens-requisicao div + div {
+    border-top: 1px solid #DED9E5;
+}
+
+.itens-requisicao div span:last-child {
+    color: #A5A0B1;
+    font-size: 12px;
+}
+
+
+
+.botoes-requisicao {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.botao-aprovar,
+.botao-recusar {
+    height: 37px;
+    padding: 0 13px;
+
+    border: 1px solid #5600B8;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-family: Arial;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.botao-aprovar {
+    background-color: #5600B8;
+    color: white;
+}
+
+.botao-aprovar:hover,
+.botao-aprovar:focus {
+    background-color: #7A22D4;
+    border-color: #7A22D4;
+}
+
+.botao-recusar {
+    background-color: white;
+    color: #5600B8;
+}
+
+.botao-recusar:hover,
+.botao-recusar:focus {
+    background-color: #D9364F;
+    border-color: #D9364F;
+    color: white;
+}
+
+.botao-aprovar svg,
+.botao-recusar svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+
+@media (max-width: 1400px) {
+    .big-numbers {
+        gap: 40px;
+        padding: 0 60px;
+    }
+}
+
+@media (max-width: 900px) {
+    .page-header {
+        height: auto;
+        flex-wrap: wrap;
+        gap: 18px;
+        padding: 20px 34px;
+    }
+
+    .big-numbers {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .titulo-pagina-texto h1 {
+        font-size: 1.5rem;
+    }
+
+    .titulo-pagina-texto p {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 24px 20px;
+    }
+
+    .pagina-Logo {
+        width: 80px;
+        height: 70px;
+    }
+
+    .page-header .adicionar {
+        width: 100%;
+    }
+
+    .big-numbers {
+        padding: 0 20px;
+    }
+
+    .big-numbers .resumo {
+        width: 100%;
+    }
+
+    .filtros-status {
+        padding: 0 20px;
+        gap: 8px;
+    }
+
+    .lista-requisicoes {
+        margin: 30px 20px 0 20px;
+        padding: 16px;
+    }
+}
