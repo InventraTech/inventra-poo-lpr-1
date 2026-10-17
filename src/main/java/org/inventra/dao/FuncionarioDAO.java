@@ -37,9 +37,9 @@ public class FuncionarioDAO {
             stmt.executeUpdate();
             System.out.println("Cadastro concluída.");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao salvar funcionário.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            //Lança a exceção para ser capturada no Servlet
+            throw new RuntimeException("Erro ao inserir um novo funcionário no banco de dados", e);
         }
     }
 
@@ -74,9 +74,9 @@ public class FuncionarioDAO {
                 array.add(funcionario);
             }
 
-        } catch(SQLException erro){
-            System.out.println("Erro ao consultar funcionário.");
-            erro.printStackTrace();
+        } catch(SQLException e){
+            //Lança a exceção para ser capturada no Servlet
+            throw new RuntimeException("Erro ao consultar a tabela de funcionarios no banco de dados", e);
         }
         return array;
     }
@@ -140,7 +140,7 @@ public class FuncionarioDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar funcionario",e);
         }
     }
 
@@ -197,9 +197,8 @@ public class FuncionarioDAO {
             stmt.executeUpdate();
             System.out.println("Funcionário atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar funcionario", e);
         }
     }
 
@@ -278,7 +277,7 @@ public class FuncionarioDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao deletar funcionario", e);
         }
         //Só chega aqui se o email ou senha estiverem errados
         return null;

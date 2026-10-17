@@ -28,31 +28,48 @@ public class ItemPreListaServlet extends HttpServlet {
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
 
-        List<ItemPreListaMolde> itensPreLista;
-        itensPreLista = itemPreListaDAO.listarItensPreLista();
+        try {
 
-        if (filtroSelecionado != null){
-            switch (filtroSelecionado){
-                case "fornecedor" -> {
-                    itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores();
-                } case "produto" -> {
-                    itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto();
-                } case "quantidade_crescente" -> {
-                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true);
-                } case "quantidade_decrescente" -> {
-                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false);
-                } default -> {
-                    itensPreLista = itemPreListaDAO.listarItensPreLista();
+            List<ItemPreListaMolde> itensPreLista;
+            itensPreLista = itemPreListaDAO.listarItensPreLista();
+
+            if (filtroSelecionado != null) {
+                switch (filtroSelecionado) {
+                    case "fornecedor" -> {
+                        itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores();
+                    }
+                    case "produto" -> {
+                        itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto();
+                    }
+                    case "quantidade_crescente" -> {
+                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true);
+                    }
+                    case "quantidade_decrescente" -> {
+                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false);
+                    }
+                    default -> {
+                        itensPreLista = itemPreListaDAO.listarItensPreLista();
+                    }
                 }
             }
-        }
 
-        request.setAttribute("itensprelista", itensPreLista);
+            request.setAttribute("itensprelista", itensPreLista);
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-itemprelista.jsp"
-        ).forward(request, response);
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-itemprelista.jsp"
+            ).forward(request, response);
+
+        } catch (NumberFormatException e){
+        request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+        response.sendRedirect(request.getContextPath() + "/itemprelista");
     }
+        catch (IllegalArgumentException e){
+        request.getSession().setAttribute("mensagemErro", e.getMessage());
+        response.sendRedirect(request.getContextPath() + "/itemprelista");
+    }
+    //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
+
+}
 
 
     @Override
@@ -68,33 +85,52 @@ public class ItemPreListaServlet extends HttpServlet {
             acao = "";
         }
 
-        if(acao.equals("excluir")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+        try {
 
-            itemPreListaDAO.deletarItemPreLista(id);
+            if (acao.equals("excluir")) {
+                int id = Integer.parseInt(request.getParameter("id"));
 
-            response.sendRedirect(
-                    request.getContextPath() + "/itemprelista"
-            );
-            return;
-        }
+                itemPreListaDAO.deletarItemPreLista(id);
 
-        else if(acao.equals("atualizar_coluna")){
-            int id = Integer.parseInt(request.getParameter("id"));
-            String coluna = request.getParameter("coluna");
-            String novoValor = request.getParameter("novoValor");
+                response.sendRedirect(
+                        request.getContextPath() + "/itemprelista"
+                );
+                return;
+            } else if (acao.equals("atualizar_coluna")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String coluna = request.getParameter("coluna");
+                String novoValor = request.getParameter("novoValor");
 
-            itemPreListaDAO.atualizarColunaItemPreLista(coluna, novoValor, id);
+                itemPreListaDAO.atualizarColunaItemPreLista(coluna, novoValor, id);
 
-            response.sendRedirect(request.getContextPath() + "/itemprelista");
+                response.sendRedirect(request.getContextPath() + "/itemprelista");
 
-            //Return faz com que pare aqui caso seja escolhido
-            return;
+                //Return faz com que pare aqui caso seja escolhido
+                return;
 
-        }
+            } else if (acao.equals("atualizar_completo")) {
+                int id = Integer.parseInt(request.getParameter("id_fornecedor"));
 
-        else if (acao.equals("atualizar_completo")) {
-            int id = Integer.parseInt(request.getParameter("id_fornecedor"));
+                int fk_pre_lista =
+                        Integer.parseInt(request.getParameter("fk_pre_lista"));
+                int fk_fornecedor =
+                        Integer.parseInt(request.getParameter("fk_fornecedor"));
+                int fk_produto =
+                        Integer.parseInt(request.getParameter("fk_prduto"));
+                int qtd =
+                        Integer.parseInt(request.getParameter("quantidade"));
+
+
+                ItemPreListaMolde atualizarItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+
+                itemPreListaDAO.atualizarItemPreListaCompleto(atualizarItemPreLista, id);
+
+                response.sendRedirect(
+                        request.getContextPath() + "/itemprelista"
+                );
+
+                return;
+            }
 
             int fk_pre_lista =
                     Integer.parseInt(request.getParameter("fk_pre_lista"));
@@ -106,34 +142,22 @@ public class ItemPreListaServlet extends HttpServlet {
                     Integer.parseInt(request.getParameter("quantidade"));
 
 
-            ItemPreListaMolde atualizarItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+            ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
 
-            itemPreListaDAO.atualizarItemPreListaCompleto(atualizarItemPreLista, id);
+            itemPreListaDAO.inserirItemPreLista(novoItemPreLista);
 
             response.sendRedirect(
                     request.getContextPath() + "/itemprelista"
             );
-
-            return;
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+            response.sendRedirect(request.getContextPath() + "/itemprelista");
         }
-
-        int fk_pre_lista =
-                Integer.parseInt(request.getParameter("fk_pre_lista"));
-        int fk_fornecedor =
-                Integer.parseInt(request.getParameter("fk_fornecedor"));
-        int fk_produto =
-                Integer.parseInt(request.getParameter("fk_prduto"));
-        int qtd =
-                Integer.parseInt(request.getParameter("quantidade"));
-
-
-        ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
-
-        itemPreListaDAO.inserirItemPreLista(novoItemPreLista);
-
-        response.sendRedirect(
-                request.getContextPath() + "/itemprelista"
-        );
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/itemprelista");
+        }
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 }
 

@@ -29,7 +29,7 @@ public class ItemPreListaDAO {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao inserir um novo item pre-lista no banco de dados", e);
         }
     }
     //READ
@@ -60,7 +60,7 @@ public class ItemPreListaDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao consultar a tabela de itens pre-lista no banco de dados", e);
         }
         return listaItensPreLista;
 
@@ -91,7 +91,7 @@ public class ItemPreListaDAO {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar item pre-lista", e);
         }
     }
 
@@ -118,11 +118,9 @@ public class ItemPreListaDAO {
             stmt.setInt(2, id_item_prelista);
 
             stmt.executeUpdate();
-            System.out.println("Item da pré-lista atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar item pre-lista", e);
         }
     }
 
@@ -138,7 +136,7 @@ public class ItemPreListaDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao deletar item pre-lista", e);
         }
     }
 

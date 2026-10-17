@@ -29,7 +29,7 @@ public class FornecedorDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao inserir fornecedor no banco de dados", e);
         }
     }
 
@@ -59,7 +59,7 @@ public class FornecedorDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao consultar a tabela de fornecedores no banco de dados", e);
         }
         return listaFornecedores;
     }
@@ -93,7 +93,7 @@ public class FornecedorDAO {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar fornecedor", e);
         }
 
     }
@@ -125,11 +125,9 @@ public class FornecedorDAO {
             stmt.setInt(2, id_fornecedor);
 
             stmt.executeUpdate();
-            System.out.println("Fornecedor atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar fornecedor", e);
         }
     }
 
@@ -143,16 +141,8 @@ public class FornecedorDAO {
 
             int linhasExecutadas = stmt.executeUpdate();
 
-            //O execute update guarda a quantidade de linhas afetadas.
-            if(linhasExecutadas > 0){
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhum fornecedor com o id "+id_fornecedor+" foi encontrado");
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar com o banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar fornecedor", e);
         }
     }
 
