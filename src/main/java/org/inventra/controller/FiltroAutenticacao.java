@@ -17,7 +17,7 @@ public class FiltroAutenticacao implements Filter {
 
     //Caminhos que podem ser acessados sem login (comparação exata)
     private static final Set<String> PUBLICAS =
-            Set.of("/login", "/login.jsp", "/acessoNegado.jsp");
+            Set.of("/login", "/login.jsp", "/erro-403.jsp");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -55,7 +55,7 @@ public class FiltroAutenticacao implements Filter {
 
         // Segunda trava: mesmo logado, só ADMIN passa
         if (!funcionario.isAdmin()) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/acessoNegado.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/erro-403.jsp");
             return;
         }
 

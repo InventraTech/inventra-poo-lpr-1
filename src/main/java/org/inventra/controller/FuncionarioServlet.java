@@ -34,6 +34,7 @@ public class FuncionarioServlet extends HttpServlet {
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
 
+        try {
         List<FuncionarioMolde> funcionarios;
         funcionarios = funcionarioDAO.listarFuncionario();
 
@@ -61,6 +62,16 @@ public class FuncionarioServlet extends HttpServlet {
         request.getRequestDispatcher(
                 "/WEB-INF/views/lista-funcionarios.jsp"
         ).forward(request, response);
+
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+            response.sendRedirect(request.getContextPath() + "/funcionario");
+        }
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/funcionario");
+        }
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
     @Override
@@ -78,68 +89,131 @@ public class FuncionarioServlet extends HttpServlet {
             acao = "";
         }
 
-        if (acao.equals("excluir")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+        try {
+            if (acao.equals("excluir")) {
+                int id = Integer.parseInt(request.getParameter("id"));
 
-            funcionarioDAO.deletarFuncionario(id);
+                funcionarioDAO.deletarFuncionario(id);
 
-            response.sendRedirect(
-                    request.getContextPath() + "/funcionario"
-            );
-            return;
-        }
-
-//        Atualiza apenas UMA coluna, chamando o método
-        if(acao.equals("atualizar_coluna")){
-            int id = Integer.parseInt(request.getParameter("id"));
-            String coluna = request.getParameter("coluna");
-            String novoValor = request.getParameter("novoValor");
-
-            boolean valorValido;
-
-            switch (coluna){
-                case "cpf" -> {
-                    valorValido = FuncionarioREGEX.validarCpf(novoValor);
-                } case "telefone" -> {
-                    valorValido = FuncionarioREGEX.validarTelefone(novoValor);
-                } case "email" -> {
-                    valorValido = FuncionarioREGEX.validarEmail(novoValor);
-                } default -> {
-                    //Caso passe uma coluna que não precisa de validação ela passa TRUE (ex: nome)
-                    valorValido = true;
-                }
-            }
-
-            if(!valorValido){
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "O valor informado para " + coluna + " é inválido");
+                response.sendRedirect(
+                        request.getContextPath() + "/funcionario"
+                );
                 return;
             }
 
-            funcionarioDAO.atualizarColunaFuncionario(coluna, novoValor, id);
+//        Atualiza apenas UMA coluna, chamando o método
+            if (acao.equals("atualizar_coluna")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String coluna = request.getParameter("coluna");
+                String novoValor = request.getParameter("novoValor");
 
-            response.sendRedirect(request.getContextPath() + "/funcionario");
+                if (coluna == null || coluna.isBlank() || novoValor == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Coluna ou valor não informado");
+                    return;
+                }
 
-            //Return faz com que pare aqui caso seja escolhido
-            return;
+                boolean valorValido;
 
-        }
+                switch (coluna) {
+                    case "cpf" -> {
+                        valorValido = FuncionarioREGEX.validarCpf(novoValor);
+                    }
+                    case "telefone" -> {
+                        valorValido = FuncionarioREGEX.validarTelefone(novoValor);
+                    }
+                    case "email" -> {
+                        valorValido = FuncionarioREGEX.validarEmail(novoValor);
+                    }
+                    default -> {
+                        //Caso passe uma coluna que não precisa de validação ela passa TRUE (ex: nome)
+                        valorValido = true;
+                    }
+                }
+
+                if (!valorValido) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "O valor informado para " + coluna + " é inválido");
+                    return;
+                }
+
+                funcionarioDAO.atualizarColunaFuncionario(coluna, novoValor, id);
+
+                response.sendRedirect(request.getContextPath() + "/funcionario");
+
+                //Return faz com que pare aqui caso seja escolhido
+                return;
+
+            }
 //        Atualizar todas as colunas de uma vez
-        else if (acao.equals("atualizar_completo")){
-            int id = Integer.parseInt(request.getParameter("id_funcionario"));
+            else if (acao.equals("atualizar_completo")) {
+                int id = Integer.parseInt(request.getParameter("id_funcionario"));
 
+
+                String nome =
+                        request.getParameter("nome");
+                String senha =
+                        request.getParameter("senha");
+                String email =
+                        request.getParameter("email");
+                String telefone =
+                        request.getParameter("telefone");
+                String cpf =
+                        request.getParameter("cpf");
+                int fk_setor =
+                        Integer.parseInt(request.getParameter("fk_setor"));
+
+                String dt_adimissao =
+                        request.getParameter("dt_admissao");
+
+                LocalDate dataAdimissao = null;
+
+                if (
+                        dt_adimissao != null &&
+                                !dt_adimissao.isBlank()
+                ) {
+                    dataAdimissao = LocalDate.parse(dt_adimissao);
+                }
+
+                String status =
+                        request.getParameter("status");
+
+                boolean isAdmin =
+                        Boolean.parseBoolean(request.getParameter("is_admin"));
+
+                //APLICANDO REGEX
+                valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
+
+                if (!valoresValidos) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
+                    return;
+                }
+
+                //INSTANCIANDO OBJETO FUNCIONARIO
+                FuncionarioMolde atualizandoTudo = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
+                funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
+
+                response.sendRedirect(request.getContextPath() + "/funcionario");
+                return;
+            }
+
+            //Fluxo de cadastro, só chegara aqui se não se encaixar em nenhuma das 2 de cima
 
             String nome =
                     request.getParameter("nome");
+
             String senha =
                     request.getParameter("senha");
-            String email =
-                    request.getParameter("email");
-            String telefone =
-                    request.getParameter("telefone");
-            String cpf =
-                    request.getParameter("cpf");
+
             int fk_setor =
                     Integer.parseInt(request.getParameter("fk_setor"));
+
+            String email =
+                    request.getParameter("email");
+
+            String telefone =
+                    request.getParameter("telefone");
+
+            String cpf =
+                    request.getParameter("cpf");
 
             String dt_adimissao =
                     request.getParameter("dt_admissao");
@@ -162,72 +236,31 @@ public class FuncionarioServlet extends HttpServlet {
             //APLICANDO REGEX
             valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
 
-            if (!valoresValidos){
+            if (!valoresValidos) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
                 return;
             }
 
-            //INSTANCIANDO OBJETO FUNCIONARIO
-            FuncionarioMolde atualizandoTudo = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
-            funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
+            FuncionarioMolde novoFuncionario = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
 
+            funcionarioDAO.inserirFuncionario(novoFuncionario);
+
+            response.sendRedirect(
+                    request.getContextPath() + "/funcionario"
+            );
+
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
             response.sendRedirect(request.getContextPath() + "/funcionario");
-            return;
         }
-
-        //Fluxo de cadastro, só chegara aqui se não se encaixar em nenhuma das 2 de cima
-
-        String nome =
-                request.getParameter("nome");
-
-        String senha =
-                request.getParameter("senha");
-
-        int fk_setor =
-                Integer.parseInt(request.getParameter("fk_setor"));
-
-        String email =
-                request.getParameter("email");
-
-        String telefone =
-                request.getParameter("telefone");
-
-        String cpf =
-                request.getParameter("cpf");
-
-        String dt_adimissao =
-                request.getParameter("dt_admissao");
-
-        LocalDate dataAdimissao = null;
-
-        if (
-                dt_adimissao != null &&
-                        !dt_adimissao.isBlank()
-        ) {
-            dataAdimissao = LocalDate.parse(dt_adimissao);
+        catch (java.time.format.DateTimeParseException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Data inválida");
+            response.sendRedirect(request.getContextPath() + "/funcionario");
         }
-
-        String status =
-                request.getParameter("status");
-
-        boolean isAdmin =
-                Boolean.parseBoolean(request.getParameter("is_admin"));
-
-        //APLICANDO REGEX
-        valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
-
-        if (!valoresValidos){
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
-            return;
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/funcionario");
         }
-
-        FuncionarioMolde novoFuncionario = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
-
-        funcionarioDAO.inserirFuncionario(novoFuncionario);
-
-        response.sendRedirect(
-                request.getContextPath() + "/funcionario"
-        );
-
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 }

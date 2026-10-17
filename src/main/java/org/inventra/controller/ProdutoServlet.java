@@ -28,36 +28,52 @@ public class ProdutoServlet extends HttpServlet {
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
 
-        List<ProdutoMolde> produtos;
-        produtos = produtoDAO.listarProdutos();
+        try {
 
-        if (filtroSelecionado != null){
-            switch (filtroSelecionado){
-                case "validade_proxima" -> {
-                    produtos = produtoDAO.listarProdutosPorData(true);
-                } case "validade_distante" -> {
-                    produtos = produtoDAO.listarProdutosPorData(false);
-                } case "az" -> {
-                    produtos = produtoDAO.listarProdutosAlfabetica(true);
-                } case "za" -> {
-                    produtos = produtoDAO.listarProdutosAlfabetica(false);
-                } case "quantidade" -> {
-                    produtos = produtoDAO.listarProdutosQuantidade();
-                } case "marca" -> {
-                    produtos = produtoDAO.listarProdutosPorMarca();
-                }
-                default -> {
-                    produtos = produtoDAO.listarProdutos();
+            List<ProdutoMolde> produtos;
+            produtos = produtoDAO.listarProdutos();
+
+            if (filtroSelecionado != null) {
+                switch (filtroSelecionado) {
+                    case "validade_proxima" -> {
+                        produtos = produtoDAO.listarProdutosPorData(true);
+                    }
+                    case "validade_distante" -> {
+                        produtos = produtoDAO.listarProdutosPorData(false);
+                    }
+                    case "az" -> {
+                        produtos = produtoDAO.listarProdutosAlfabetica(true);
+                    }
+                    case "za" -> {
+                        produtos = produtoDAO.listarProdutosAlfabetica(false);
+                    }
+                    case "quantidade" -> {
+                        produtos = produtoDAO.listarProdutosQuantidade();
+                    }
+                    case "marca" -> {
+                        produtos = produtoDAO.listarProdutosPorMarca();
+                    }
+                    default -> {
+                        produtos = produtoDAO.listarProdutos();
+                    }
                 }
             }
+
+            request.setAttribute("produtos", produtos);
+
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-produtos.jsp"
+            ).forward(request, response);
         }
-
-        request.setAttribute("produtos", produtos);
-
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-produtos.jsp"
-        ).forward(request, response);
-
+        catch (NumberFormatException e){
+        request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+        response.sendRedirect(request.getContextPath() + "/produto");
+    }
+        catch (IllegalArgumentException e){
+        request.getSession().setAttribute("mensagemErro", e.getMessage());
+        response.sendRedirect(request.getContextPath() + "/produto");
+    }
+    //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
     @Override
@@ -74,33 +90,63 @@ public class ProdutoServlet extends HttpServlet {
             acao = "";
         }
 
-        if(acao.equals("excluir")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+        try {
 
-            produtoDAO.deletarProduto(id);
+            if (acao.equals("excluir")) {
+                int id = Integer.parseInt(request.getParameter("id"));
 
-            response.sendRedirect(
-                    request.getContextPath() + "/produto"
-            );
-            return;
-        }
+                produtoDAO.deletarProduto(id);
+
+                response.sendRedirect(
+                        request.getContextPath() + "/produto"
+                );
+                return;
+            }
 
 //        Atualiza apenas UMA coluna
-        else if(acao.equals("atualizar_coluna")){
-            int id = Integer.parseInt(request.getParameter("id"));
-            String coluna = request.getParameter("coluna");
-            String novoValor = request.getParameter("novoValor");
+            else if (acao.equals("atualizar_coluna")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String coluna = request.getParameter("coluna");
+                String novoValor = request.getParameter("novoValor");
 
-            produtoDAO.atualizarColunaProduto(coluna, novoValor, id);
+                produtoDAO.atualizarColunaProduto(coluna, novoValor, id);
 
-            response.sendRedirect(request.getContextPath() + "/produto");
+                response.sendRedirect(request.getContextPath() + "/produto");
 
-            //Return faz com que pare aqui caso seja escolhido
-            return;
-        }
+                //Return faz com que pare aqui caso seja escolhido
+                return;
+            } else if (acao.equals("atualizar_completo")) {
+                int id = Integer.parseInt(request.getParameter("id_produto"));
 
-        else if (acao.equals("atualizar_completo")){
-            int id = Integer.parseInt(request.getParameter("id_produto"));
+                String nome =
+                        request.getParameter("nome");
+                int fk_marca =
+                        Integer.parseInt(request.getParameter("fk_marca"));
+                int fk_categoria =
+                        Integer.parseInt(request.getParameter("fk_categoria"));
+                String unidadeMedida =
+                        request.getParameter("unidadeMedida");
+                int estoqueMin =
+                        Integer.parseInt(request.getParameter("estoqueMin"));
+                int estoqueMax =
+                        Integer.parseInt(request.getParameter("estoqueMax"));
+                int fk_fornecedor =
+                        Integer.parseInt(request.getParameter("fk_fornecedor"));
+                String descricao =
+                        request.getParameter("descricao");
+                boolean ativo =
+                        Boolean.parseBoolean(request.getParameter("ativo"));
+
+                ProdutoMolde atualizandoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+
+                produtoDAO.atualizarProdutoCompleto(atualizandoProduto, id);
+
+                response.sendRedirect(
+                        request.getContextPath() + "/produto"
+                );
+
+                return;
+            }
 
             String nome =
                     request.getParameter("nome");
@@ -121,42 +167,21 @@ public class ProdutoServlet extends HttpServlet {
             boolean ativo =
                     Boolean.parseBoolean(request.getParameter("ativo"));
 
-            ProdutoMolde atualizandoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+            ProdutoMolde novoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
 
-            produtoDAO.atualizarProdutoCompleto(atualizandoProduto, id);
+            produtoDAO.inserirProduto(novoProduto);
 
             response.sendRedirect(
                     request.getContextPath() + "/produto"
             );
-
-            return;
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+            response.sendRedirect(request.getContextPath() + "/produto");
         }
-
-        String nome =
-                request.getParameter("nome");
-        int fk_marca =
-                Integer.parseInt(request.getParameter("fk_marca"));
-        int fk_categoria =
-                Integer.parseInt(request.getParameter("fk_categoria"));
-        String unidadeMedida =
-                request.getParameter("unidadeMedida");
-        int estoqueMin =
-                Integer.parseInt(request.getParameter("estoqueMin"));
-        int estoqueMax =
-                Integer.parseInt(request.getParameter("estoqueMax"));
-        int fk_fornecedor =
-                Integer.parseInt(request.getParameter("fk_fornecedor"));
-        String descricao =
-                request.getParameter("descricao");
-        boolean ativo =
-                Boolean.parseBoolean(request.getParameter("ativo"));
-
-        ProdutoMolde novoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
-
-        produtoDAO.inserirProduto(novoProduto);
-
-        response.sendRedirect(
-                request.getContextPath() + "/produto"
-        );
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/produto");
+        }
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 }
