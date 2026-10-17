@@ -27,8 +27,28 @@ public class RequisicaoServlet extends HttpServlet{
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
+        String filtroSelecionado = request.getParameter("filtro");
 
-        List<RequisicaoMolde> requisicoes = requisicaoDAO.listarRequisicoes();
+        List<RequisicaoMolde> requisicoes;
+         requisicoes = requisicaoDAO.listarRequisicoes();
+
+         if (filtroSelecionado != null){
+             switch (filtroSelecionado){
+                 case "tipo" -> {
+                     requisicoes = requisicaoDAO.listarRequisicoesPorTipo();
+                 } case "quantidade_crescente" -> {
+                     requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(true);
+                 } case "quantidade_decrescente" -> {
+                     requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(false);
+                 } case "data_proxima" -> {
+                     requisicoes = requisicaoDAO.listarRequisicoesPorData(true);
+                 } case "data_distante" -> {
+                     requisicoes = requisicaoDAO.listarRequisicoesPorData(false);
+                 } default -> {
+                     requisicoes = requisicaoDAO.listarRequisicoes();
+                 }
+             }
+         }
 
         request.setAttribute("requisicoes", requisicoes);
 
