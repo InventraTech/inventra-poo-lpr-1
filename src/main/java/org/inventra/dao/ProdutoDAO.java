@@ -14,27 +14,27 @@ public class ProdutoDAO {
     // 1.CREATE
     public void inserirProduto(ProdutoMolde produto) {
 
-        String sql = "INSERT INTO produto (nome, fk_marca, fk_categoria, unidade_medida, estoque_min, estoque_max, fk_fornecedor, descricao, ativo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (fk_fornecedor, fk_marca, fk_categoria, nome, unidade_medida, estoque_min, estoque_max, descricao, ativo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setString(1, produto.getNome());
-            stmt.setInt(2, produto.getFk_marca());
-            stmt.setInt(3, produto.getFk_categoria());
-            stmt.setString(4, produto.getUnidadeMedida());
-            stmt.setInt(5, produto.getEstoqueMin());
-            stmt.setInt(6, produto.getEstoqueMax());
-            stmt.setInt(7, produto.getFk_fornecedor());
-            stmt.setString(8, produto.getDescricao());
-            stmt.setBoolean(9, produto.isAtivo());
+            int index = 1;
+
+            stmt.setInt(index++, produto.getFk_fornecedor());
+            stmt.setInt(index++, produto.getFk_marca());
+            stmt.setInt(index++, produto.getFk_categoria());
+            stmt.setString(index++, produto.getNome());
+            stmt.setString(index++, produto.getUnidadeMedida());
+            stmt.setInt(index++, produto.getEstoqueMin());
+            stmt.setInt(index++, produto.getEstoqueMax());
+            stmt.setString(index++, produto.getDescricao());
+            stmt.setBoolean(index++, produto.isAtivo());
 
             stmt.executeUpdate();
-            System.out.println("Produto cadastrado");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao cadastrar o produto");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir um novo produto no banco de dados", e);
         }
     }
 
@@ -42,8 +42,8 @@ public class ProdutoDAO {
 
     //SQL base que será modificado para cada uma das filtragens posteriormente
     public static final String sqlBase = """
-            SELECT p.id_produto, p.nome, m.nome AS nome_marca, c.nome AS nome_categoria, p.unidade_medida, p.estoque_min, p.estoque_max,
-                       f.nome_juridico AS nome_fornecedor, p.descricao, p.ativo
+            SELECT p.id_produto, f.nome_juridico AS nome_fornecedor, m.nome AS nome_marca, c.nome AS nome_categoria,
+                       p.nome, p.unidade_medida, p.estoque_min, p.estoque_max, p.descricao, p.ativo
                 FROM produto p
                 JOIN marca m ON p.fk_marca = m.id_marca
                 JOIN categoria c ON p.fk_categoria = c.id_categoria
@@ -69,12 +69,12 @@ public class ProdutoDAO {
                 String descricao = rs.getString("descricao");
                 boolean ativo = rs.getBoolean("ativo");
 
-                ProdutoMolde produto = new ProdutoMolde(id, nome, marca, categoria, unidadeMedida, estoqueMin, estoqueMax, fornecedor, descricao, ativo);
+                ProdutoMolde produto = new ProdutoMolde(id, fornecedor, marca, categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
                 listaProdutos.add(produto);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao consultar a tabela de produtos no banco de dados", e);
         }
         return listaProdutos;
 
@@ -85,13 +85,13 @@ public class ProdutoDAO {
     public void atualizarProdutoCompleto(ProdutoMolde produto, int id_produto) {
         String sql = """
                 UPDATE produto
-                SET nome = ?,
-                	fk_marca = ?,
+                SET fk_fornecedor = ?,
+                    fk_marca = ?,
                 	fk_categoria = ?,
+                	nome = ?,
                 	unidade_medida = ?,
                 	estoque_min = ?,
                 	estoque_max = ?,
-                	fk_fornecedor = ?,
                 	descricao = ?,
                 	ativo = ?
                 WHERE id_produto = ?
@@ -100,22 +100,24 @@ public class ProdutoDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setString(1, produto.getNome());
-            stmt.setInt(2, produto.getFk_marca());
-            stmt.setInt(3, produto.getFk_categoria());
-            stmt.setString(4, produto.getUnidadeMedida());
-            stmt.setInt(5, produto.getEstoqueMin());
-            stmt.setInt(6, produto.getEstoqueMax());
-            stmt.setInt(7, produto.getFk_fornecedor());
-            stmt.setString(8, produto.getDescricao());
-            stmt.setBoolean(9, produto.isAtivo());
+            int index = 1;
 
-            stmt.setInt(10, id_produto);
+            stmt.setInt(index++, produto.getFk_fornecedor());
+            stmt.setInt(index++, produto.getFk_marca());
+            stmt.setInt(index++, produto.getFk_categoria());
+            stmt.setString(index++, produto.getNome());
+            stmt.setString(index++, produto.getUnidadeMedida());
+            stmt.setInt(index++, produto.getEstoqueMin());
+            stmt.setInt(index++, produto.getEstoqueMax());
+            stmt.setString(index++, produto.getDescricao());
+            stmt.setBoolean(index++, produto.isAtivo());
+
+            stmt.setInt(index++, id_produto);
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar um produto no banco de dados", e);
         }
     }
 
@@ -127,19 +129,19 @@ public class ProdutoDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            if (nomeColuna.equalsIgnoreCase("nome")) {
-                stmt.setString(1, novoValor);
+            if (nomeColuna.equalsIgnoreCase("FK_fornecedor")) {
+                stmt.setInt(1, Integer.parseInt(novoValor));
             } else if (nomeColuna.equalsIgnoreCase("FK_marca")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             } else if (nomeColuna.equalsIgnoreCase("FK_categoria")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
+            } else if (nomeColuna.equalsIgnoreCase("nome")) {
+                stmt.setString(1, novoValor);
             } else if (nomeColuna.equalsIgnoreCase("Unidade_medida")) {
                 stmt.setString(1, novoValor);
             } else if (nomeColuna.equalsIgnoreCase("estoque_min")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             } else if (nomeColuna.equalsIgnoreCase("estoque_max")) {
-                stmt.setInt(1, Integer.parseInt(novoValor));
-            } else if (nomeColuna.equalsIgnoreCase("fk_fornecedor")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             } else if (nomeColuna.equalsIgnoreCase("descricao")) {
                 stmt.setString(1, novoValor);
@@ -149,7 +151,7 @@ public class ProdutoDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar um produto no banco de dados", e);
         }
 
 
@@ -166,15 +168,8 @@ public class ProdutoDAO {
 
             int linhasExecutadas = stmt.executeUpdate();
 
-            if (linhasExecutadas > 0) {
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhuma linha foi encontrada com o id " + id_produto);
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar o banco");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar um produto no banco de dados", e);
         }
     }
 

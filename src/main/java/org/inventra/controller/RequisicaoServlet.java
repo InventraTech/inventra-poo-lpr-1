@@ -27,14 +27,52 @@ public class RequisicaoServlet extends HttpServlet{
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
+        String filtroSelecionado = request.getParameter("filtro");
 
-        List<RequisicaoMolde> requisicoes = requisicaoDAO.consultarRequisicoes();
+        try {
 
-        request.setAttribute("requisicoes", requisicoes);
+            List<RequisicaoMolde> requisicoes;
+            requisicoes = requisicaoDAO.listarRequisicoes();
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-requisicoes.jsp"
-        ).forward(request, response);
+            if (filtroSelecionado != null) {
+                switch (filtroSelecionado) {
+                    case "tipo" -> {
+                        requisicoes = requisicaoDAO.listarRequisicoesPorTipo();
+                    }
+                    case "quantidade_crescente" -> {
+                        requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(true);
+                    }
+                    case "quantidade_decrescente" -> {
+                        requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(false);
+                    }
+                    case "data_proxima" -> {
+                        requisicoes = requisicaoDAO.listarRequisicoesPorData(true);
+                    }
+                    case "data_distante" -> {
+                        requisicoes = requisicaoDAO.listarRequisicoesPorData(false);
+                    }
+                    default -> {
+                        requisicoes = requisicaoDAO.listarRequisicoes();
+                    }
+                }
+            }
+
+            request.setAttribute("requisicoes", requisicoes);
+
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-requisicoes.jsp"
+            ).forward(request, response);
+
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+            response.sendRedirect(request.getContextPath() + "/requisicao");
+        }
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/requisicao");
+        }
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
+
     }
 
     @Override
@@ -51,32 +89,71 @@ public class RequisicaoServlet extends HttpServlet{
             acao = "";
         }
 
-        if(acao.equals("excluir")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+        try {
 
-            requisicaoDAO.deletarRequisicao(id);
+            if (acao.equals("excluir")) {
+                int id = Integer.parseInt(request.getParameter("id"));
 
-            response.sendRedirect(
-                    request.getContextPath() + "/requisicao"
-            );
-            return;
-        }
+                requisicaoDAO.deletarRequisicao(id);
 
-        else if (acao.equals("atualizar_coluna")){
-            int id = Integer.parseInt(request.getParameter("id"));
-            String coluna = request.getParameter("coluna");
-            String novoValor = request.getParameter("novoValor");
+                response.sendRedirect(
+                        request.getContextPath() + "/requisicao"
+                );
+                return;
+            } else if (acao.equals("atualizar_coluna")) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String coluna = request.getParameter("coluna");
+                String novoValor = request.getParameter("novoValor");
 
-            requisicaoDAO.atualizarColunaRequisicao(coluna, novoValor, id);
+                requisicaoDAO.atualizarColunaRequisicao(coluna, novoValor, id);
 
-            response.sendRedirect(request.getContextPath() + "/requisicao");
+                response.sendRedirect(request.getContextPath() + "/requisicao");
 
-            //Return faz com que pare aqui caso seja escolhido
-            return;
-        }
+                //Return faz com que pare aqui caso seja escolhido
+                return;
+            } else if (acao.equals("atualizar_completo")) {
+                int id = Integer.parseInt(request.getParameter("id_requisicao"));
 
-        else if (acao.equals("atualizar_completo")){
-            int id = Integer.parseInt(request.getParameter("id_requisicao"));
+                int idTipoRequisicao =
+                        Integer.parseInt(request.getParameter("idTipoRequisicao"));
+                int quantidadeProduto =
+                        Integer.parseInt(request.getParameter("quantidadeProduto"));
+                String motivo =
+                        request.getParameter("motivo");
+                String status =
+                        request.getParameter("status");
+
+                String dataHora =
+                        request.getParameter("dataHora");
+
+                LocalDateTime dataHoraRequisicao = null;
+
+                if (
+                        dataHora != null &&
+                                !dataHora.isBlank()
+                ) {
+                    dataHoraRequisicao = LocalDateTime.parse(dataHora);
+                }
+
+                int fkFuncionarioSolicitante =
+                        Integer.parseInt(request.getParameter("fkFuncionarioSolicitante"));
+                int fkFuncionarioAprovador =
+                        Integer.parseInt(request.getParameter("fkFuncionarioAprovador"));
+                int fkProduto =
+                        Integer.parseInt(request.getParameter("fkProduto"));
+
+
+                RequisicaoMolde atualizarRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
+
+                requisicaoDAO.atualizarRequisicaoCompleta(atualizarRequisicao, id);
+
+                response.sendRedirect(
+                        request.getContextPath() + "/requisicao"
+                );
+
+                return;
+            }
+
 
             int idTipoRequisicao =
                     Integer.parseInt(request.getParameter("idTipoRequisicao"));
@@ -107,55 +184,27 @@ public class RequisicaoServlet extends HttpServlet{
                     Integer.parseInt(request.getParameter("fkProduto"));
 
 
-            RequisicaoMolde atualizarRequisicao = new RequisicaoMolde(idTipoRequisicao, quantidadeProduto, motivo, status, dataHoraRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto );
+            RequisicaoMolde novaRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
 
-            requisicaoDAO.atualizarRequisicaoCompleta(atualizarRequisicao, id);
+            requisicaoDAO.inserirRequisicao(novaRequisicao);
 
             response.sendRedirect(
                     request.getContextPath() + "/requisicao"
             );
 
-            return;
+        } catch (NumberFormatException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
+            response.sendRedirect(request.getContextPath() + "/requisicao");
         }
-
-
-
-        int idTipoRequisicao =
-                Integer.parseInt(request.getParameter("idTipoRequisicao"));
-        int quantidadeProduto =
-                Integer.parseInt(request.getParameter("quantidadeProduto"));
-        String motivo =
-                request.getParameter("motivo");
-        String status =
-                request.getParameter("status");
-
-        String dataHora =
-                request.getParameter("dataHora");
-
-        LocalDateTime dataHoraRequisicao = null;
-
-        if (
-                dataHora != null &&
-                        !dataHora.isBlank()
-        ) {
-            dataHoraRequisicao = LocalDateTime.parse(dataHora);
+        catch (java.time.format.DateTimeParseException e){
+            request.getSession().setAttribute("mensagemErro", "Erro: Data inválida");
+            response.sendRedirect(request.getContextPath() + "/requisicao");
         }
-
-        int fkFuncionarioSolicitante =
-                Integer.parseInt(request.getParameter("fkFuncionarioSolicitante"));
-        int fkFuncionarioAprovador =
-                Integer.parseInt(request.getParameter("fkFuncionarioAprovador"));
-        int fkProduto =
-                Integer.parseInt(request.getParameter("fkProduto"));
-
-
-        RequisicaoMolde novaRequisicao = new RequisicaoMolde(idTipoRequisicao, quantidadeProduto, motivo, status, dataHoraRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto );
-
-        requisicaoDAO.inserirRequisicao(novaRequisicao);
-
-        response.sendRedirect(
-                request.getContextPath() + "/requisicao"
-        );
+        catch (IllegalArgumentException e){
+            request.getSession().setAttribute("mensagemErro", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/requisicao");
+        }
+        //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
 }

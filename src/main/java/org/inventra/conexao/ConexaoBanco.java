@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class
 ConexaoBanco {
-    private static Dotenv dotEnv = Dotenv.load();
+    private static Dotenv dotEnv = Dotenv.configure().directory("/").filename(".env").load();
 
     private static final String URL = dotEnv.get("DB_URL");
     private static final String USUARIO = dotEnv.get("DB_USUARIO");

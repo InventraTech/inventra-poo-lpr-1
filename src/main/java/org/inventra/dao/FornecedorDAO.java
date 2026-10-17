@@ -2,7 +2,6 @@ package org.inventra.dao;
 
 import org.inventra.conexao.ConexaoBanco;
 import org.inventra.model.FornecedorMolde;
-import org.inventra.model.ProdutoMolde;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,29 +13,30 @@ import java.util.List;
 public class FornecedorDAO {
     public void inserirFornecedor(FornecedorMolde fornecedor){
 
-        String sql = "INSERT INTO fornecedor (nome_juridico, cnpj, email, telefone, nota_vpq, fk_regiao) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fornecedor (fk_endereco, nome_juridico, cnpj, email, nota_vpq) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setString(1, fornecedor.getNome_juridico());
-            stmt.setString(2, fornecedor.getCnpj());
-            stmt.setString(3, fornecedor.getEmail());
-            stmt.setString(4, fornecedor.getTelefone());
-            stmt.setInt(5, fornecedor.getNota_vpq());
-            stmt.setInt(6, fornecedor.getFk_regiao());
+            int index = 1;
+
+            stmt.setInt(index++, fornecedor.getFk_endereco());
+            stmt.setString(index++, fornecedor.getNome_juridico());
+            stmt.setString(index++, fornecedor.getCnpj());
+            stmt.setString(index++, fornecedor.getEmail());
+            stmt.setInt(index++, fornecedor.getNota_vpq());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao inserir fornecedor no banco de dados", e);
         }
     }
 
     public static final String sqlBase = """
-            SELECT f.id_fornecedor, f.nome_juridico, f.cnpj, f.email, f.telefone, f.nota_vpq, CONCAT(r.estado, ' | ', r.cidade) AS regiao
-            FROM fornecedor f 
-            JOIN regiao r ON f.fk_regiao = r.id_regiao
+            SELECT f.id_fornecedor, f.nome_juridico, f.cnpj, f.email, f.nota_vpq, CONCAT(e.estado, ' | ', e.cidade) AS endereco
+            FROM fornecedor f
+            JOIN endereco e ON f.fk_endereco = e.id_endereco
             """;
 
     public List<FornecedorMolde> consultarFornecedor(String sql){
@@ -49,18 +49,17 @@ public class FornecedorDAO {
             while (rs.next()){
                 int id = rs.getInt("id_fornecedor");
                 String nome_juridico = rs.getString("nome_juridico");
+                String endereco = rs.getString("endereco");
                 String cnpj = rs.getString("cnpj");
                 String email = rs.getString("email");
-                String telefone = rs.getString("telefone");
                 int nota_vpq = rs.getInt("nota_vpq");
-                String regiao = rs.getString("regiao");
 
-                FornecedorMolde novoFornecedor = new FornecedorMolde(id, nome_juridico, cnpj, email, telefone, nota_vpq, regiao);
+                FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nome_juridico, cnpj, email, nota_vpq);
                 listaFornecedores.add(novoFornecedor);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao consultar a tabela de fornecedores no banco de dados", e);
         }
         return listaFornecedores;
     }
@@ -69,32 +68,32 @@ public class FornecedorDAO {
 
         String sql = """
                 UPDATE fornecedor
-                SET nome_juridico = ?,
+                SET fk_endereco = ?,
+                    nome_juridico = ?,
                 	cnpj = ?,
                 	email = ?,
-                	telefone = ?,
-                	nota_vpq = ?,
-                	fk_regiao = ?
+                	nota_vpq = ?
                 WHERE id_fornecedor = ?
                 """;
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setString(1, fornecedor.getNome_juridico());
-            stmt.setString(2, fornecedor.getCnpj());
-            stmt.setString(3, fornecedor.getEmail());
-            stmt.setString(4, fornecedor.getTelefone());
-            stmt.setInt(5, fornecedor.getNota_vpq());
-            stmt.setInt(6, fornecedor.getFk_regiao());
+            int index = 1;
 
-            stmt.setInt(7, id_fornecedor);
+            stmt.setInt(index++, fornecedor.getFk_endereco());
+            stmt.setString(index++, fornecedor.getNome_juridico());
+            stmt.setString(index++, fornecedor.getCnpj());
+            stmt.setString(index++, fornecedor.getEmail());
+            stmt.setInt(index++, fornecedor.getNota_vpq());
+
+            stmt.setInt(index++, id_fornecedor);
 
             stmt.executeUpdate();
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar fornecedor", e);
         }
 
     }
@@ -109,19 +108,16 @@ public class FornecedorDAO {
             if (NomeColuna.equalsIgnoreCase("nome_juridico")) {
                 stmt.setString(1, novoValor);
             }
+            else if (NomeColuna.equalsIgnoreCase("fk_endereco")) {
+                stmt.setInt(1, Integer.parseInt(novoValor));
+            }
             else if (NomeColuna.equalsIgnoreCase("cnpj")) {
                 stmt.setString(1, novoValor);
             }
             else if (NomeColuna.equalsIgnoreCase("email")) {
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("telefone")) {
-                stmt.setString(1, novoValor);
-            }
             else if (NomeColuna.equalsIgnoreCase("nota_vpq")) {
-                stmt.setInt(1, Integer.parseInt(novoValor));
-            }
-            else if (NomeColuna.equalsIgnoreCase("fk_regiao")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
 
@@ -129,11 +125,9 @@ public class FornecedorDAO {
             stmt.setInt(2, id_fornecedor);
 
             stmt.executeUpdate();
-            System.out.println("Fornecedor atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar fornecedor", e);
         }
     }
 
@@ -147,16 +141,8 @@ public class FornecedorDAO {
 
             int linhasExecutadas = stmt.executeUpdate();
 
-            //O execute update guarda a quantidade de linhas afetadas.
-            if(linhasExecutadas > 0){
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhum fornecedor com o id "+id_fornecedor+" foi encontrado");
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar com o banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar fornecedor", e);
         }
     }
 

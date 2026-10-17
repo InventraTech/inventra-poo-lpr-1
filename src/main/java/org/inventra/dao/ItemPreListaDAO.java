@@ -15,20 +15,21 @@ public class ItemPreListaDAO {
     //CREATE
     public void inserirItemPreLista(ItemPreListaMolde itemPreLista){
 
-        String sql = "INSERT INTO item_pre_lista (fk_fornecedor, fk_produto, qtd) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO item_pre_lista (fk_pre_lista, fk_fornecedor, fk_produto, qtd) VALUES(?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreLista.getFk_fornecedor());
-            stmt.setInt(2, itemPreLista.getFk_produto());
-            stmt.setInt(3, itemPreLista.getQtd());
+            stmt.setInt(1, itemPreLista.getFk_pre_lista());
+            stmt.setInt(2, itemPreLista.getFk_fornecedor());
+            stmt.setInt(3, itemPreLista.getFk_produto());
+            stmt.setInt(4, itemPreLista.getQtd());
 
             stmt.executeUpdate();
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao inserir um novo item pre-lista no banco de dados", e);
         }
     }
     //READ
@@ -36,7 +37,7 @@ public class ItemPreListaDAO {
     public static final String sqlBase = """
             SELECT i.id_item_lista, f.nome_juridico AS fornecedor, p.nome AS produto, i.qtd AS quantidade
             FROM Item_pre_lista i
-            JOIN fornecedor f ON i.fk_pre_lista = f.id_fornecedor
+            JOIN fornecedor f ON i.fk_fornecedor = f.id_fornecedor
             JOIN produto p ON i.fk_produto = p.id_produto
             """;
 
@@ -59,7 +60,7 @@ public class ItemPreListaDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao consultar a tabela de itens pre-lista no banco de dados", e);
         }
         return listaItensPreLista;
 
@@ -69,7 +70,8 @@ public class ItemPreListaDAO {
 
         String sql = """
                 UPDATE item_pre_lista
-                SET fk_fornecedor = ?,
+                SET fk_pre_lista = ?,
+                	fk_fornecedor = ?,
                 	fk_produto = ?,
                 	qtd = ?
                 WHERE id_item_lista = ?
@@ -78,17 +80,18 @@ public class ItemPreListaDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreListaMolde.getFk_fornecedor());
-            stmt.setInt(2, itemPreListaMolde.getFk_produto());
-            stmt.setInt(3, itemPreListaMolde.getQtd());
+            stmt.setInt(1, itemPreListaMolde.getFk_pre_lista());
+            stmt.setInt(2, itemPreListaMolde.getFk_fornecedor());
+            stmt.setInt(3, itemPreListaMolde.getFk_produto());
+            stmt.setInt(4, itemPreListaMolde.getQtd());
 
-            stmt.setInt(4, id_itemPreLista);
+            stmt.setInt(5, id_itemPreLista);
 
             stmt.executeUpdate();
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar item pre-lista", e);
         }
     }
 
@@ -98,7 +101,7 @@ public class ItemPreListaDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            if (NomeColuna.equalsIgnoreCase("fk_preLista")) {
+            if (NomeColuna.equalsIgnoreCase("fk_pre_lista")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
             else if (NomeColuna.equalsIgnoreCase("fk_fornecedor")) {
@@ -115,11 +118,9 @@ public class ItemPreListaDAO {
             stmt.setInt(2, id_item_prelista);
 
             stmt.executeUpdate();
-            System.out.println("Item da pré-lista atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar item pre-lista", e);
         }
     }
 
@@ -135,7 +136,7 @@ public class ItemPreListaDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao deletar item pre-lista", e);
         }
     }
 

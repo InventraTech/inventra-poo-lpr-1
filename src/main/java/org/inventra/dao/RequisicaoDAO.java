@@ -15,26 +15,24 @@ public class RequisicaoDAO {
 
     // 1. CREATE
     public void inserirRequisicao(RequisicaoMolde requisicao){
-        String sql = "INSERT INTO requisicao (id_tipoRequisicao, quantidade_prod, motivo, status, dt_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Requisicao (id_tipoRequisicao, quantidade_prod, motivo, status, dt_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
             stmt.setInt(1, requisicao.getIdTipoRequisicao());
-            stmt.setInt(2, requisicao.getQuantidadeProduto());
-            stmt.setString(3, requisicao.getMotivo());
-            stmt.setString(4, requisicao.getStatus());
-            stmt.setObject(5, requisicao.getDataHora());
-            stmt.setInt(6, requisicao.getFkFuncionarioSolicitante());
-            stmt.setInt(7, requisicao.getFkFuncionarioAprovador());
-            stmt.setInt(8, requisicao.getFkProduto());
+            stmt.setInt(2, requisicao.getFkFuncionarioSolicitante());
+            stmt.setInt(3, requisicao.getFkFuncionarioAprovador());
+            stmt.setInt(4, requisicao.getFkProduto());
+            stmt.setInt(5, requisicao.getQuantidadeProduto());
+            stmt.setString(6, requisicao.getMotivo());
+            stmt.setString(7, requisicao.getStatus());
+            stmt.setObject(8, requisicao.getDataHora());
 
             stmt.executeUpdate();
-            System.out.println("Requisição cadastrada com sucesso.");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao salvar requisição.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir uma nova requisicao no banco de dados", e);
         }
     }
 
@@ -42,10 +40,10 @@ public class RequisicaoDAO {
 
     //SQL base:
     public static final String sqlBase = """
-            SELECT r.id_requisicao, t.tipo AS tipo_requisicao, r.quantidade_prod, r.motivo, r.status,
-            r.dt_requisicao, fs.nome AS funcionario_solicitante, fa.nome AS funcionario_aprovador, p.nome AS produto
+            SELECT r.id_requisicao, t.tipo AS tipo_requisicao, fs.nome AS funcionario_solicitante, fa.nome AS funcionario_aprovador,
+            p.nome AS produto, r.quantidade_prod, r.motivo, r.status, r.dt_requisicao
             FROM requisicao r
-            JOIN tipo_Requisicao t ON r.id_tipoRequisicao = t.id_tipoRequisicao
+            JOIN tipo_requisicao t ON r.fk_tipo_requisicao = t.id_tipo_requisicao
             JOIN funcionario fs ON r.fk_funcionario_solicitante = fs.id_funcionario
             JOIN funcionario fa ON r.fk_funcionario_aprovador = fa.id_funcionario
             JOIN produto p ON r.fk_produto = p.id_produto
@@ -61,6 +59,9 @@ public class RequisicaoDAO {
             while (rs.next()){
                 int id = rs.getInt("id_requisicao");
                 String idTipoRequisicao = rs.getString("tipo_requisicao");
+                String funcionarioSolicitante = rs.getString("funcionario_solicitante");
+                String funcionarioAprovador = rs.getString("funcionario_aprovador");
+                String produto = rs.getString("produto");
                 int qtd = rs.getInt("quantidade_prod");
                 String motivo = rs.getString("motivo");
                 String status = rs.getString("status");
@@ -68,17 +69,12 @@ public class RequisicaoDAO {
                 // Lê a data e a hora individualmente e as combina em um LocalDateTime
                 LocalDateTime dataHora = rs.getObject("dt_requisicao", LocalDateTime.class);
 
-                String funcionarioSolicitante = rs.getString("funcionario_solicitante");
-                String funcionarioAprovador = rs.getString("funcionario_aprovador");
-                String produto = rs.getString("produto");
-
-                RequisicaoMolde requisicao = new RequisicaoMolde(id, idTipoRequisicao, qtd, motivo, status, dataHora, funcionarioSolicitante, funcionarioAprovador, produto);
+                RequisicaoMolde requisicao = new RequisicaoMolde(id, idTipoRequisicao, funcionarioSolicitante, funcionarioAprovador, produto, qtd, motivo, status, dataHora);
                 array.add(requisicao);
             }
 
-        } catch(SQLException erro){
-            System.out.println("Erro ao consultar requisições.");
-            erro.printStackTrace();
+        } catch(SQLException e){
+            throw new RuntimeException("Erro ao consultar a tabela de requisicoes no banco de dados", e);
         }
         return array;
     }
@@ -89,14 +85,14 @@ public class RequisicaoDAO {
 
         String sql = """
                 UPDATE requisicao
-                SET id_tiporequisicao = ?,
+                SET fk_tipo_requisicao = ?,
+                	fk_funcionario_solicitante = ?,
+                	fk_funcionario_aprovador = ?,
+                	fk_produto = ?,
                 	quantidade_prod = ?,
                 	motivo = ?,
                 	status = ?,
-                	dt_requisicao = ?,
-                	fk_funcionario_solicitante = ?,
-                	fk_funcionario_aprovador = ?,
-                	fk_produto = ?
+                	dt_requisicao = ?
                 WHERE id_requisicao = ?
                 """;
 
@@ -104,20 +100,20 @@ public class RequisicaoDAO {
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
             stmt.setInt(1, requisicao.getIdTipoRequisicao());
-            stmt.setInt(2, requisicao.getQuantidadeProduto());
-            stmt.setString(3, requisicao.getMotivo());
-            stmt.setString(4, requisicao.getStatus());
-            stmt.setObject(5, requisicao.getDataHora());
-            stmt.setInt(6, requisicao.getFkFuncionarioSolicitante());
-            stmt.setInt(7, requisicao.getFkFuncionarioAprovador());
-            stmt.setInt(8, requisicao.getFkProduto());
+            stmt.setInt(2, requisicao.getFkFuncionarioSolicitante());
+            stmt.setInt(3, requisicao.getFkFuncionarioAprovador());
+            stmt.setInt(4, requisicao.getFkProduto());
+            stmt.setInt(5, requisicao.getQuantidadeProduto());
+            stmt.setString(6, requisicao.getMotivo());
+            stmt.setString(7, requisicao.getStatus());
+            stmt.setObject(8, requisicao.getDataHora());
 
             stmt.setInt(9, id_requisicao);
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar uma requisicao no banco de dados", e);
         }
     }
 
@@ -128,10 +124,10 @@ public class RequisicaoDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            if(nomeColuna.equalsIgnoreCase("id_tipoRequisicao")){
+            if(nomeColuna.equalsIgnoreCase("fk_tipo_requisicao")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (nomeColuna.equalsIgnoreCase("quantidade_produto")){
+            else if (nomeColuna.equalsIgnoreCase("quantidade_prod")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
             else if (nomeColuna.equalsIgnoreCase("motivo")){
@@ -140,7 +136,7 @@ public class RequisicaoDAO {
             else if (nomeColuna.equalsIgnoreCase("status")){
                 stmt.setString(1, novoValor);
             }
-            else if (nomeColuna.equalsIgnoreCase("datahora")){
+            else if (nomeColuna.equalsIgnoreCase("dt_requisicao")){
                 LocalDateTime data = LocalDateTime.parse(novoValor);
                 stmt.setObject(1, data);
             }
@@ -158,9 +154,8 @@ public class RequisicaoDAO {
             stmt.executeUpdate();
             System.out.println("Requisição atualizada!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar uma requisicao no banco de dados", e);
         }
     }
 
@@ -174,15 +169,8 @@ public class RequisicaoDAO {
             stmt.setInt(1, id_requisicao);
             int linhasExecutadas = stmt.executeUpdate();
 
-            if(linhasExecutadas > 0){
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhuma requisição com o id " + id_requisicao + " foi encontrada.");
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar com o banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar uma requisicao no banco de dados", e);
         }
     }
 
@@ -193,7 +181,7 @@ public class RequisicaoDAO {
     }
 
     public List<RequisicaoMolde> listarRequisicoesPorTipo(){
-        return consultarRequisicoes(sqlBase.concat(" ORDER BY r.id_tiporequisicao"));
+        return consultarRequisicoes(sqlBase.concat(" ORDER BY r.fk_tipo_requisicao"));
     }
 
     public List<RequisicaoMolde> listarRequisicoesPorQuantidadeProduto(boolean ordem) {

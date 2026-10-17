@@ -29,11 +29,9 @@ public class LoteDAO {
             stmt.setString(8, lote.getNota_fiscal());
 
             stmt.executeUpdate();
-            System.out.println("Cadastro de Lote concluído.");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao salvar lote.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir um novo lote no banco de dados", e);
         }
     }
 
@@ -67,9 +65,8 @@ public class LoteDAO {
                 array.add(lote);
             }
 
-        } catch(SQLException erro){
-            System.out.println("Erro ao consultar lotes.");
-            erro.printStackTrace();
+        } catch(SQLException e){
+            throw new RuntimeException("Erro ao consultar a tabela de lotes no banco de dados", e);
         }
         return array;
     }
@@ -108,7 +105,7 @@ public class LoteDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar lote no banco de dados", e);
         }
     }
 
@@ -149,11 +146,9 @@ public class LoteDAO {
 
             stmt.setInt(2, id_lote);
             stmt.executeUpdate();
-            System.out.println("Lote atualizado!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar lote no banco de dados", e);
         }
     }
 
@@ -167,15 +162,8 @@ public class LoteDAO {
             stmt.setInt(1, id_lote);
             int linhasExecutadas = stmt.executeUpdate();
 
-            if(linhasExecutadas > 0){
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhum lote com o id "+id_lote+" foi encontrado.");
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar com o banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar lote no banco de dados", e);
         }
     }
 
