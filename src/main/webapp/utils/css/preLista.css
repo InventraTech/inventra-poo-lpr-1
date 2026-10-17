@@ -1,0 +1,502 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {font-size: Arial, sans-serif;
+
+}
+.header{
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(to right, #5B00B8, #3F2BBE);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+}
+
+.header-left{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.menu-icon{
+    color: white;
+    height: 24px;
+    width: 50px;
+    background:transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+  
+    justify-content: flex-start;
+
+    cursor: pointer;
+}
+.page-name{
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-name {
+    color: white;
+    font-size: 16px;
+    font-family: Arial;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background-color: white;
+    color: #5B21B6;
+
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+.page-header {
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 81px 0 34px;
+}
+
+
+.titulo-pagina{
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.pagina-Logo{
+    width: 125px;
+    height: 110px;
+    object-fit: contain;
+}
+
+.titulo-pagina-texto h1 {
+    color: #5000B8;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    font-family: Arial;
+}
+
+.titulo-pagina-texto p {
+    color: #8B788F;
+    font-size: 18px;
+}
+
+.acoes{
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.adicionar{
+    height: 45px;
+    min-width: 160px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 9px;
+    background-color: #5600B8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+.exportar {
+    height: 45px;
+    min-width: 160px;
+    padding: 0 1px;
+
+    border: none;
+    border-radius: 9px;
+
+    background-color: #5600B8;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.exportar svg {
+    width: 17px;
+    height: 17px;
+}
+
+.big-numbers{
+    display: flex;
+    justify-content: center;
+    gap: 250px;
+    padding: 0 88px 0 65px;
+}
+
+.resumo{
+    width: 300px;
+    height: 92px;
+    border: 1px solid #E5E0E8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+.icone {
+    width: 60px;
+    height: 60px;
+    background-color: #5600B8;
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icone svg {
+    width: 28px;
+    height: 28px;
+}
+
+.infos {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    font-family: Arial;
+}
+
+.infos span {
+    color: #8B788F;
+    font-size: 18px;
+    margin-bottom: 3px;
+}
+
+.infos strong {
+    color: #111;
+    font-size: 25px;
+    font-weight: 400;
+}
+
+/* FILTROS */
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 0 60px;
+    margin-top: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.busca {
+    height: 38px;
+    flex: 1;
+
+    border: 1px solid #DED9E5;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 15px;
+}
+
+.busca svg {
+    width: 15px;
+    height: 15px;
+    color: #3F3A4D;
+}
+
+.busca input {
+    border: none;
+    outline: none;
+
+    width: 100%;
+
+    margin-left: 10px;
+
+    font-size: 14px;
+    color: #555;
+}
+
+.busca input::placeholder {
+    color: #5F5870;
+}
+
+
+.categoria {
+    width: 300px;
+    margin-right: 30px;
+    height: 38px;
+
+    border: 1px solid #DED9E5;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 12px;
+
+    color: #5F5870;
+    font-size: 14px;
+}
+
+.categoria svg {
+    width: 17px;
+    height: 17px;
+    color: #8B788F;
+}
+
+.lista-reposicao {
+    margin: 46px 90px 0 60px;
+
+    padding: 28px 32px;
+
+    background-color: #FAF9FC;
+
+    border: 1px solid #E8E3ED;
+    border-radius: 15px;
+}
+
+.cabecalho-reposicao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fornecedor {
+    display: flex;
+    align-items: center;
+}
+
+.iniciais {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #5600B8;
+    color: white;
+    font-family: Arial;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 150;
+}
+
+.info-fornecedor {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 10px;
+}
+
+.info-fornecedor strong {
+    color: #17131A;
+    font-size: 18px;
+    font-family: Arial;
+}
+
+.info-fornecedor span {
+    color: #8B788F;
+    font-size: 12px;
+    font-family: Arial;
+    margin-top: 4px;
+}
+
+.recebido {
+    height: 37px;
+
+    padding: 0 13px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: #5600B8;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    font-size: 14px;
+}
+
+.recebido svg {
+    width: 21px;
+    height: 21px;
+}
+
+.produto {
+    height: 62px;
+    margin-top: 31px;
+    padding: 0 18px;
+    background-color: white;
+    border: 1px solid #DED9E5;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.nome-produto {
+    color: #17131A;
+    font-size: 20px;
+    font-family: Arial;
+}
+
+.estoque {
+    color: #A5A0B1;
+    font-size: 12px;
+    margin-top: 5px;
+    font-family: Arial;
+}
+
+.botao-menu {
+    color:white;
+    text-decoration: none;
+    font-size: 27px;
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.menu-lateral {
+    position: fixed;
+    inset: 0;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transition: opacity 0.2s ease;
+
+    z-index: 2000;
+}
+
+.menu-lateral:target {
+    visibility: visible;
+    opacity: 1;
+}
+.menu-fundo {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+}
+.menu-painel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color:#5600B8;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+}
+.menu-fechar {
+    color: white;
+    text-decoration: none;
+    font-size: 27px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+.menu-itens {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 45px;
+    padding: 0;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.menu-item:hover,
+.menu-item.ativo {
+    background-color: #7A22D4;
+    color: white;
+}
+
+.menu-saida {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 15px;
+    height: 45px;
+    color: white;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+.categoria{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.categoria select{
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #5F5870;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    appearance: none;
+    cursor: pointer;
+}
+.categoria svg{
+    flex-shrink: 0;
+    pointer-events: none;
+}
