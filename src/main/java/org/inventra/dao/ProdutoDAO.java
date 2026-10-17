@@ -32,11 +32,9 @@ public class ProdutoDAO {
             stmt.setBoolean(index++, produto.isAtivo());
 
             stmt.executeUpdate();
-            System.out.println("Produto cadastrado");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao cadastrar o produto");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir um novo produto no banco de dados", e);
         }
     }
 
@@ -76,7 +74,7 @@ public class ProdutoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao consultar a tabela de produtos no banco de dados", e);
         }
         return listaProdutos;
 
@@ -119,7 +117,7 @@ public class ProdutoDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar um produto no banco de dados", e);
         }
     }
 
@@ -153,7 +151,7 @@ public class ProdutoDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar um produto no banco de dados", e);
         }
 
 
@@ -170,15 +168,8 @@ public class ProdutoDAO {
 
             int linhasExecutadas = stmt.executeUpdate();
 
-            if (linhasExecutadas > 0) {
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhuma linha foi encontrada com o id " + id_produto);
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar o banco");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar um produto no banco de dados", e);
         }
     }
 

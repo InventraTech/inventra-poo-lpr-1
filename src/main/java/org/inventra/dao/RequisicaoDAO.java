@@ -30,11 +30,9 @@ public class RequisicaoDAO {
             stmt.setObject(8, requisicao.getDataHora());
 
             stmt.executeUpdate();
-            System.out.println("Requisição cadastrada com sucesso.");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao salvar requisição.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir uma nova requisicao no banco de dados", e);
         }
     }
 
@@ -75,9 +73,8 @@ public class RequisicaoDAO {
                 array.add(requisicao);
             }
 
-        } catch(SQLException erro){
-            System.out.println("Erro ao consultar requisições.");
-            erro.printStackTrace();
+        } catch(SQLException e){
+            throw new RuntimeException("Erro ao consultar a tabela de requisicoes no banco de dados", e);
         }
         return array;
     }
@@ -116,7 +113,7 @@ public class RequisicaoDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erro ao atualizar uma requisicao no banco de dados", e);
         }
     }
 
@@ -157,9 +154,8 @@ public class RequisicaoDAO {
             stmt.executeUpdate();
             System.out.println("Requisição atualizada!");
 
-        } catch (SQLException erro) {
-            System.out.println("Erro ao se conectar no banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar uma requisicao no banco de dados", e);
         }
     }
 
@@ -173,15 +169,8 @@ public class RequisicaoDAO {
             stmt.setInt(1, id_requisicao);
             int linhasExecutadas = stmt.executeUpdate();
 
-            if(linhasExecutadas > 0){
-                System.out.println("Alteração concluída com sucesso.");
-            } else {
-                System.out.println("Nenhuma requisição com o id " + id_requisicao + " foi encontrada.");
-            }
-
-        } catch (SQLException erro) {
-            System.out.println("Erro ao conectar com o banco.");
-            erro.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar uma requisicao no banco de dados", e);
         }
     }
 
