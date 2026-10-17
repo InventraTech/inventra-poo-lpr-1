@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+    <display-name>Inventra Web</display-name>
+
+    <!-- Erro 400: Bad Request (Requisição inválida) -->
+    <error-page>
+        <error-code>400</error-code>
+        <location>/WEB-INF/views/erros/erro-400.jsp</location>
+    </error-page>
+
+    <!-- Erro 403: Forbidden (quando um usuário não tem acesso para fazer determinada ação) -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/views/erros/erro-403.jsp</location>
+    </error-page>
+
+    <!-- Erro 404: Not Found (para quando a página não for encontrada) -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/erros/erro-404.jsp</location>
+    </error-page>
+
+    <!-- Erro 405: Method Not Allowed (Método HTTP não permitido) -->
+    <error-page>
+        <error-code>405</error-code>
+        <location>/WEB-INF/views/erros/erro-405.jsp</location>
+    </error-page>
+
+    <!-- Erro 500: Internal Server Error (Erro no servidor / Banco) -->
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/views/erros/erro-500.jsp</location>
+    </error-page>
+
+    <!-- Erro Genérico / Throwable (Qualquer outra falha inesperada) -->
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/WEB-INF/views/erros/erro-500.jsp</location>
+    </error-page>
+
+</web-app>
