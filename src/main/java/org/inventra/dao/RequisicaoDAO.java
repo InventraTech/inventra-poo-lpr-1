@@ -15,7 +15,7 @@ public class RequisicaoDAO {
 
     // 1. CREATE
     public void inserirRequisicao(RequisicaoMolde requisicao){
-        String sql = "INSERT INTO requisicao (fk_tipo_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto, quantidade_prod, motivo, status, dt_requisicao) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Requisicao (id_tipoRequisicao, quantidade_prod, motivo, status, dt_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
