@@ -1,0 +1,55 @@
+.tabela-lotes{
+    margin: 30px auto 0;
+    width: calc(100% - 132px);
+}
+.tabela-lotes table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: Arial, sans-serif;
+}
+.tabela-lotes th,
+.tabela-lotes td{
+    border: 1px solid #E5E0E8;
+    height: 60px;
+    padding: 12px;
+    text-align: center;
+}
+.tabela-lotes th{
+    height: 38px;
+    color: #A08DA8;
+    font-size: 15px;
+    font-weight: 500;
+    background-color: #FFFFFF;
+}
+.tabela-lotes td{
+    height: 60px;
+    color: #514A58;
+    font-size: 14px;
+}
+.acoes .adicionar{
+    text-decoration: none;
+    font-family: Arial,sans-serif;
+}
+.categoria{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.categoria select{
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #5F5870;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    appearance: none;
+    cursor: pointer;
+}
+.categoria svg{
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
