@@ -1,0 +1,194 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requisi├º├Áes</title>
+
+    <link rel="stylesheet" href="../../utils/css/preLista.css">
+    <link rel="stylesheet" href="../../utils/css/requisicoes.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <header class="header">
+       <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">
+    <i data-lucide="menu"></i>
+</a>
+
+        <div class="header-user">
+            <span class="user-name">Nelson Junior</span>
+            <div class="user-avatar">
+                <i data-lucide="user"></i>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="menu-lateral" id="modal-menu">
+        <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
+
+        <nav class="menu-painel">
+            <a href="#" class="menu-fechar" aria-label="Fechar menu">☰</a>
+
+            <ul class="menu-itens">
+                <li><a href="index.html" class="menu-item">Página inicial</a></li>
+                <li><a href="estoque.html" class="menu-item">Estoque</a></li>
+                <li><a href="fornecedores.html" class="menu-item">Fornecedores</a></li>
+                <li><a href="requisicoes.html" class="menu-item ativo">Requisições</a></li>
+                <li><a href="lotes.html" class="menu-item">Lotes</a></li>
+                <li><a href="index.html" class="menu-item">Pré-Listas</a></li>
+            </ul>
+
+            <a href="#" class="menu-saida">Saída</a>
+        </nav>
+    </div>
+
+    <main class="main-content">
+
+       
+        <section class="page-header">
+            <div class="titulo-pagina">
+                <img
+                    src="download.INVENTRA.png"
+                    alt="Logo Inventra"
+                    class="pagina-Logo"
+                >
+
+                <div class="titulo-pagina-texto">
+                    <h1>Requisições</h1>
+                    <p>Pedidos internos dos setores para retirada de itens</p>
+                </div>
+            </div>
+
+            <a href="#modal-requisicao" class="adicionar">
+                <i data-lucide="plus"></i>
+                <span>Nova Requisição</span>
+            </a>
+        </section>
+
+     
+        <section class="big-numbers">
+
+            <div class="resumo">
+                <div class="icone">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <div class="infos">
+                    <span>Requisições</span>
+                    <strong>4</strong>
+                </div>
+            </div>
+
+            <div class="resumo">
+                <div class="icone">
+                    <i data-lucide="clock"></i>
+                </div>
+                <div class="infos">
+                    <span>Pendentes</span>
+                    <strong>2</strong>
+                </div>
+            </div>
+
+            <div class="resumo">
+                <div class="icone">
+                    <i data-lucide="circle-check"></i>
+                </div>
+                <div class="infos">
+                    <span>Aprovadas</span>
+                    <strong>2</strong>
+                </div>
+            </div>
+
+        </section>
+
+      
+        <nav class="filtros-status" aria-label="Filtrar requisi├º├Áes">
+            <a href="#todas" class="filtro-status ativo">Todas</a>
+            <a href="#pendentes" class="filtro-status">Pendentes</a>
+            <a href="#aprovadas" class="filtro-status">Aprovadas</a>
+            <a href="#recusadas" class="filtro-status">Recusadas</a>
+        </nav>
+
+        <section class="lista-requisicoes" id="todas">
+
+            <article class="requisicao" id="requisicao-001">
+                <div class="requisicao-topo">
+                    <div>
+                        <strong>Requisição #001</strong>
+                        <p>Nelson - Estoque - 28/09/2026</p>
+                    </div>
+
+                    <span class="status pendente">Pendente</span>
+                </div>
+
+                <div class="itens-requisicao">
+                    <div>
+                        <span>Arroz Camil</span>
+                        <span>10 unidades</span>
+                    </div>
+                    <div>
+                        <span>Feijão</span>
+                        <span>10 unidades</span>
+                    </div>
+                </div>
+
+                <div class="botoes-requisicao">
+                    <a href="#recusada-001" class="botao-recusar">
+                        <i data-lucide="ban"></i>
+                        Recusar
+                    </a>
+
+                    <a href="#aprovada-001" class="botao-aprovar">
+                        <i data-lucide="check"></i>
+                        Aprovar
+                    </a>
+                </div>
+            </article>
+
+            <article class="requisicao" id="requisicao-002">
+                <div class="requisicao-topo">
+                    <div>
+                        <strong>Requisição #002</strong>
+                        <p>Nelson - Estoque - 28/09/2026</p>
+                    </div>
+
+                    <span class="status pendente">Pendente</span>
+                </div>
+
+                <div class="itens-requisicao">
+                    <div>
+                        <span>Arroz Camil</span>
+                        <span>10 unidades</span>
+                    </div>
+                    <div>
+                        <span>Feijão</span>
+                        <span>5 unidades</span>
+                    </div>
+                </div>
+
+                <div class="botoes-requisicao">
+                    <a href="#recusada-002" class="botao-recusar">
+                        <i data-lucide="ban"></i>
+                        Recusar
+                    </a>
+
+                    <a href="#aprovada-002" class="botao-aprovar">
+                        <i data-lucide="check"></i>
+                        Aprovar
+                    </a>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>
