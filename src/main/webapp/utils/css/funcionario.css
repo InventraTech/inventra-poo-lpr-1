@@ -1,0 +1,539 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #FFFFFF;
+    color: #17131A;
+}
+.painel-usuario {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 35px 60px 45px;
+}
+
+.titulo-usuario {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+.icone-titulo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background-color: #F0E5FC;
+    color: #5600B8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.icone-titulo svg {
+    width: 25px;
+    height: 25px;
+}
+.titulo-usuario h1 {
+    color: #5000B8;
+    font-size: 27px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.titulo-usuario p {
+    color: #8B788F;
+    font-size: 15px;
+}
+.cartao-perfil {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 125px;
+    padding: 22px 28px;
+    margin-bottom: 25px;
+    border: 1px solid #E5E0E8;
+    border-radius: 13px;
+    background-color: #FAF9FC;
+}
+.foto-perfil {
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #E9D8FA;
+    color: #5600B8;
+}
+.foto-perfil > svg {
+    width: 39px;
+    height: 39px;
+}
+.editar-foto {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    border-radius: 50%;
+    background-color: #5600B8;
+    color: white;
+    cursor: pointer;
+}
+.editar-foto svg {
+    width: 13px;
+    height: 13px;
+}
+.informacoes-perfil {
+    flex: 1;
+    min-width: 0;
+}
+.informacoes-perfil h2 {
+    margin-bottom: 7px;
+    color: #17131A;
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+.informacoes-perfil p {
+    color: #8B788F;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+.etiqueta-cargo {
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: #F0E5FC;
+    color: #5600B8;
+    font-size: 13px;
+    font-weight: 600;
+}
+.secao-usuario {
+    padding: 25px 28px;
+    margin-bottom: 22px;
+    border: 1px solid #E5E0E8;
+    border-radius: 13px;
+    background-color: white;
+}
+.titulo-secao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+.titulo-secao svg {
+    width: 22px;
+    height: 22px;
+    color: #5600B8;
+}
+.titulo-secao h2 {
+    color: #5000B8;
+    font-size: 19px;
+    font-weight: 700;
+}
+.grade-campos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 25px;
+}
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+.campo-completo {
+    margin-bottom: 22px;
+}
+.campo label {
+    color: #403747;
+    font-size: 14px;
+    font-weight: 600;
+}
+.campo input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #DED9E5;
+    border-radius: 7px;
+    outline: none;
+    background-color: white;
+    color: #302837;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.campo input::placeholder {
+    color: #A5A0B1;
+}
+.campo input:focus {
+    border-color: #5600B8;
+    box-shadow: 0 0 0 3px rgba(86, 0, 184, 0.10);
+}
+.preferencia {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid #F0ECF3;
+    cursor: pointer;
+}
+.texto-preferencia {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+.texto-preferencia strong {
+    color: #302837;
+    font-size: 14px;
+    font-weight: 600;
+}
+.texto-preferencia small {
+    color: #8B788F;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.interruptor {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+.interruptor-visual {
+    position: relative;
+    width: 46px;
+    min-width: 46px;
+    height: 25px;
+    border-radius: 20px;
+    background-color: #D6D1DC;
+    transition: background-color 0.2s;
+}
+.interruptor-visual::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+.interruptor:checked + .interruptor-visual {
+    background-color: #5600B8;
+}
+
+.interruptor:checked + .interruptor-visual::after {
+    transform: translateX(21px);
+}
+.interruptor:focus-visible + .interruptor-visual {
+    outline: 3px solid #C9A5F0;
+    outline-offset: 3px;
+}
+.trocar-conta {
+    width: 100%;
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 20px;
+    margin-bottom: 22px;
+    border: 1px solid #E5E0E8;
+    border-radius: 10px;
+    background-color: white;
+    color: #403747;
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.trocar-conta:hover {
+    background-color: #FAF7FE;
+}
+.icone-conta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background-color: #F0E5FC;
+    color: #5600B8;
+}
+.icone-conta svg {
+    width: 21px;
+    height: 21px;
+}
+.seta-conta {
+    width: 19px;
+    height: 19px;
+    margin-left: auto;
+    color: #8B788F;
+}
+.acoes-usuario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+#mensagem-salvamento {
+    color: #5600B8;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.botao-salvar {
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #5600B8;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.botao-salvar:hover {
+    background-color: #3F2BBE;
+}
+.botao-salvar svg {
+    width: 18px;
+    height: 18px;
+}
+@media (max-width: 800px) {
+    .painel-usuario {
+        padding: 28px 25px;
+    }
+    .grade-campos {
+        gap: 20px;
+    }
+}
+@media (max-width: 600px) {
+    .painel-usuario {
+        padding: 25px 16px;
+    }
+    .titulo-usuario h1 {
+        font-size: 22px;
+    }
+    .titulo-usuario p {
+        font-size: 13px;
+    }
+    .cartao-perfil {
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 20px;
+    }
+    .informacoes-perfil {
+        flex-basis: calc(100% - 100px);
+    }
+    .etiqueta-cargo {
+        margin-left: 91px;
+    }
+    .secao-usuario {
+        padding: 22px 18px;
+    }
+    .grade-campos {
+        grid-template-columns: 1fr;
+    }
+    .preferencia {
+        gap: 12px;
+    }
+    .texto-preferencia small {
+        font-size: 12px;
+    }
+    .acoes-usuario {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .botao-salvar {
+        width: 100%;
+    }
+}
+
+
+.header {
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(to right, #5B00B8, #3F2BBE);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+}
+
+.botao-menu {
+    color: white;
+    text-decoration: none;
+    font-size: 27px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.botao-menu svg {
+    width: 25px;
+    height: 25px;
+    stroke-width: 2;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.user-name {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: white;
+    color: #5B21B6;
+}
+
+.user-avatar svg {
+    width: 20px;
+    height: 20px;
+}
+
+
+.menu-lateral {
+    position: fixed;
+    inset: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 2000;
+}
+
+.menu-lateral:target {
+    visibility: visible;
+    opacity: 1;
+}
+
+.menu-fundo {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.menu-painel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #5600B8;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.menu-fechar {
+    align-self: flex-end;
+    color: white;
+    text-decoration: none;
+    font-size: 27px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.menu-fechar svg {
+    width: 23px;
+    height: 23px;
+}
+
+.menu-itens {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 45px;
+    padding: 8px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.menu-item:hover,
+.menu-item.ativo {
+    background-color: #7A22D4;
+    color: white;
+}
+
+.menu-saida {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 15px;
+    min-height: 45px;
+    color: white;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.menu-saida svg {
+    width: 18px;
+    height: 18px;
+}
+
+
+@media (max-width: 600px) {
+    .header {
+        padding: 0 20px;
+    }
+
+    .menu-painel {
+        width: 250px;
+        max-width: 85%;
+    }
+
+    .user-name {
+        font-size: 14px;
+    }
+}
