@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotes</title>
+
+    <link rel="stylesheet" href="../../utils/css/lote.css">
+    
+    
+
+     <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+   <header class="header">
+            <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
+
+        <div class="header-user">
+            <span class="user-name">Nelson Junior</span>
+            <div class="user-avatar">
+                <i data-lucide="user"></i>
+            </div>
+        </div>
+
+    </header>
+
+    <div class="menu-lateral" id="modal-menu">
+
+    <a href="#" class="menu-fundo" aria-label="Fechar menu"></a>
+
+    <nav class="menu-painel">
+
+        <a href="#" class="menu-fechar" aria-label="Fechar menu">☰</a>
+
+        <ul class="menu-itens">
+            <li><a href="index.html" class="menu-item">Página inicial</a></li>
+            <li><a href="estoque.html" class="menu-item">Estoque</a></li>
+
+            <li><a href="fornecedores.html" class="menu-item">Fornecedores</a></li>
+            <li><a href="../requisicoes/requisicoes.html" class="menu-item">Requisições</a></li>
+            <li><a href="lotes.html" class="menu-item ativo">Lotes</a></li>
+            <li><a href="index.html" class="menu-item">Pré Listas</a></li>
+        </ul>
+
+        <a href="#" class="menu-saida">
+            ...
+            Saída
+        </a>
+
+    </nav>
+</div>
+
+    <main class="main-content">
+
+        <section class="page-header">
+            <div class="titulo-pagina">
+                <img src="download.INVENTRA.png"
+                alt="Logo Inventra"
+                class="pagina-Logo">
+
+                <div class="titulo-pagina-texto">
+                    <h1>Lotes</h1>
+                    <p>Validade, quantidade e status de cada lote</p>
+                </div>
+            </div>
+
+                  <div class="acoes">
+                    <a href="#modal-lote" class="adicionar">
+                        <i data-lucide="plus"></i>
+                        <span>Novo Lote</span>
+                    </a>
+                </div>
+
+        </section>
+
+        <section class="big-numbers">
+
+    <div class="resumo">
+        <div class="icone">
+            <i data-lucide="shopping-cart"></i>
+        </div>
+
+        <div class="infos">
+            <span>Lotes cadastrados</span>
+            <strong>4</strong>
+        </div>
+    </div>
+
+
+    <div class="resumo">
+        <div class="icone">
+            <i data-lucide="calendar-days"></i>
+        </div>
+
+        <div class="infos">
+            <span>Vencendo em 30 dias</span>
+            <strong>5</strong>
+        </div>
+    </div>
+
+
+    <div class="resumo">
+        <div class="icone">
+            <i data-lucide="ban"></i>
+        </div>
+
+        <div class="infos">
+            <span>Vencidos</span>
+            <strong>1</strong>
+        </div>
+    </div>
+
+</section>
+
+<section class="filtros">
+    <div class="busca">
+        <i data-lucide="search"></i>
+        <input type="text" placeholder="Buscar por nome, SKU ou fornecedor...">
+    </div>
+
+    <div class="categoria">
+        <select name="categoria" aria-label="Filtrar por categoria">
+            <option>Todas as categorias</option>
+            <option>Grãos e cereais</option>
+            <option>Laticínios</option>
+            <option>Carnes e Ovos</option>
+        </select>
+        <i data-lucide="chevron-down"></i>
+    </div>
+</section>
+            
+
+        <section class="tabela-lotes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lote</th>
+                        <th>Fornecedor</th>
+                        <th>Qtd.</th>
+                        <th>Validade</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+    
+</body>
+</html>
