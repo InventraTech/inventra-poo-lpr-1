@@ -22,6 +22,17 @@ body {
     align-items: center;
     gap: 20px;
 }
+.header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+.header-logo img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
 .botao-menu {
     color: white;
     text-decoration: none;
