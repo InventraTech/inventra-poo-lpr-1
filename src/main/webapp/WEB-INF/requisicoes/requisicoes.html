@@ -36,11 +36,11 @@
 
             <ul class="menu-itens">
                 <li><a href="index.html" class="menu-item">Página inicial</a></li>
-                <li><a href="estoque.html" class="menu-item">Estoque</a></li>
-                <li><a href="fornecedores.html" class="menu-item">Fornecedores</a></li>
-                <li><a href="requisicoes.html" class="menu-item ativo">Requisições</a></li>
-                <li><a href="lotes.html" class="menu-item">Lotes</a></li>
-                <li><a href="index.html" class="menu-item">Pré-Listas</a></li>
+                <li><a href="../estoque/estoque.html" class="menu-item">Estoque</a></li>
+                <li><a href="../fornecedor/fornecedores.html" class="menu-item">Fornecedores</a></li>
+                <li><a href="../requisicoes/requisicoes.html" class="menu-item ativo">Requisições</a></li>
+                <li><a href="../lotes/lotes.html" class="menu-item">Lotes</a></li>
+                <li><a href="../pre-lista/index.html" class="menu-item">Pré-Listas</a></li>
             </ul>
 
             <a href="#" class="menu-saida">Saída</a>
@@ -52,11 +52,7 @@
        
         <section class="page-header">
             <div class="titulo-pagina">
-                <img
-                    src="download.INVENTRA.png"
-                    alt="Logo Inventra"
-                    class="pagina-Logo"
-                >
+                 <img src="../../utils/Imagens/download.INVENTRA.png" alt="Logo Inventra" class="pagina-Logo">
 
                 <div class="titulo-pagina-texto">
                     <h1>Requisições</h1>
@@ -189,6 +185,76 @@
     <script>
         lucide.createIcons();
     </script>
+
+    
+        
+        <section class="modal-requisicao" id="modal-requisicao">
+            <div class="modal-conteudo">
+                <a href="#" class="modal-fechar" aria-label="Fechar">×</a>
+
+                <h2>Nova Requisição</h2>
+
+                <form class="form-requisicao">
+                    <div class="campos-principais">
+                        <label>
+                            Data da requisição
+                            <input type="date" name="data-requisicao">
+                        </label>
+
+                        <label>
+                            Status
+                            <select name="status">
+                                <option value="pendente">Pendente</option>
+                                <option value="aprovada">Aprovada</option>
+                                <option value="recusada">Recusada</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <h3>Produtos da requisição</h3>
+
+                    <div class="tabela-produtos">
+                        <div class="tabela-cabecalho">
+                            <span>Nome do produto</span>
+                            <span>Quantidade</span>
+                            <span></span>
+                        </div>
+
+                        <div class="linha-produto">
+                            <input type="text" name="produto-1" value="Arroz Camil">
+                            <input type="text" name="quantidade-1" placeholder="10 unidades">
+                            <span class="icone-lixeira">
+                                <i data-lucide="trash-2"></i>
+                            </span>
+                        </div>
+
+                        <div class="linha-produto">
+                            <input type="text" name="produto-2" value="Feijão">
+                            <input type="text" name="quantidade-2" placeholder="10 unidades">
+                            <span class="icone-lixeira">
+                                <i data-lucide="trash-2"></i>
+                            </span>
+                        </div>
+
+                        <div class="adicionar-produto">
+                            <i data-lucide="plus"></i>
+                            <span>Adicionar produto</span>
+                        </div>
+                    </div>
+
+                    <label class="campo-descricao">
+                        Descrição
+                        <textarea name="descricao" placeholder="Detalhes adicionais sobre a requisição"></textarea>
+                    </label>
+
+                    <div class="acoes-modal">
+                        <a href="#" class="cancelar-modal">Cancelar</a>
+                        <button type="submit">Salvar requisição</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
 
 </body>
 </html>
