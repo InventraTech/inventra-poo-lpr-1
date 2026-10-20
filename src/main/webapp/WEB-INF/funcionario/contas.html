@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funcionários - Inventra</title>
+
+    <link rel="stylesheet" href="../../utils/css/contas.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <main class="painel-contas">
+        <header class="cabecalho-contas">
+            <h1>Funcionários</h1>
+            <p>Selecione uma conta para continuar</p>
+        </header>
+
+        <div class="busca-funcionario">
+            <i data-lucide="search"></i>
+            <input
+                type="search"
+                id="buscar-funcionario"
+                placeholder="Buscar funcionário..."
+                aria-label="Buscar funcionário"
+            >
+        </div>
+
+        <section class="lista-funcionarios" id="lista-funcionarios">
+            <a href="funcionario.html" class="funcionario selecionado" data-nome="Nelson Junior">
+                <span class="avatar-funcionario">NJ</span>
+                <span class="dados-funcionario">
+                    <strong>Nelson Junior</strong>
+                    <small><span class="indicador-ativo"></span>Ativo</small>
+                </span>
+                <span class="cargo-funcionario">Estoque</span>
+                <i data-lucide="chevron-right" class="seta-funcionario"></i>
+            </a>
+
+            <a href="funcionario.html" class="funcionario" data-nome="Maria Souza">
+                <span class="avatar-funcionario avatar-rosa">MS</span>
+                <span class="dados-funcionario">
+                    <strong>Maria Souza</strong>
+                    <small><span class="indicador-ativo"></span>Ativo</small>
+                </span>
+                <span class="cargo-funcionario">Compradora</span>
+                <i data-lucide="chevron-right" class="seta-funcionario"></i>
+            </a>
+
+            <a href="funcionario.html" class="funcionario" data-nome="Carlos Lima">
+                <span class="avatar-funcionario avatar-azul">CL</span>
+                <span class="dados-funcionario">
+                    <strong>Carlos Lima</strong>
+                    <small><span class="indicador-ativo"></span>Ativo</small>
+                </span>
+                <span class="cargo-funcionario">Administrador</span>
+                <i data-lucide="chevron-right" class="seta-funcionario"></i>
+            </a>
+
+            <a href="funcionario.html" class="funcionario" data-nome="Ana Oliveira">
+                <span class="avatar-funcionario avatar-lilas">AO</span>
+                <span class="dados-funcionario">
+                    <strong>Ana Oliveira</strong>
+                    <small><span class="indicador-ativo"></span>Ativo</small>
+                </span>
+                <span class="cargo-funcionario">Financeiro</span>
+                <i data-lucide="chevron-right" class="seta-funcionario"></i>
+            </a>
+        </section>
+
+        <a href="../funcionario/novofuncionario.html" class="adicionar-funcionario">
+            <i data-lucide="plus"></i>
+            Adicionar funcionário
+        </a>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const busca = document.getElementById("buscar-funcionario");
+        const funcionarios = document.querySelectorAll(".funcionario");
+
+        busca.addEventListener("input", function () {
+            const termo = this.value.trim().toLowerCase();
+
+            funcionarios.forEach(function (funcionario) {
+                const nome = funcionario.dataset.nome.toLowerCase();
+                funcionario.hidden = !nome.includes(termo);
+            });
+        });
+    </script>
+</body>
+</html>

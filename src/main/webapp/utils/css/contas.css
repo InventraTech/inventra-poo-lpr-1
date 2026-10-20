@@ -1,0 +1,258 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #FFFFFF;
+    color: #211B35;
+    min-height: 100vh;
+}
+
+.painel-contas {
+    width: calc(100% - 80px);
+    max-width: 1080px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E0E8;
+    border-radius: 14px;
+}
+
+.cabecalho-contas {
+    margin-bottom: 28px;
+}
+
+.cabecalho-contas h1 {
+    color: #5000B8;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.cabecalho-contas p {
+    color: #8B788F;
+    font-size: 18px;
+}
+
+.busca-funcionario {
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 18px;
+    margin-bottom: 24px;
+    border: 1px solid #DDE1EC;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+}
+
+.busca-funcionario svg {
+    width: 23px;
+    height: 23px;
+    color: #8B91A7;
+    flex-shrink: 0;
+}
+
+.busca-funcionario input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #211B35;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.busca-funcionario input::placeholder {
+    color: #9299B0;
+}
+
+.lista-funcionarios {
+    border: 1px solid #E2E4EF;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.funcionario {
+    min-height: 105px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #E8E8F0;
+    background-color: #FFFFFF;
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.funcionario:last-child {
+    border-bottom: none;
+}
+
+.funcionario:hover,
+.funcionario.selecionado {
+    background-color: #FAF7FF;
+}
+
+.funcionario.selecionado {
+    border-left: 6px solid #5600B8;
+    padding-left: 18px;
+}
+
+.avatar-funcionario {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #E9D8FA;
+    color: #5600B8;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.avatar-rosa {
+    background-color: #F8E4F0;
+    color: #963D79;
+}
+
+.avatar-azul {
+    background-color: #E0EAFE;
+    color: #3157A4;
+}
+
+.avatar-lilas {
+    background-color: #DCCAF5;
+    color: #FFFFFF;
+}
+
+.dados-funcionario {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.dados-funcionario strong {
+    color: #29224D;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dados-funcionario small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #9299B0;
+    font-size: 14px;
+}
+
+.indicador-ativo {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #10BF91;
+}
+
+.cargo-funcionario {
+    padding: 10px 16px;
+    border-radius: 24px;
+    background-color: #F3ECFF;
+    color: #5600B8;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.seta-funcionario {
+    width: 23px;
+    height: 23px;
+    flex-shrink: 0;
+    color: #5600B8;
+}
+
+.adicionar-funcionario {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 26px;
+    color: #5600B8;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.adicionar-funcionario:hover {
+    color: #7A22D4;
+}
+
+.adicionar-funcionario svg {
+    width: 24px;
+    height: 24px;
+}
+
+.funcionario[hidden] {
+    display: none;
+}
+
+@media (max-width: 650px) {
+    .painel-contas {
+        width: calc(100% - 28px);
+        margin: 20px auto;
+        padding: 22px 16px;
+    }
+
+    .cabecalho-contas h1 {
+        font-size: 29px;
+    }
+
+    .cabecalho-contas p {
+        font-size: 15px;
+    }
+
+    .funcionario {
+        gap: 12px;
+        padding: 14px 12px;
+        min-height: 85px;
+    }
+
+    .funcionario.selecionado {
+        padding-left: 7px;
+    }
+
+    .avatar-funcionario {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        font-size: 15px;
+    }
+
+    .dados-funcionario strong {
+        font-size: 14px;
+    }
+
+    .dados-funcionario small {
+        font-size: 12px;
+    }
+
+    .cargo-funcionario {
+        padding: 7px 9px;
+        font-size: 11px;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .seta-funcionario {
+        width: 18px;
+        height: 18px;
+    }
+}

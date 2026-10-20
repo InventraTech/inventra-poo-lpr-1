@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Funcionário - Inventra</title>
+
+    <link rel="stylesheet" href="../../utils/css/novofuncionario.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <main class="pagina-funcionario">
+        <header class="cabecalho-pagina">
+            <div class="icone-titulo">
+                <i data-lucide="user-round-plus"></i>
+            </div>
+
+            <div>
+                <h1>Novo Funcionário</h1>
+                <p>Preencha as informações abaixo para cadastrar um novo colaborador.</p>
+            </div>
+        </header>
+
+        <form id="form-funcionario">
+            <section class="grupo-formulario">
+                <h2>Dados pessoais</h2>
+
+                <div class="campo campo-largo">
+                    <label for="nome">Nome completo *</label>
+                    <input type="text" id="nome" name="nome"
+                        placeholder="Ex: Maria Eduarda Silva dos Anjos" required>
+                </div>
+
+                <div class="grade-campos">
+                    <div class="campo">
+                        <label for="cpf">CPF *</label>
+                        <input type="text" id="cpf" name="cpf"
+                            placeholder="000.000.000-00" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="nascimento">Data de nascimento *</label>
+                        <input type="date" id="nascimento" name="nascimento" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="telefone">Telefone *</label>
+                        <input type="tel" id="telefone" name="telefone"
+                            placeholder="(XX) XXXXX-XXXX" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email"
+                            placeholder="exemplo@inventra.com" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grupo-formulario">
+                <h2>Informações profissionais</h2>
+
+                <div class="grade-campos">
+                    <div class="campo">
+                        <label for="cargo">Cargo *</label>
+                        <select id="cargo" name="cargo" required>
+                            <option value="">Selecione o cargo</option>
+                            <option value="Estoquista">Estoquista</option>
+                            <option value="Comprador">Comprador</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Financeiro">Financeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="departamento">Departamento *</label>
+                        <select id="departamento" name="departamento" required>
+                            <option value="">Selecione o departamento</option>
+                            <option value="Estoque">Estoque</option>
+                            <option value="Compras">Compras</option>
+                            <option value="Administrativo">Administrativo</option>
+                            <option value="Financeiro">Financeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="contrato">Tipo de contrato *</label>
+                        <select id="contrato" name="contrato" required>
+                            <option value="">Selecione o tipo de contrato</option>
+                            <option value="CLT">CLT</option>
+                            <option value="Estágio">Estágio</option>
+                            <option value="Temporário">Temporário</option>
+                            <option value="Terceirizado">Terceirizado</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="admissao">Data de admissão *</label>
+                        <input type="date" id="admissao" name="admissao" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grupo-formulario">
+                <h2>Acesso ao sistema</h2>
+
+                <div class="grade-campos">
+                    <div class="campo">
+                        <label for="usuario">Usuário (login) *</label>
+                        <input type="text" id="usuario" name="usuario"
+                            placeholder="Ex: maria.anjos" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="senha">Senha temporária *</label>
+                        <div class="campo-senha">
+                            <input type="password" id="senha" name="senha"
+                                placeholder="Mínimo de 8 caracteres"
+                                minlength="8" required>
+                            <button type="button" id="mostrar-senha"
+                                aria-label="Mostrar senha">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="acoes-formulario">
+                <a href="contas.html" class="botao-secundario">Cancelar</a>
+                <button type="submit" class="botao-principal">
+                    <i data-lucide="user-round-plus"></i>
+                    Salvar funcionário
+                </button>
+            </footer>
+
+            <p id="mensagem-formulario" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const campoSenha = document.getElementById("senha");
+        const botaoSenha = document.getElementById("mostrar-senha");
+
+        botaoSenha.addEventListener("click", function () {
+            const mostrar = campoSenha.type === "password";
+            campoSenha.type = mostrar ? "text" : "password";
+
+            botaoSenha.innerHTML = mostrar
+                ? '<i data-lucide="eye-off"></i>'
+                : '<i data-lucide="eye"></i>';
+
+            botaoSenha.setAttribute(
+                "aria-label",
+                mostrar ? "Ocultar senha" : "Mostrar senha"
+            );
+
+            lucide.createIcons();
+        });
+
+        document.getElementById("form-funcionario").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            document.getElementById("mensagem-formulario").textContent =
+                "Formulário preenchido! O cadastro ainda precisa ser conectado ao sistema.";
+        });
+    </script>
+</body>
+</html>
