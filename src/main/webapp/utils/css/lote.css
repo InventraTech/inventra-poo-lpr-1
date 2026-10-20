@@ -573,6 +573,229 @@ body {
     cursor: pointer;
     width: 100%;
 }
+.modal-lote {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.modal-lote:target {
+    display: flex;
+}
+
+.modal-lote-fundo {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.modal-lote-conteudo {
+    position: relative;
+    z-index: 1;
+    width: 610px;
+    max-width: 100%;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #E8D8FF;
+    border-radius: 12px;
+    padding: 36px 35px 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.modal-lote-conteudo h2 {
+    color: #5000B8;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.modal-lote-fechar {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    color: #7135D8;
+    text-decoration: none;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.formulario-lote {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 19px;
+    row-gap: 21px;
+}
+
+.campo-lote {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.campo-lote-completo {
+    grid-column: 1 / -1;
+}
+
+.campo-lote label {
+    color: #252536;
+    font-size: 15px;
+}
+
+.campo-lote input,
+.campo-lote select {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #DDE1EC;
+    border-radius: 10px;
+    outline: none;
+    background-color: #FAFAFC;
+    color: #333344;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.campo-lote input::placeholder {
+    color: #7D8498;
+}
+
+.campo-lote input:focus,
+.campo-lote select:focus {
+    border-color: #5600B8;
+}
+
+.fornecedor-ativo-lote {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #252536;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.fornecedor-ativo-lote input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.interruptor-lote {
+    position: relative;
+    width: 44px;
+    height: 23px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background-color: #BDB8C7;
+    transition: background-color 0.2s ease;
+}
+
+.interruptor-lote::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s ease;
+}
+
+.fornecedor-ativo-lote input:checked + .interruptor-lote {
+    background-color: #5600B8;
+}
+
+.fornecedor-ativo-lote input:checked + .interruptor-lote::before {
+    transform: translateX(21px);
+}
+
+.acoes-modal-lote {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-top: 16px;
+}
+
+.cancelar-lote,
+.salvar-lote {
+    height: 49px;
+    min-width: 128px;
+    padding: 0 22px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cancelar-lote {
+    border: 1px solid #DDE1EC;
+    background-color: #FFFFFF;
+    color: #17131A;
+}
+
+.salvar-lote {
+    min-width: 165px;
+    border: none;
+    background-color: #5600B8;
+    color: #FFFFFF;
+}
+
+.salvar-lote:hover {
+    background-color: #7A22D4;
+}
+
+@media (max-width: 600px) {
+    .modal-lote {
+        padding: 12px;
+    }
+
+    .modal-lote-conteudo {
+        padding: 32px 20px 20px;
+    }
+
+    .modal-lote-conteudo h2 {
+        font-size: 29px;
+        margin-bottom: 24px;
+    }
+
+    .formulario-lote {
+        grid-template-columns: 1fr;
+        row-gap: 16px;
+    }
+
+    .campo-lote-completo,
+    .fornecedor-ativo-lote,
+    .acoes-modal-lote {
+        grid-column: 1;
+    }
+
+    .acoes-modal-lote {
+        gap: 10px;
+    }
+
+    .cancelar-lote,
+    .salvar-lote {
+        min-width: 0;
+        flex: 1;
+        padding: 0 12px;
+    }
+}
 
 
 

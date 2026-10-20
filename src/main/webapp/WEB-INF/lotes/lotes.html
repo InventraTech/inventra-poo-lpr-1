@@ -34,14 +34,13 @@
         <a href="#" class="menu-fechar" aria-label="Fechar menu">☰</a>
 
         <ul class="menu-itens">
-            <li><a href="index.html" class="menu-item">Página inicial</a></li>
-            <li><a href="estoque.html" class="menu-item">Estoque</a></li>
-
-            <li><a href="fornecedores.html" class="menu-item">Fornecedores</a></li>
-            <li><a href="../requisicoes/requisicoes.html" class="menu-item">Requisições</a></li>
-            <li><a href="lotes.html" class="menu-item ativo">Lotes</a></li>
-            <li><a href="index.html" class="menu-item">Pré Listas</a></li>
-        </ul>
+                <li><a href="index.html" class="menu-item">Página inicial</a></li>
+                <li><a href="../estoque/estoque.html" class="menu-item">Estoque</a></li>
+                <li><a href="../fornecedor/fornecedores.html" class="menu-item">Fornecedores</a></li>
+                <li><a href="../requisicoes/requisicoes.html" class="menu-item">Requisições</a></li>
+                <li><a href="../lotes/lotes.html" class="menu-item ativo">Lotes</a></li>
+                <li><a href="../pre-lista/index.html" class="menu-item">Pré-Listas</a></li>
+            </ul>
 
         <a href="#" class="menu-saida">
             ...
@@ -178,6 +177,71 @@
             </table>
         </section>
     </main>
+<div class="modal-lote" id="modal-lote">
+    <a href="#" class="modal-lote-fundo" aria-label="Fechar modal"></a>
+
+    <section class="modal-lote-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-lote">
+        <a href="#" class="modal-lote-fechar" aria-label="Fechar">×</a>
+
+        <h2 id="titulo-modal-lote">Novo Lote</h2>
+
+        <form class="formulario-lote">
+            <div class="campo-lote campo-lote-completo">
+                <label for="produto-lote">Produto</label>
+                <input type="text" id="produto-lote" placeholder="Ex: arroz">
+            </div>
+
+            <div class="campo-lote">
+                <label for="numero-lote">Número do Lote</label>
+                <input type="text" id="numero-lote" placeholder="Ex: L00123">
+            </div>
+
+            <div class="campo-lote">
+                <label for="validade-lote">Data de validade</label>
+                <input type="date" id="validade-lote">
+            </div>
+
+            <div class="campo-lote">
+                <label for="quantidade-lote">Quantidade</label>
+                <input type="number" id="quantidade-lote" placeholder="Ex: 100">
+            </div>
+
+            <div class="campo-lote">
+                <label for="unidade-lote">Unidade de medida</label>
+                <input type="text" id="unidade-lote" placeholder="Ex: Kg, L, UN...">
+            </div>
+
+            <div class="campo-lote">
+                <label for="fornecedor-lote">Fornecedor</label>
+                <select id="fornecedor-lote">
+                    <option value="">Selecionar fornecedor</option>
+                </select>
+            </div>
+
+            <div class="campo-lote">
+                <label for="custo-lote">Custo de aquisição</label>
+                <input type="number" id="custo-lote" placeholder="Ex: 50,00" step="0.01">
+            </div>
+
+            <div class="campo-lote campo-lote-completo">
+                <label for="descricao-lote">Descrição</label>
+                <input type="text" id="descricao-lote" placeholder="Detalhes adicionais sobre o produto">
+            </div>
+
+            <label class="fornecedor-ativo-lote">
+                <input type="checkbox" checked>
+                <span class="interruptor-lote"></span>
+                Fornecedor ativo
+            </label>
+
+            <div class="acoes-modal-lote">
+                <a href="#" class="cancelar-lote">Cancelar</a>
+                <button type="submit" class="salvar-lote">Salvar</button>
+            </div>
+        </form>
+    </section>
+</div>
+
 
     <script>
         lucide.createIcons();
