@@ -354,7 +354,7 @@ public class FuncionarioDAO {
             }
 
         } catch(SQLException e){
-            throw new RuntimeException("Erro ao consultar a tabela de funcionarios no banco de dados", e);
+            throw new RuntimeException(e);
         }
         return 0;
     }
