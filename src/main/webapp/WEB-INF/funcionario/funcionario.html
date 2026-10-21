@@ -194,7 +194,6 @@
 
             </section>
 
-            <!-- PREFERÊNCIAS -->
             <section class="secao-usuario">
 
                 <div class="titulo-secao">
@@ -245,7 +244,6 @@
 
             </section>
 
-            <!-- TROCAR DE CONTA -->
             <button type="button" class="trocar-conta" id="trocar-conta">
 
                 <span class="icone-conta">
@@ -258,14 +256,13 @@
 
             </button>
 
-            <!-- SALVAR -->
             <div class="acoes-usuario">
 
                 <p id="mensagem-salvamento" aria-live="polite"></p>
 
                 <button type="submit" class="botao-salvar">
                     <i data-lucide="save"></i>
-                    <span>Salvar alterações</span>
+                    <span>Salvar funcionário</span>
                 </button>
 
             </div>
@@ -273,8 +270,6 @@
         </form>
 
     </main>
-
-    <!-- FUNCIONALIDADES -->
     <script>
         lucide.createIcons();
 
@@ -386,17 +381,9 @@
                 mensagem.textContent = "Não foi possível salvar os dados neste navegador.";
             }
         });
-
-        // Ação provisória para trocar de conta
+        // Abre a tela de seleção de funcionários
         document.getElementById("trocar-conta").addEventListener("click", function () {
-            mensagem.textContent =
-                "A troca de conta precisa ser conectada ao sistema de autenticação.";
-        });
-
-        // A foto ainda não está conectada a um upload de imagem
-        document.getElementById("botao-foto").addEventListener("click", function () {
-            mensagem.textContent =
-                "A alteração da foto será implementada em uma próxima etapa.";
+        window.location.href = "contas.html";
         });
     </script>
 
