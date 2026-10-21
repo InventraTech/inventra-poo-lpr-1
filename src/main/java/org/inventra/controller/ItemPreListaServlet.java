@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ItemPreListaDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet(name = "ItemPreListaServlet", value = "/itemprelista")
@@ -27,33 +29,83 @@ public class ItemPreListaServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
+
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try {
+            if ("exportar".equals(acao)) {
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"itens-pre-lista.csv\"");
 
-            List<ItemPreListaMolde> itensPreLista;
-            itensPreLista = itemPreListaDAO.listarItensPreLista();
+                List<ItemPreListaMolde> itensPreLista;
+                itensPreLista = itemPreListaDAO.listarItensPreLista(limite, offSet);
 
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
-                    case "fornecedor" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores();
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Fornecedor;Produto;Quantidade");
+
+                    for (ItemPreListaMolde f : itensPreLista) {
+                        writer.print(f.getId_item_prelista() + ";");
+                        writer.print(f.getFornecedor() + ";");
+                        writer.print(f.getProduto() + ";");
+                        writer.print(f.getQtd() + ";");
                     }
-                    case "produto" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto();
-                    }
-                    case "quantidade_crescente" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true);
-                    }
-                    case "quantidade_decrescente" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false);
-                    }
-                    default -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreLista();
-                    }
+                    writer.flush();
+                }
+                return;
+            }
+            List<ItemPreListaMolde> itensPreLista = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "fornecedor" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores(limite, offSet);
+                }
+                case "produto" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto(limite, offSet);
+                }
+                case "quantidade_crescente" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true, limite, offSet);
+                }
+                case "quantidade_decrescente" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false, limite, offSet);
+                }
+                default -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreLista(limite, offSet);
                 }
             }
 
+            int totalRegistros = itemPreListaDAO.contarItensPreLista();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
             request.setAttribute("itensprelista", itensPreLista);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-itemprelista.jsp"

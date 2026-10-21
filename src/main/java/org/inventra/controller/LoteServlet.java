@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.LoteDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.LoteMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,39 +31,95 @@ public class LoteServlet extends HttpServlet{
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
 
-        try{
-        List<LoteMolde> lotes;
-        lotes = loteDao.listarLote();
-
-        if(filtroSelecionado != null){
-            switch (filtroSelecionado){
-                case "entrada_crescente" -> {
-                    lotes = loteDao.listarLoteDataEntrada(true);
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
                 }
-                case "entrada_decrescente" -> {
-                    lotes = loteDao.listarLoteDataEntrada(false);
-                }
-                case "validade_crescente" -> {
-                    lotes = loteDao.listarLoteDataValidade(true);
-                }
-                case "validade_decrescente" -> {
-                    lotes = loteDao.listarLoteDataValidade(false);
-                }
-                case "produtos_atual" -> {
-                    lotes = loteDao.listarLoteQuantidadeProdutosAtual();
-                }
-                default -> {
-                    lotes = loteDao.listarLote();
-                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
             }
         }
 
-        request.setAttribute("lotes", lotes);
+        int offSet = (paginaAtual - 1) * limite;
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-lotes.jsp"
-        ).forward(request, response);
+        try{
+            if ("exportar".equals(acao)) {
+                //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"lotes.csv\"");
+
+                List<LoteMolde> lotes;
+                lotes = loteDao.listarLoteParaExportar(filtroSelecionado);
+
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+
+                    for (LoteMolde f : lotes) {
+                        writer.print(f.getId_lote() + ";");
+                        writer.print(f.getProduto() + ";");
+                        writer.print(f.getNumero_lote() + ";");
+                        writer.print(f.getQtd_inicial() + ";");
+                        writer.print(f.getQtd_atual() + ";");
+                        writer.print(f.getDt_entrada() + ";");
+                        writer.print(f.getDt_validade() + ";");
+                        writer.print(f.getValor_compra() + ";");
+                        writer.println(f.getNota_fiscal());
+                    }
+                    writer.flush();
+                }
+                return;
+            }
+            List<LoteMolde> lotes = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "entrada_crescente" -> {
+                    lotes = loteDao.listarLoteDataEntrada(true, limite, offSet);
+                }
+                case "entrada_decrescente" -> {
+                    lotes = loteDao.listarLoteDataEntrada(false, limite, offSet);
+                }
+                case "validade_crescente" -> {
+                    lotes = loteDao.listarLoteDataValidade(true, limite, offSet);
+                }
+                case "validade_decrescente" -> {
+                    lotes = loteDao.listarLoteDataValidade(false, limite, offSet);
+                }
+                case "produtos_atual" -> {
+                    lotes = loteDao.listarLoteQuantidadeProdutosAtual(limite, offSet);
+                }
+                default -> {
+                    lotes = loteDao.listarLote(limite, offSet);
+                }
+            }
+
+            int totalRegistros = loteDao.contarLotes();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
+            request.setAttribute("lotes", lotes);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-lotes.jsp"
+            ).forward(request, response);
 
         } catch (NumberFormatException e){
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");

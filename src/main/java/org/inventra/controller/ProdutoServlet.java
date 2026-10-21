@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ProdutoMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet(name = "ProdutoServlet", value = "/produto")
@@ -27,39 +29,98 @@ public class ProdutoServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
+
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try {
+            if ("exportar".equals(acao)){
+                //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"produtos.csv\"");
 
-            List<ProdutoMolde> produtos;
-            produtos = produtoDAO.listarProdutos();
+                List<ProdutoMolde> produtos;
+                produtos = produtoDAO.listarProdutosParaExportar(filtroSelecionado);
 
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
-                    case "validade_proxima" -> {
-                        produtos = produtoDAO.listarProdutosPorData(true);
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+
+                    for (ProdutoMolde f : produtos) {
+                        writer.print(f.getIdProduto() + ";");
+                        writer.print(f.getNome() + ";");
+                        writer.print(f.getNomeMarca() + ";");
+                        writer.print(f.getNomeCategoria() + ";");
+                        writer.print(f.getUnidadeMedida() + ";");
+                        writer.print(f.getEstoqueMin() + ";");
+                        writer.print(f.getEstoqueMax() + ";");
+                        writer.print(f.getNomeFornecedor() + ";");
+                        writer.print(f.getDescricao() + ";");
+                        writer.print(f.isAtivo());
                     }
-                    case "validade_distante" -> {
-                        produtos = produtoDAO.listarProdutosPorData(false);
-                    }
-                    case "az" -> {
-                        produtos = produtoDAO.listarProdutosAlfabetica(true);
-                    }
-                    case "za" -> {
-                        produtos = produtoDAO.listarProdutosAlfabetica(false);
-                    }
-                    case "quantidade" -> {
-                        produtos = produtoDAO.listarProdutosQuantidade();
-                    }
-                    case "marca" -> {
-                        produtos = produtoDAO.listarProdutosPorMarca();
-                    }
-                    default -> {
-                        produtos = produtoDAO.listarProdutos();
-                    }
+                    writer.flush();
+                }
+                return;
+            }
+
+            List<ProdutoMolde> produtos = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "validade_proxima" -> {
+                    produtos = produtoDAO.listarProdutosPorData(true, limite, offSet);
+                }
+                case "validade_distante" -> {
+                    produtos = produtoDAO.listarProdutosPorData(false, limite, offSet);
+                }
+                case "az" -> {
+                    produtos = produtoDAO.listarProdutosAlfabetica(true, limite, offSet);
+                }
+                case "za" -> {
+                    produtos = produtoDAO.listarProdutosAlfabetica(false, limite, offSet);
+                }
+                case "quantidade" -> {
+                    produtos = produtoDAO.listarProdutosQuantidade(limite, offSet);
+                }
+                case "marca" -> {
+                    produtos = produtoDAO.listarProdutosPorMarca(limite, offSet);
+                }
+                default -> {
+                    produtos = produtoDAO.listarProdutos(limite, offSet);
                 }
             }
 
+            int totalRegistros = produtoDAO.contarProdutos();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
+            //Enviando as informações principais para a tela do usuarios
             request.setAttribute("produtos", produtos);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-produtos.jsp"

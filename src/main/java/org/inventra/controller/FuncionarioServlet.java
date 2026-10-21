@@ -9,6 +9,7 @@ import org.inventra.dao.FuncionarioDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FuncionarioREGEX;
 
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,35 +34,96 @@ public class FuncionarioServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
 
-        try {
-        List<FuncionarioMolde> funcionarios;
-        funcionarios = funcionarioDAO.listarFuncionario();
-
-        if (filtroSelecionado != null){
-            switch (filtroSelecionado){
-                case "az" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(true);
-                } case "za" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(false);
-                } case "setor" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorSetor();
-                } case "data_crescente" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorData(true);
-                } case "data_decrescente" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorData(false);
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
                 }
-                default -> {
-                    funcionarios = funcionarioDAO.listarFuncionario();
-                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
             }
         }
 
-        request.setAttribute("funcionarios", funcionarios);
+        int offSet = (paginaAtual - 1) * limite;
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-funcionarios.jsp"
-        ).forward(request, response);
+        try {
+            if ("exportar".equals(acao)) {
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"funcionarios.csv\"");
+
+                List<FuncionarioMolde> funcionarios;
+                funcionarios = funcionarioDAO.listarFuncionarioParaExportar(filtroSelecionado);
+
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+
+                    for (FuncionarioMolde f : funcionarios) {
+                        writer.print(f.getId_funcionario() + ";");
+                        writer.print(f.getNome() + ";");
+                        writer.print(f.getEmail() + ";");
+                        writer.print(f.getTelefone() + ";");
+                        writer.print(f.getCpf() + ";");
+                        writer.print(f.getDt_admissao() + ";");
+                        writer.print(f.getStatus() + ";");
+                        writer.print(f.getSetor() + ";");
+                        writer.println(f.isAdmin());
+                    }
+                    writer.flush();
+                }
+                return;
+            }
+
+            List<FuncionarioMolde> funcionarios = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "az" -> {
+                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(true, limite, offSet);
+                }
+                case "za" -> {
+                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(false, limite, offSet);
+                }
+                case "setor" -> {
+                    funcionarios = funcionarioDAO.listarFuncionarioPorSetor(limite, offSet);
+                }
+                case "data_crescente" -> {
+                    funcionarios = funcionarioDAO.listarFuncionarioPorData(true, limite, offSet);
+                }
+                case "data_decrescente" -> {
+                    funcionarios = funcionarioDAO.listarFuncionarioPorData(false, limite, offSet);
+                }
+                default -> {
+                    funcionarios = funcionarioDAO.listarFuncionario(limite, offSet);
+                }
+            }
+
+            int totalRegistros = funcionarioDAO.contarFuncionarios();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
+           //Enviando as informações principais para a tela do usuario
+            request.setAttribute("funcionarios", funcionarios);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-funcionarios.jsp"
+            ).forward(request, response);
 
         } catch (NumberFormatException e){
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
