@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ProdutoMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet(name = "ProdutoServlet", value = "/produto")
@@ -27,12 +29,12 @@ public class ProdutoServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        List<ProdutoMolde> produtos;
+        produtos = produtoDAO.listarProdutos();
 
         try {
-
-            List<ProdutoMolde> produtos;
-            produtos = produtoDAO.listarProdutos();
-
             if (filtroSelecionado != null) {
                 switch (filtroSelecionado) {
                     case "validade_proxima" -> {
@@ -59,8 +61,32 @@ public class ProdutoServlet extends HttpServlet {
                 }
             }
 
-            request.setAttribute("produtos", produtos);
+            if ("exportar".equals(acao)){
+                //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"produtos.csv\"");
 
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+
+                    for (ProdutoMolde f : produtos) {
+                        writer.print(f.getIdProduto() + ";");
+                        writer.print(f.getNome() + ";");
+                        writer.print(f.getNomeMarca() + ";");
+                        writer.print(f.getNomeCategoria() + ";");
+                        writer.print(f.getUnidadeMedida() + ";");
+                        writer.print(f.getEstoqueMin() + ";");
+                        writer.print(f.getEstoqueMax() + ";");
+                        writer.print(f.getNomeFornecedor() + ";");
+                        writer.print(f.getDescricao() + ";");
+                        writer.print(f.isAtivo());
+                    }
+                    writer.flush();
+                }
+                return;
+            }
+            request.setAttribute("produtos", produtos);
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-produtos.jsp"
             ).forward(request, response);

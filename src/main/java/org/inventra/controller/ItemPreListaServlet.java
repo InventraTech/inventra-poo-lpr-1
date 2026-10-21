@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ItemPreListaDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet(name = "ItemPreListaServlet", value = "/itemprelista")
@@ -27,14 +29,14 @@ public class ItemPreListaServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        List<ItemPreListaMolde> itensPreLista;
+        itensPreLista = itemPreListaDAO.listarItensPreLista();
 
         try {
-
-            List<ItemPreListaMolde> itensPreLista;
-            itensPreLista = itemPreListaDAO.listarItensPreLista();
-
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
+            if (filtroSelecionado != null){
+                switch (filtroSelecionado){
                     case "fornecedor" -> {
                         itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores();
                     }
@@ -51,6 +53,25 @@ public class ItemPreListaServlet extends HttpServlet {
                         itensPreLista = itemPreListaDAO.listarItensPreLista();
                     }
                 }
+            }
+
+            if ("exportar".equals(acao)) {
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"itens-pre-lista.csv\"");
+
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Fornecedor;Produto;Quantidade");
+
+                    for (ItemPreListaMolde f : itensPreLista) {
+                        writer.print(f.getId_item_prelista() + ";");
+                        writer.print(f.getFornecedor() + ";");
+                        writer.print(f.getProduto() + ";");
+                        writer.print(f.getQtd() + ";");
+                    }
+                    writer.flush();
+                }
+                return;
             }
 
             request.setAttribute("itensprelista", itensPreLista);

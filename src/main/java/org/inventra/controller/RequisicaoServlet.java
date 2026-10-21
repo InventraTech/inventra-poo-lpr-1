@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.RequisicaoDAO;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.RequisicaoMolde;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,12 +30,12 @@ public class RequisicaoServlet extends HttpServlet{
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        List<RequisicaoMolde> requisicoes;
+        requisicoes = requisicaoDAO.listarRequisicoes();
 
         try {
-
-            List<RequisicaoMolde> requisicoes;
-            requisicoes = requisicaoDAO.listarRequisicoes();
-
             if (filtroSelecionado != null) {
                 switch (filtroSelecionado) {
                     case "tipo" -> {
@@ -57,8 +59,31 @@ public class RequisicaoServlet extends HttpServlet{
                 }
             }
 
-            request.setAttribute("requisicoes", requisicoes);
+            if ("exportar".equals(acao)){
+                //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"funcionarios.csv\"");
 
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Tipo Requisicão;Funcionário Solicitante;Funcionário Aprovador;Produto;Quantidade;Motivo;Status");
+
+                    for (RequisicaoMolde f : requisicoes) {
+                        writer.print(f.getIdRequisicao() + ";");
+                        writer.print(f.getIdTipoRequisicao() + ";");
+                        writer.print(f.getFkFuncionarioSolicitante() + ";");
+                        writer.print(f.getFkFuncionarioAprovador() + ";");
+                        writer.print(f.getProduto() + ";");
+                        writer.print(f.getQuantidadeProduto() + ";");
+                        writer.print(f.getMotivo() + ";");
+                        writer.print(f.getStatus());
+                    }
+                    writer.flush();
+                }
+                return;
+            }
+
+            request.setAttribute("requisicoes", requisicoes);
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-requisicoes.jsp"
             ).forward(request, response);

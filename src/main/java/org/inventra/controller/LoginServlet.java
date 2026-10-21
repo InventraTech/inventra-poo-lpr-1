@@ -52,7 +52,7 @@ public class LoginServlet extends HttpServlet {
             sessao.setAttribute("funcionarioLogado", funcionario);
 
             response.sendRedirect(
-                    request.getContextPath() + "/index.html"
+                    request.getContextPath() + "/index.jsp"
             );
         } else {
             request.setAttribute("erro", "E-mail ou senha incorretos!");

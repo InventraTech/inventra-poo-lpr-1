@@ -7,10 +7,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FornecedorDAO;
 import org.inventra.model.FornecedorMolde;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FornecedorREGEX;
 import org.inventra.utils.FuncionarioREGEX;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet(name = "FornecedorServlet", value = "/fornecedor")
@@ -29,12 +31,12 @@ public class FornecedorServlet extends HttpServlet{
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
+        String acao = request.getParameter("acao");
+
+        List<FornecedorMolde> fornecedores;
+        fornecedores = fornecedorDAO.listarFornecedor();
 
         try {
-
-            List<FornecedorMolde> fornecedores;
-            fornecedores = fornecedorDAO.listarFornecedor();
-
             if (filtroSelecionado != null) {
                 switch (filtroSelecionado) {
                     case "notaVPQ_crescente" -> {
@@ -49,9 +51,27 @@ public class FornecedorServlet extends HttpServlet{
                 }
             }
 
+            if ("exportar".equals(acao)){
+                //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"fornecedores.csv\"");
 
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Endereço;CNPJ;email;nota_vpq");
+
+                    for (FornecedorMolde f : fornecedores) {
+                        writer.print(f.getId_fornecedor() + ";");
+                        writer.print(f.getNome_juridico() + ";");
+                        writer.print(f.getFk_endereco() + ";");
+                        writer.print(f.getEmail() + ";");
+                        writer.print(f.getNota_vpq() + ";");
+                    }
+                    writer.flush();
+                }
+                return;
+            }
             request.setAttribute("fornecedores", fornecedores);
-
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-fornecedores.jsp"
             ).forward(request, response);

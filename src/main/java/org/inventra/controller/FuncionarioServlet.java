@@ -9,6 +9,7 @@ import org.inventra.dao.FuncionarioDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FuncionarioREGEX;
 
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,35 +34,57 @@ public class FuncionarioServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
-
-        try {
+        String acao = request.getParameter("acao");
         List<FuncionarioMolde> funcionarios;
         funcionarios = funcionarioDAO.listarFuncionario();
 
-        if (filtroSelecionado != null){
-            switch (filtroSelecionado){
-                case "az" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(true);
-                } case "za" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(false);
-                } case "setor" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorSetor();
-                } case "data_crescente" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorData(true);
-                } case "data_decrescente" -> {
-                    funcionarios = funcionarioDAO.listarFuncionarioPorData(false);
-                }
-                default -> {
-                    funcionarios = funcionarioDAO.listarFuncionario();
+        try {
+            if (filtroSelecionado != null){
+                switch (filtroSelecionado){
+                    case "az" -> {
+                        funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(true);
+                    } case "za" -> {
+                        funcionarios = funcionarioDAO.listarFuncionarioAlfabetico(false);
+                    } case "setor" -> {
+                        funcionarios = funcionarioDAO.listarFuncionarioPorSetor();
+                    } case "data_crescente" -> {
+                        funcionarios = funcionarioDAO.listarFuncionarioPorData(true);
+                    } case "data_decrescente" -> {
+                        funcionarios = funcionarioDAO.listarFuncionarioPorData(false);
+                    }
+                    default -> {
+                        funcionarios = funcionarioDAO.listarFuncionario();
+                    }
                 }
             }
-        }
 
-        request.setAttribute("funcionarios", funcionarios);
+            if ("exportar".equals(acao)) {
+                response.setContentType("text/csv; charset=UTF-8");
+                response.setHeader("Content-Disposition", "attachment; filename=\"funcionarios.csv\"");
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-funcionarios.jsp"
-        ).forward(request, response);
+                try (PrintWriter writer = response.getWriter()) {
+                    writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
+                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+
+                    for (FuncionarioMolde f : funcionarios) {
+                        writer.print(f.getId_funcionario() + ";");
+                        writer.print(f.getNome() + ";");
+                        writer.print(f.getEmail() + ";");
+                        writer.print(f.getTelefone() + ";");
+                        writer.print(f.getCpf() + ";");
+                        writer.print(f.getDt_admissao() + ";");
+                        writer.print(f.getStatus() + ";");
+                        writer.print(f.getSetor() + ";");
+                        writer.println(f.isAdmin());
+                    }
+                    writer.flush();
+                }
+                return;
+            }
+            request.setAttribute("funcionarios", funcionarios);
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-funcionarios.jsp"
+            ).forward(request, response);
 
         } catch (NumberFormatException e){
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
