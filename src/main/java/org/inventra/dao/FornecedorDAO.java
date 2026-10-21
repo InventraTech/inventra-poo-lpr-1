@@ -39,23 +39,35 @@ public class FornecedorDAO {
             JOIN endereco e ON f.fk_endereco = e.id_endereco
             """;
 
-    public List<FornecedorMolde> consultarFornecedor(String sql){
+    public List<FornecedorMolde> consultarFornecedor(String sql, Integer limite, Integer offset){
         List<FornecedorMolde> listaFornecedores = new ArrayList<>();
 
+        //Se precisar de paginação vai para a tela do usuário, se não o exportar pega todos(para o arquivo CSV)
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
+
         try(Connection conexao = ConexaoBanco.conectar();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()) {
+            PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            while (rs.next()){
-                int id = rs.getInt("id_fornecedor");
-                String nome_juridico = rs.getString("nome_juridico");
-                String endereco = rs.getString("endereco");
-                String cnpj = rs.getString("cnpj");
-                String email = rs.getString("email");
-                int nota_vpq = rs.getInt("nota_vpq");
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nome_juridico, cnpj, email, nota_vpq);
-                listaFornecedores.add(novoFornecedor);
+            try(ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_fornecedor");
+                    String nome_juridico = rs.getString("nome_juridico");
+                    String endereco = rs.getString("endereco");
+                    String cnpj = rs.getString("cnpj");
+                    String email = rs.getString("email");
+                    int nota_vpq = rs.getInt("nota_vpq");
+
+                    FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nome_juridico, cnpj, email, nota_vpq);
+                    listaFornecedores.add(novoFornecedor);
+                }
             }
 
         } catch (SQLException e) {
@@ -146,16 +158,50 @@ public class FornecedorDAO {
         }
     }
 
-    public List<FornecedorMolde> listarFornecedor(){
-        return consultarFornecedor(sqlBase.concat("order by f.id_fornecedor"));
+    public List<FornecedorMolde> listarFornecedor(Integer limite, Integer offset){
+        return consultarFornecedor(sqlBase.concat("order by f.id_fornecedor"), limite, offset);
     }
 
-    public List<FornecedorMolde> listarFornecedorNotaVPQ(boolean ordem) {
+    public List<FornecedorMolde> listarFornecedorNotaVPQ(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq ASC"));
+            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq ASC"), limite, offset);
         } else {
-            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq DESC"));
+            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq DESC"), limite, offset);
         }
+    }
+
+    public List<FornecedorMolde> listarFornecedorParaExportar(String filtragem){
+        if (filtragem != null) {
+            switch (filtragem) {
+                case "notaVPQ_crescente" -> {
+                    return listarFornecedorNotaVPQ(true, null, null);
+                }
+                case "notaVPQ_decrescente" -> {
+                    return listarFornecedorNotaVPQ(false, null, null);
+                }
+                default -> {
+                    return listarFornecedor(null, null);
+                }
+            }
+        }
+        return null;
+    }
+
+    public int contarFornecedores(){
+        String sql = "select count(*) from fornecedores";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }
 

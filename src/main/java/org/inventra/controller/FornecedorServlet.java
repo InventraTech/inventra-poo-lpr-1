@@ -32,29 +32,32 @@ public class FornecedorServlet extends HttpServlet{
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
 
-        List<FornecedorMolde> fornecedores;
-        fornecedores = fornecedorDAO.listarFornecedor();
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try {
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
-                    case "notaVPQ_crescente" -> {
-                        fornecedores = fornecedorDAO.listarFornecedorNotaVPQ(true);
-                    }
-                    case "notaVPQ_decrescente" -> {
-                        fornecedores = fornecedorDAO.listarFornecedorNotaVPQ(false);
-                    }
-                    default -> {
-                        fornecedores = fornecedorDAO.listarFornecedor();
-                    }
-                }
-            }
-
             if ("exportar".equals(acao)){
                 //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=\"fornecedores.csv\"");
+
+                List<FornecedorMolde> fornecedores;
+                fornecedores = fornecedorDAO.listarFornecedorParaExportar(filtroSelecionado);
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
@@ -71,7 +74,37 @@ public class FornecedorServlet extends HttpServlet{
                 }
                 return;
             }
+
+            List<FornecedorMolde> fornecedores = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "notaVPQ_crescente" -> {
+                    fornecedores = fornecedorDAO.listarFornecedorNotaVPQ(true, limite, offSet);
+                }
+                case "notaVPQ_decrescente" -> {
+                    fornecedores = fornecedorDAO.listarFornecedorNotaVPQ(false, limite, offSet);
+                }
+                default -> {
+                    fornecedores = fornecedorDAO.listarFornecedor(limite, offSet);
+                }
+            }
+
+            int totalRegistros = fornecedorDAO.contarFornecedores();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
             request.setAttribute("fornecedores", fornecedores);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
+
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-fornecedores.jsp"
             ).forward(request, response);
