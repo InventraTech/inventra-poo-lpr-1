@@ -31,33 +31,31 @@ public class ItemPreListaServlet extends HttpServlet {
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
 
-        List<ItemPreListaMolde> itensPreLista;
-        itensPreLista = itemPreListaDAO.listarItensPreLista();
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
+
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try {
-            if (filtroSelecionado != null){
-                switch (filtroSelecionado){
-                    case "fornecedor" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores();
-                    }
-                    case "produto" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto();
-                    }
-                    case "quantidade_crescente" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true);
-                    }
-                    case "quantidade_decrescente" -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false);
-                    }
-                    default -> {
-                        itensPreLista = itemPreListaDAO.listarItensPreLista();
-                    }
-                }
-            }
-
             if ("exportar".equals(acao)) {
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=\"itens-pre-lista.csv\"");
+
+                List<ItemPreListaMolde> itensPreLista;
+                itensPreLista = itemPreListaDAO.listarItensPreLista(limite, offSet);
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
@@ -73,8 +71,41 @@ public class ItemPreListaServlet extends HttpServlet {
                 }
                 return;
             }
+            List<ItemPreListaMolde> itensPreLista = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "fornecedor" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorFornecedores(limite, offSet);
+                }
+                case "produto" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorProduto(limite, offSet);
+                }
+                case "quantidade_crescente" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(true, limite, offSet);
+                }
+                case "quantidade_decrescente" -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreListaPorQuantidade(false, limite, offSet);
+                }
+                default -> {
+                    itensPreLista = itemPreListaDAO.listarItensPreLista(limite, offSet);
+                }
+            }
+
+            int totalRegistros = itemPreListaDAO.contarItensPreLista();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
 
             request.setAttribute("itensprelista", itensPreLista);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-itemprelista.jsp"

@@ -2,6 +2,7 @@ package org.inventra.dao;
 
 import org.inventra.conexao.ConexaoBanco;
 import org.inventra.model.FornecedorMolde;
+import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
 
 import java.sql.Connection;
@@ -41,22 +42,34 @@ public class ItemPreListaDAO {
             JOIN produto p ON i.fk_produto = p.id_produto
             """;
 
-    public List<ItemPreListaMolde> consultarItensPreLista(String sql){
+    public List<ItemPreListaMolde> consultarItensPreLista(String sql, Integer limite, Integer offset){
         List<ItemPreListaMolde> listaItensPreLista = new ArrayList<>();
 
+        //Se precisar de paginação vai para a tela do usuário, se não o exportar pega todos(para o arquivo CSV)
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
+
         try (Connection conexao = ConexaoBanco.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()){
+             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            while(rs.next()){
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                int id_ItemPreLista = rs.getInt("id_item_lista");
-                String fornecedor = rs.getString("fornecedor");
-                String produto = rs.getString("produto");
-                int qtd = rs.getInt("quantidade");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
 
-                ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(id_ItemPreLista, fornecedor, produto, qtd);
-                listaItensPreLista.add(novoItemPreLista);
+                    int id_ItemPreLista = rs.getInt("id_item_lista");
+                    String fornecedor = rs.getString("fornecedor");
+                    String produto = rs.getString("produto");
+                    int qtd = rs.getInt("quantidade");
+
+                    ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(id_ItemPreLista, fornecedor, produto, qtd);
+                    listaItensPreLista.add(novoItemPreLista);
+                }
             }
 
         } catch (SQLException e) {
@@ -142,23 +155,63 @@ public class ItemPreListaDAO {
 
     //FILTRAGENS
 
-    public List<ItemPreListaMolde> listarItensPreLista(){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"));
+    public List<ItemPreListaMolde> listarItensPreLista(Integer limite, Integer offset){
+        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"), limite, offset);
     }
 
-    public List<ItemPreListaMolde> listarItensPreListaPorFornecedores(){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"));
+    public List<ItemPreListaMolde> listarItensPreListaPorFornecedores(Integer limite, Integer offset){
+        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"), limite, offset);
     }
 
-    public List<ItemPreListaMolde> listarItensPreListaPorProduto(){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY p.nome"));
+    public List<ItemPreListaMolde> listarItensPreListaPorProduto(Integer limite, Integer offset){
+        return consultarItensPreLista(sqlBase.concat(" ORDER BY p.nome"), limite, offset);
     }
 
-    public List<ItemPreListaMolde> listarItensPreListaPorQuantidade(boolean ordem) {
+    public List<ItemPreListaMolde> listarItensPreListaPorQuantidade(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd ASC"));
+            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd ASC"), limite, offset);
         } else {
-            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd DESC"));
+            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd DESC"), limite, offset);
         }
+    }
+
+    public List<ItemPreListaMolde> listarItemPreListaParaExportar(String filtragem){
+        if (filtragem != null){
+            switch (filtragem){
+                case "fornecedor" -> {
+                    return listarItensPreListaPorFornecedores(null, null);
+                }
+                case "produto" -> {
+                    return listarItensPreListaPorProduto(null, null);
+                }
+                case "quantidade_crescente" -> {
+                    return listarItensPreListaPorQuantidade(true, null, null);
+                }
+                case "quantidade_decrescente" -> {
+                    return listarItensPreListaPorQuantidade(false, null, null);
+                }
+                default -> {
+                    return listarItensPreLista(null, null);
+                }
+            }
+        }
+        return null;
+    }
+
+    public int contarItensPreLista(){
+        String sql = "SELECT COUNT(*) FROM Item_pre_lista";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }
