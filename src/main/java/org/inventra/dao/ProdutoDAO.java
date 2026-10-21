@@ -50,27 +50,39 @@ public class ProdutoDAO {
                 JOIN fornecedor f ON p.fk_fornecedor = f.id_fornecedor
             """;
 
-    public List<ProdutoMolde> consultaProdutos(String sql) {
+    public List<ProdutoMolde> consultaProdutos(String sql, Integer limite, Integer offset) {
         List<ProdutoMolde> listaProdutos = new ArrayList<>();
 
+        //Se precisar de paginação vai para a tela do usuário, se não o exportar pega todos(para o arquivo CSV)
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
+
         try (Connection conexao = ConexaoBanco.conectar();
-             PreparedStatement stmt = conexao.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            while (rs.next()) {
-                int id = rs.getInt("id_produto");
-                String nome = rs.getString("nome");
-                String marca = rs.getString("nome_marca");
-                String categoria = rs.getString("nome_categoria");
-                String unidadeMedida = rs.getString("unidade_medida");
-                int estoqueMin = rs.getInt("estoque_min");
-                int estoqueMax = rs.getInt("estoque_max");
-                String fornecedor = rs.getString("nome_fornecedor");
-                String descricao = rs.getString("descricao");
-                boolean ativo = rs.getBoolean("ativo");
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                ProdutoMolde produto = new ProdutoMolde(id, fornecedor, marca, categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
-                listaProdutos.add(produto);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_produto");
+                    String nome = rs.getString("nome");
+                    String marca = rs.getString("nome_marca");
+                    String categoria = rs.getString("nome_categoria");
+                    String unidadeMedida = rs.getString("unidade_medida");
+                    int estoqueMin = rs.getInt("estoque_min");
+                    int estoqueMax = rs.getInt("estoque_max");
+                    String fornecedor = rs.getString("nome_fornecedor");
+                    String descricao = rs.getString("descricao");
+                    boolean ativo = rs.getBoolean("ativo");
+
+                    ProdutoMolde produto = new ProdutoMolde(id, fornecedor, marca, categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+                    listaProdutos.add(produto);
+                }
             }
 
         } catch (SQLException e) {
@@ -175,31 +187,77 @@ public class ProdutoDAO {
 
     //FILTROS
 
-    public List<ProdutoMolde> listarProdutos() {
-        return consultaProdutos(sqlBase.concat(" ORDER BY p.id_produto asc"));
+    public List<ProdutoMolde> listarProdutos(Integer limite, Integer offset) {
+        return consultaProdutos(sqlBase.concat(" ORDER BY p.id_produto asc"), limite, offset);
     }
 
-    public List<ProdutoMolde> listarProdutosQuantidade() {
-        return consultaProdutos(sqlBase.concat(" ORDER BY l.qtd_atual desc"));
+    public List<ProdutoMolde> listarProdutosQuantidade(Integer limite, Integer offset) {
+        return consultaProdutos(sqlBase.concat(" ORDER BY l.qtd_atual desc"), limite, offset);
     }
 
-    public List<ProdutoMolde> listarProdutosPorMarca() {
-        return consultaProdutos(sqlBase.concat(" ORDER BY m.nome, p.nome asc"));
+    public List<ProdutoMolde> listarProdutosPorMarca(Integer limite, Integer offset) {
+        return consultaProdutos(sqlBase.concat(" ORDER BY m.nome, p.nome asc"), limite, offset);
     }
 
-    public List<ProdutoMolde> listarProdutosAlfabetica(boolean ordem) {
+    public List<ProdutoMolde> listarProdutosAlfabetica(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultaProdutos(sqlBase.concat(" order by p.nome ASC"));
+            return consultaProdutos(sqlBase.concat(" order by p.nome ASC"), limite, offset);
         } else {
-            return consultaProdutos(sqlBase.concat(" order by p.nome DESC"));
+            return consultaProdutos(sqlBase.concat(" order by p.nome DESC"), limite, offset);
         }
     }
 
-    public List<ProdutoMolde> listarProdutosPorData(boolean ordem) {
+    public List<ProdutoMolde> listarProdutosPorData(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade asc"));
+            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade asc"), limite, offset);
         } else {
-            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade desc"));
+            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade desc"), limite, offset);
         }
+    }
+
+    public List<ProdutoMolde> listarProdutosParaExportar(String filtragem){
+        if (filtragem != null) {
+            switch (filtragem) {
+                case "validade_proxima" -> {
+                    return listarProdutosPorData(true, null, null);
+                }
+                case "validade_distante" -> {
+                    return listarProdutosPorData(false, null, null);
+                }
+                case "az" -> {
+                    return listarProdutosAlfabetica(true, null, null);
+                }
+                case "za" -> {
+                    return listarProdutosAlfabetica(false, null, null);
+                }
+                case "quantidade" -> {
+                    return listarProdutosQuantidade(null, null);
+                }
+                case "marca" -> {
+                    return listarProdutosPorMarca(null, null);
+                }
+                default -> {
+                    return listarProdutos(null, null);
+                }
+            }
+        }
+        return null;
+    }
+
+    public int contarProdutos(){
+        String sql = "SELECT COUNT(*) FROM produto";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }
