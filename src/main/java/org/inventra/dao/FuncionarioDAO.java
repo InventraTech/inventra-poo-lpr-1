@@ -51,34 +51,45 @@ public class FuncionarioDAO {
             JOIN setor s ON f.fk_setor = s.id_setor
             """;
 
-    public List<FuncionarioMolde> consultarFuncionario(String sql){
-        List<FuncionarioMolde> array = new ArrayList<>();
+    public List<FuncionarioMolde> consultarFuncionario(String sql, Integer limite, Integer offset){
+        List<FuncionarioMolde> listaFuncionarios = new ArrayList<>();
+
+        //Se precisar de paginação vai para a tela do usuário, se não o exportar pega todos(para o arquivo CSV)
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
 
         try(Connection conexao = ConexaoBanco.conectar();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()){
+            PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            while (rs.next()){
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                int id = rs.getInt("id_funcionario");
-                String nome = rs.getString("nome_funcionario");
-                String email = rs.getString("email");
-                String telefone = rs.getString("telefone");
-                String cpf = rs.getString("cpf");
-                LocalDate dt_admissao = rs.getObject("dt_admissao", LocalDate.class);
-                String status = rs.getString("status");
-                String setor = rs.getString("setor");
-                boolean isAdmin = rs.getBoolean("is_admin");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_funcionario");
+                    String nome = rs.getString("nome_funcionario");
+                    String email = rs.getString("email");
+                    String telefone = rs.getString("telefone");
+                    String cpf = rs.getString("cpf");
+                    LocalDate dt_admissao = rs.getObject("dt_admissao", LocalDate.class);
+                    String status = rs.getString("status");
+                    String setor = rs.getString("setor");
+                    boolean isAdmin = rs.getBoolean("is_admin");
 
-                FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, telefone, cpf, dt_admissao, status, setor, isAdmin);
-                array.add(funcionario);
+                    FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, telefone, cpf, dt_admissao, status, setor, isAdmin);
+                    listaFuncionarios.add(funcionario);
+                }
             }
 
         } catch(SQLException e){
             //Lança a exceção para ser capturada no Servlet
             throw new RuntimeException("Erro ao consultar a tabela de funcionarios no banco de dados", e);
         }
-        return array;
+        return listaFuncionarios;
     }
 
     // 3. UPDATES
@@ -285,28 +296,67 @@ public class FuncionarioDAO {
 
     //MÉTODOS DE FILTRAGEM
 
-    public List<FuncionarioMolde> listarFuncionario(){
-        return consultarFuncionario(sqlBase.concat("order by f.id_funcionario"));
+    public List<FuncionarioMolde> listarFuncionario(Integer limite, Integer offset){
+        return consultarFuncionario(sqlBase.concat("order by f.id_funcionario"), limite, offset);
     }
 
-    public List<FuncionarioMolde> listarFuncionarioPorSetor(){
-        return consultarFuncionario(sqlBase.concat("order by s.nome, f.nome"));
+    public List<FuncionarioMolde> listarFuncionarioPorSetor(Integer limite, Integer offset){
+        return consultarFuncionario(sqlBase.concat("order by s.nome, f.nome"), limite, offset);
     }
 
-    public List<FuncionarioMolde> listarFuncionarioAlfabetico(boolean ordem){
+    public List<FuncionarioMolde> listarFuncionarioAlfabetico(boolean ordem, Integer limite, Integer offset){
         if (ordem) {
-            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome ASC"));
+            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome ASC"), limite, offset);
         } else {
-            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome DESC"));
+            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome DESC"), limite, offset);
         }
     }
 
-    public List<FuncionarioMolde> listarFuncionarioPorData(boolean ordem){
+    public List<FuncionarioMolde> listarFuncionarioPorData(boolean ordem, Integer limite, Integer offset){
         if (ordem) {
-            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao desc"));
+            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao desc"), limite, offset);
         } else {
-            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao asc"));
+            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao asc"), limite, offset);
         }
+    }
+
+    public List<FuncionarioMolde> listarFuncionarioParaExportar(String filtragem){
+        if (filtragem != null){
+            switch (filtragem){
+                case "az" -> {
+                    return listarFuncionarioAlfabetico(true, null, null);
+                } case "za" -> {
+                    return listarFuncionarioAlfabetico(false, null, null);
+                } case "setor" -> {
+                    return listarFuncionarioPorSetor(null, null);
+                } case "data_crescente" -> {
+                    return listarFuncionarioPorData(true, null, null);
+                } case "data_decrescente" -> {
+                    return listarFuncionarioPorData(false, null, null);
+                }
+                default -> {
+                    return listarFuncionario(null, null);
+                }
+            }
+        }
+        return null;
+    }
+
+    public int contarFuncionarios(){
+        String sql = "SELECT COUNT(*) FROM funcionario";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch(SQLException e){
+            throw new RuntimeException("Erro ao consultar a tabela de funcionarios no banco de dados", e);
+        }
+        return 0;
     }
 
 }
