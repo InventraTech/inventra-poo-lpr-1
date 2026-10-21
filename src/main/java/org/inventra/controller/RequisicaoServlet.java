@@ -32,37 +32,32 @@ public class RequisicaoServlet extends HttpServlet{
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
 
-        List<RequisicaoMolde> requisicoes;
-        requisicoes = requisicaoDAO.listarRequisicoes();
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
+
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try {
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
-                    case "tipo" -> {
-                        requisicoes = requisicaoDAO.listarRequisicoesPorTipo();
-                    }
-                    case "quantidade_crescente" -> {
-                        requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(true);
-                    }
-                    case "quantidade_decrescente" -> {
-                        requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(false);
-                    }
-                    case "data_proxima" -> {
-                        requisicoes = requisicaoDAO.listarRequisicoesPorData(true);
-                    }
-                    case "data_distante" -> {
-                        requisicoes = requisicaoDAO.listarRequisicoesPorData(false);
-                    }
-                    default -> {
-                        requisicoes = requisicaoDAO.listarRequisicoes();
-                    }
-                }
-            }
-
             if ("exportar".equals(acao)){
                 //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=\"funcionarios.csv\"");
+
+                List<RequisicaoMolde> requisicoes;
+                requisicoes = requisicaoDAO.listarRequisicaoParaExportar(filtroSelecionado);
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
@@ -83,7 +78,45 @@ public class RequisicaoServlet extends HttpServlet{
                 return;
             }
 
+            List<RequisicaoMolde> requisicoes = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "tipo" -> {
+                    requisicoes = requisicaoDAO.listarRequisicoesPorTipo(limite, offSet);
+                }
+                case "quantidade_crescente" -> {
+                    requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(true, limite, offSet);
+                }
+                case "quantidade_decrescente" -> {
+                    requisicoes = requisicaoDAO.listarRequisicoesPorQuantidadeProduto(false, limite, offSet);
+                }
+                case "data_proxima" -> {
+                    requisicoes = requisicaoDAO.listarRequisicoesPorData(true, limite, offSet);
+                }
+                case "data_distante" -> {
+                    requisicoes = requisicaoDAO.listarRequisicoesPorData(false, limite, offSet);
+                }
+                default -> {
+                    requisicoes = requisicaoDAO.listarRequisicoes(limite, offSet);
+                }
+            }
+
+            int totalRegistros = requisicaoDAO.contarRequisicoes();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
             request.setAttribute("requisicoes", requisicoes);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
+
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-requisicoes.jsp"
             ).forward(request, response);

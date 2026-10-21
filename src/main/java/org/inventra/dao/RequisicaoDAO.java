@@ -49,28 +49,37 @@ public class RequisicaoDAO {
             JOIN produto p ON r.fk_produto = p.id_produto
             """;
 
-    public List<RequisicaoMolde> consultarRequisicoes(String sql){
+    public List<RequisicaoMolde> consultarRequisicoes(String sql, Integer limite, Integer offset){
         List<RequisicaoMolde> array = new ArrayList<>();
 
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
+
         try(Connection conexao = ConexaoBanco.conectar();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()){
+            PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            while (rs.next()){
-                int id = rs.getInt("id_requisicao");
-                String idTipoRequisicao = rs.getString("tipo_requisicao");
-                String funcionarioSolicitante = rs.getString("funcionario_solicitante");
-                String funcionarioAprovador = rs.getString("funcionario_aprovador");
-                String produto = rs.getString("produto");
-                int qtd = rs.getInt("quantidade_prod");
-                String motivo = rs.getString("motivo");
-                String status = rs.getString("status");
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                // Lê a data e a hora individualmente e as combina em um LocalDateTime
-                LocalDateTime dataHora = rs.getObject("dt_requisicao", LocalDateTime.class);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_requisicao");
+                    String idTipoRequisicao = rs.getString("tipo_requisicao");
+                    String funcionarioSolicitante = rs.getString("funcionario_solicitante");
+                    String funcionarioAprovador = rs.getString("funcionario_aprovador");
+                    String produto = rs.getString("produto");
+                    int qtd = rs.getInt("quantidade_prod");
+                    String motivo = rs.getString("motivo");
+                    String status = rs.getString("status");
+                    LocalDateTime dataHora = rs.getObject("dt_requisicao", LocalDateTime.class);
 
-                RequisicaoMolde requisicao = new RequisicaoMolde(id, idTipoRequisicao, funcionarioSolicitante, funcionarioAprovador, produto, qtd, motivo, status, dataHora);
-                array.add(requisicao);
+                    RequisicaoMolde requisicao = new RequisicaoMolde(id, idTipoRequisicao, funcionarioSolicitante, funcionarioAprovador, produto, qtd, motivo, status, dataHora);
+                    array.add(requisicao);
+                }
             }
 
         } catch(SQLException e){
@@ -176,27 +185,70 @@ public class RequisicaoDAO {
 
     //MÉTODOS DE LISTAGENS
 
-    public List<RequisicaoMolde> listarRequisicoes(){
-        return consultarRequisicoes(sqlBase.concat("order by r.id_requisicao"));
+    public List<RequisicaoMolde> listarRequisicoes(Integer limite, Integer offset){
+        return consultarRequisicoes(sqlBase.concat("order by r.id_requisicao"), limite, offset);
     }
 
-    public List<RequisicaoMolde> listarRequisicoesPorTipo(){
-        return consultarRequisicoes(sqlBase.concat(" ORDER BY r.fk_tipo_requisicao"));
+    public List<RequisicaoMolde> listarRequisicoesPorTipo(Integer limite, Integer offset){
+        return consultarRequisicoes(sqlBase.concat(" ORDER BY r.fk_tipo_requisicao"), limite, offset);
     }
 
-    public List<RequisicaoMolde> listarRequisicoesPorQuantidadeProduto(boolean ordem) {
+    public List<RequisicaoMolde> listarRequisicoesPorQuantidadeProduto(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod ASC"));
+            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod ASC"), limite, offset);
         } else {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod DESC"));
+            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod DESC"), limite, offset);
         }
     }
 
-    public List<RequisicaoMolde> listarRequisicoesPorData(boolean ordem) {
+    public List<RequisicaoMolde> listarRequisicoesPorData(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao ASC"));
+            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao ASC"), limite, offset);
         } else {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao DESC"));
+            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao DESC"), limite, offset);
         }
+    }
+
+    public List<RequisicaoMolde> listarRequisicaoParaExportar(String filtragem){
+        if (filtragem != null) {
+            switch (filtragem) {
+                case "tipo" -> {
+                    return listarRequisicoesPorTipo(null, null);
+                }
+                case "quantidade_crescente" -> {
+                    return listarRequisicoesPorQuantidadeProduto(true, null, null);
+                }
+                case "quantidade_decrescente" -> {
+                    return listarRequisicoesPorQuantidadeProduto(false, null, null);
+                }
+                case "data_proxima" -> {
+                    return listarRequisicoesPorData(true, null, null);
+                }
+                case "data_distante" -> {
+                    return listarRequisicoesPorData(false, null, null);
+                }
+                default -> {
+                    return listarRequisicoes(null, null);
+                }
+            }
+        }
+        return null;
+    }
+
+    public int contarRequisicoes(){
+        String sql = "SELECT COUNT(*) FROM requisicao";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }
