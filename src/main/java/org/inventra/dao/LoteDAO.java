@@ -43,26 +43,38 @@ public class LoteDAO {
             JOIN produto p ON l.fk_produto = p.id_produto
             """;
 
-    public List<LoteMolde> consultarLote(String sql){
+    public List<LoteMolde> consultarLote(String sql, Integer limite, Integer offset){
         List<LoteMolde> array = new ArrayList<>();
 
+        //Se precisar de paginação vai para a tela do usuário, se não o exportar pega todos(para o arquivo CSV)
+        boolean comPaginacao = (limite != null && offset != null);
+        if (comPaginacao){
+            sql = sql.concat(" LIMIT ? OFFSET ?");
+        }
+
         try(Connection conexao = ConexaoBanco.conectar();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()){
+            PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            while (rs.next()){
-                int id = rs.getInt("id_lote");
-                String produto = rs.getString("nome_produto");
-                String numero_lote = rs.getString("numero_lote");
-                int qtd_inicial = rs.getInt("qtd_inicial");
-                int qtd_atual = rs.getInt("qtd_atual");
-                LocalDate dt_entrada = rs.getObject("dt_entrada", LocalDate.class);
-                LocalDate dt_validade = rs.getObject("dt_validade", LocalDate.class);
-                BigDecimal valor_custo = rs.getBigDecimal("valor_compra");
-                String nota_fiscal = rs.getString("nota_fiscal");
+            if (comPaginacao){
+                stmt.setInt(1, limite);
+                stmt.setInt(2, offset);
+            }
 
-                LoteMolde lote = new LoteMolde(id, produto, numero_lote, qtd_inicial, qtd_atual, dt_entrada, dt_validade, valor_custo, nota_fiscal);
-                array.add(lote);
+            try(ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_lote");
+                    String produto = rs.getString("nome_produto");
+                    String numero_lote = rs.getString("numero_lote");
+                    int qtd_inicial = rs.getInt("qtd_inicial");
+                    int qtd_atual = rs.getInt("qtd_atual");
+                    LocalDate dt_entrada = rs.getObject("dt_entrada", LocalDate.class);
+                    LocalDate dt_validade = rs.getObject("dt_validade", LocalDate.class);
+                    BigDecimal valor_custo = rs.getBigDecimal("valor_compra");
+                    String nota_fiscal = rs.getString("nota_fiscal");
+
+                    LoteMolde lote = new LoteMolde(id, produto, numero_lote, qtd_inicial, qtd_atual, dt_entrada, dt_validade, valor_custo, nota_fiscal);
+                    array.add(lote);
+                }
             }
 
         } catch(SQLException e){
@@ -167,41 +179,70 @@ public class LoteDAO {
         }
     }
 
-    public List<LoteMolde> listarLote(){
-        return consultarLote(sqlBase.concat(" ORDER BY id_lote asc"));
+    public List<LoteMolde> listarLote(Integer limite, Integer offset){
+        return consultarLote(sqlBase.concat(" ORDER BY id_lote asc"), limite, offset);
     }
 
-    public List<LoteMolde> listarLoteQuantidadeProdutosAtual(){
-        return consultarLote(sqlBase.concat(" ORDER BY qtd_atual desc"));
+    public List<LoteMolde> listarLoteQuantidadeProdutosAtual(Integer limite, Integer offset){
+        return consultarLote(sqlBase.concat(" ORDER BY qtd_atual desc"), limite, offset);
     }
 
-    public List<LoteMolde> listarLoteDataEntrada(boolean ordem){
+    public List<LoteMolde> listarLoteDataEntrada(boolean ordem, Integer limite, Integer offset){
         if(ordem){
-            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada asc"));
+            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada asc"), limite, offset);
         } else {
-            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada desc"));
+            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada desc"), limite, offset);
         }
     }
 
-    public List<LoteMolde> listarLoteDataValidade(boolean ordem){
+    public List<LoteMolde> listarLoteDataValidade(boolean ordem, Integer limite, Integer offset){
         if(ordem){
-            return consultarLote(sqlBase.concat(" ORDER BY dt_validade asc"));
+            return consultarLote(sqlBase.concat(" ORDER BY dt_validade asc"), limite, offset);
         } else {
-            return consultarLote(sqlBase.concat(" ORDER BY dt_validade desc"));
+            return consultarLote(sqlBase.concat(" ORDER BY dt_validade desc"), limite, offset);
         }
     }
 
+    public List<LoteMolde> listarLoteParaExportar(String filtragem){
+        if (filtragem != null) {
+            switch (filtragem) {
+                case "entrada_crescente" -> {
+                    return listarLoteDataEntrada(true, null, null);
+                }
+                case "entrada_decrescente" -> {
+                    return listarLoteDataEntrada(false, null, null);
+                }
+                case "validade_crescente" -> {
+                    return listarLoteDataValidade(true, null, null);
+                }
+                case "validade_decrescente" -> {
+                    return listarLoteDataValidade(false, null, null);
+                }
+                case "produtos_atual" -> {
+                    return listarLoteQuantidadeProdutosAtual(null, null);
+                }
+                default -> {
+                    return listarLote(null, null);
+                }
+            }
+        }
+        return null;
+    }
 
+    public int contarLotes(){
+        String sql = "SELECT COUNT(*) FROM lotes";
 
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
 
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
 
-
-
-
-
-
-
-
-
-
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
 }

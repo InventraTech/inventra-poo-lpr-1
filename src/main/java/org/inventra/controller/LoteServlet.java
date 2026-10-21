@@ -32,38 +32,32 @@ public class LoteServlet extends HttpServlet{
     ) throws ServletException, IOException {
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
+        //Definindo a páginação:
+        int limite = 6;
+        int paginaAtual = 1;
 
-        List<LoteMolde> lotes;
-        lotes = loteDao.listarLote();
+        String pagina = request.getParameter("pagina");
+        if (pagina != null && !pagina.isEmpty()){
+            try {
+                paginaAtual = Integer.parseInt(pagina);
+                if (paginaAtual < 1) {
+                    paginaAtual = 1;
+                }
+            } catch (NumberFormatException e){
+                paginaAtual = 1;
+            }
+        }
+
+        int offSet = (paginaAtual - 1) * limite;
 
         try{
-            if (filtroSelecionado != null) {
-                switch (filtroSelecionado) {
-                    case "entrada_crescente" -> {
-                        lotes = loteDao.listarLoteDataEntrada(true);
-                    }
-                    case "entrada_decrescente" -> {
-                        lotes = loteDao.listarLoteDataEntrada(false);
-                    }
-                    case "validade_crescente" -> {
-                        lotes = loteDao.listarLoteDataValidade(true);
-                    }
-                    case "validade_decrescente" -> {
-                        lotes = loteDao.listarLoteDataValidade(false);
-                    }
-                    case "produtos_atual" -> {
-                        lotes = loteDao.listarLoteQuantidadeProdutosAtual();
-                    }
-                    default -> {
-                        lotes = loteDao.listarLote();
-                    }
-                }
-            }
-
             if ("exportar".equals(acao)) {
                 //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setHeader("Content-Disposition", "attachment; filename=\"lotes.csv\"");
+
+                List<LoteMolde> lotes;
+                lotes = loteDao.listarLoteParaExportar(filtroSelecionado);
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
@@ -84,7 +78,45 @@ public class LoteServlet extends HttpServlet{
                 }
                 return;
             }
+            List<LoteMolde> lotes = List.of();
+
+            if (filtroSelecionado == null) {
+                filtroSelecionado = "";
+            }
+
+            switch (filtroSelecionado) {
+                case "entrada_crescente" -> {
+                    lotes = loteDao.listarLoteDataEntrada(true, limite, offSet);
+                }
+                case "entrada_decrescente" -> {
+                    lotes = loteDao.listarLoteDataEntrada(false, limite, offSet);
+                }
+                case "validade_crescente" -> {
+                    lotes = loteDao.listarLoteDataValidade(true, limite, offSet);
+                }
+                case "validade_decrescente" -> {
+                    lotes = loteDao.listarLoteDataValidade(false, limite, offSet);
+                }
+                case "produtos_atual" -> {
+                    lotes = loteDao.listarLoteQuantidadeProdutosAtual(limite, offSet);
+                }
+                default -> {
+                    lotes = loteDao.listarLote(limite, offSet);
+                }
+            }
+
+            int totalRegistros = loteDao.contarLotes();
+            //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
+            if (totalPaginas == 0){
+                totalPaginas = 1;
+            }
+
             request.setAttribute("lotes", lotes);
+            request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("filtroSelecionado", filtroSelecionado);
+
             request.getRequestDispatcher(
                     "/WEB-INF/views/lista-lotes.jsp"
             ).forward(request, response);
