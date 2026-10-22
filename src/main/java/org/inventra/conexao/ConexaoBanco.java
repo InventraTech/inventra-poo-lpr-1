@@ -1,36 +1,43 @@
 package org.inventra.conexao;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class
-ConexaoBanco {
+public class ConexaoBanco {
     private static Dotenv dotEnv = Dotenv.configure().directory("/").filename(".env").load();
+    private static HikariDataSource dataSource;
 
-    private static final String URL = dotEnv.get("DB_URL");
-    private static final String USUARIO = dotEnv.get("DB_USUARIO");
-    private static final String SENHA = dotEnv.get("DB_SENHA");
-
-    // Metodo que retorna Connection que pode ser chamado por outras classes
-    public static Connection conectar() {
+    static {
         try {
-            Class.forName("org.postgresql.Driver");
+            HikariConfig config = new HikariConfig();
 
-            // Abre a conexão e devolve ela para quem chamou o método
-            return DriverManager.getConnection(URL, USUARIO, SENHA);
+            // Configurações básicas de conexão obtidas do .env
+            config.setJdbcUrl(dotEnv.get("DB_URL"));
+            config.setUsername(dotEnv.get("DB_USUARIO"));
+            config.setPassword(dotEnv.get("DB_SENHA"));
+            config.setDriverClassName("org.postgresql.Driver");
 
-        } catch (ClassNotFoundException erro) {
-            System.out.println("Driver do banco de dados não localizado");
-            erro.printStackTrace();
-            return null;
+            // Configurações recomendadas do Pool (Opcionais, mas ajustam a performance)
+            config.setMaximumPoolSize(10); // Quantidade máxima de conexões simultâneas no pool
+            config.setMinimumIdle(2);      // Quantidade mínima de conexões mantidas vivas
+            config.setIdleTimeout(30000);  // Tempo máximo (ms) que uma conexão pode ficar ociosa (30 segundos)
+            config.setConnectionTimeout(30000); // Tempo máximo (ms) (equivalente a 30 segundos)
 
-        } catch (SQLException erro) {
-            System.out.println("Erro: Verifique se o usuário e senha estão corretos");
-            erro.printStackTrace();
-            return null;
+            dataSource = new HikariDataSource(config);
+
+        } catch (Exception e) {
+            System.out.println("Erro ao inicializar o Pool de Conexões do HikariCP");
+            e.printStackTrace();
+            throw new RuntimeException("Falha crítica ao iniciar o pool de conexões", e);
         }
+    }
+
+    // Método que retorna uma Connection obtida do pool
+    public static Connection conectar() throws SQLException {
+        return dataSource.getConnection();
     }
 }
