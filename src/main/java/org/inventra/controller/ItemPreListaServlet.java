@@ -108,7 +108,7 @@ public class ItemPreListaServlet extends HttpServlet {
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-itemprelista.jsp"
+                    "/WEB-INF/pre-lista/lista-itemprelista.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

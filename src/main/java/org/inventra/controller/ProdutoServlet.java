@@ -120,10 +120,11 @@ public class ProdutoServlet extends HttpServlet {
             request.setAttribute("produtos", produtos);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-produtos.jsp"
+                    "/WEB-INF/produto/lista-produtos.jsp"
             ).forward(request, response);
         }
         catch (NumberFormatException e){

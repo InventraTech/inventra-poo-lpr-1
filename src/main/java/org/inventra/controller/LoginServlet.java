@@ -52,8 +52,7 @@ public class LoginServlet extends HttpServlet {
             sessao.setAttribute("funcionarioLogado", funcionario);
 
             response.sendRedirect(
-                    request.getContextPath() + "/index.jsp"
-            );
+                    request.getContextPath() + "/fornecedor");
         } else {
             request.setAttribute("erro", "E-mail ou senha incorretos!");
             request.getRequestDispatcher("/login.jsp").forward(request, response);

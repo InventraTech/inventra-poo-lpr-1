@@ -36,7 +36,7 @@ public class FiltroAutenticacao implements Filter {
         boolean paginasPublicas = PUBLICAS.contains(caminho) ||
                 caminho.startsWith("/css/") ||
                 caminho.startsWith("/js/") ||
-                caminho.startsWith("/utils/");
+                caminho.toLowerCase().startsWith("/utils/");
 
         if (paginasPublicas) {
             chain.doFilter(request, response);
@@ -55,7 +55,7 @@ public class FiltroAutenticacao implements Filter {
 
         // Segunda trava: mesmo logado, só ADMIN passa
         if (!funcionario.isAdmin()) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/erro-403.jsp");
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN); // web.xml mostra /WEB-INF/views/erros/erro-403.jsp
             return;
         }
 

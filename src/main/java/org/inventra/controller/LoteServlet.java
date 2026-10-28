@@ -118,7 +118,7 @@ public class LoteServlet extends HttpServlet{
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-lotes.jsp"
+                    "/WEB-INF/lotes/lista-lotes.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

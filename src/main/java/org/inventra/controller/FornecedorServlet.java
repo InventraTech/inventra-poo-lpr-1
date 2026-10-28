@@ -103,10 +103,11 @@ public class FornecedorServlet extends HttpServlet{
             request.setAttribute("fornecedores", fornecedores);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-fornecedores.jsp"
+                    "/WEB-INF/fornecedor/lista-fornecedores.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

@@ -122,7 +122,7 @@ public class FuncionarioServlet extends HttpServlet {
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-funcionarios.jsp"
+                    "/WEB-INF/funcionarios/lista-funcionarios.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

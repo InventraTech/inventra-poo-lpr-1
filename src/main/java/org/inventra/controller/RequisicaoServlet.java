@@ -118,7 +118,7 @@ public class RequisicaoServlet extends HttpServlet{
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-requisicoes.jsp"
+                    "/WEB-INF/requisicao/lista-requisicoes.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){
