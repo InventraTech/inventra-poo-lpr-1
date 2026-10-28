@@ -33,7 +33,7 @@ public class LoteServlet extends HttpServlet{
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
         //Definindo a páginação:
-        int limite = 6;
+        int limite = 4;
         int paginaAtual = 1;
 
         String pagina = request.getParameter("pagina");
@@ -115,6 +115,7 @@ public class LoteServlet extends HttpServlet{
             request.setAttribute("lotes", lotes);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(

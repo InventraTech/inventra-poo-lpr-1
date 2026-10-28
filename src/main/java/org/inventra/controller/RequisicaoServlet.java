@@ -33,7 +33,7 @@ public class RequisicaoServlet extends HttpServlet{
         String acao = request.getParameter("acao");
 
         //Definindo a páginação:
-        int limite = 6;
+        int limite = 4;
         int paginaAtual = 1;
 
         String pagina = request.getParameter("pagina");
@@ -114,6 +114,7 @@ public class RequisicaoServlet extends HttpServlet{
 
             request.setAttribute("requisicoes", requisicoes);
             request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("totalPaginas", totalPaginas);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 

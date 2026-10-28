@@ -105,6 +105,7 @@ public class ItemPreListaServlet extends HttpServlet {
             request.setAttribute("itensprelista", itensPreLista);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(

@@ -118,6 +118,7 @@ public class FuncionarioServlet extends HttpServlet {
            //Enviando as informações principais para a tela do usuario
             request.setAttribute("funcionarios", funcionarios);
             request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("totalPaginas", totalPaginas);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
