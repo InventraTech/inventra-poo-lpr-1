@@ -63,7 +63,7 @@
         <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone_funcionarios.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Total de funcionários</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <strong class="bignumero-valor" title="Quantidade de funcionáriosl">${totalRegistros}</strong>
         </div>
       </div>
       <div class="bignumero">
