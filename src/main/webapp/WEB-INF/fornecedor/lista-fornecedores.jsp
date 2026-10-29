@@ -8,7 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fornecedores | Inventra</title>
-  <link rel="icon" href="${ctx}/utils/imagens/imagotipo.png">
+  <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
   <link rel="stylesheet" href="${ctx}/utils/css/base.css">
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css">
   <style>
@@ -60,21 +60,21 @@
 
     <section class="bignumeros">
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone_predio (1).png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone-predio.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Fornecedores</span>
           <strong class="bignumero-valor" title="Quantidade Fornecedores">${totalRegistros}</strong>
         </div>
       </div>
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone_check.png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone-check.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Ativos</span>
           <strong class="bignumero-valor" title="Informação não disponível">—</strong>
         </div>
       </div>
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone_caixa.png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone-caixa.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Produtos vinculados</span>
           <strong class="bignumero-valor" title="Informação não disponível">—</strong>

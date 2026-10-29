@@ -8,7 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Funcionários | Inventra</title>
-  <link rel="icon" href="${ctx}/utils/imagens/imagotipo.png">
+  <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
   <link rel="stylesheet" href="${ctx}/utils/css/base.css">
   <link rel="stylesheet" href="${ctx}/utils/css/funcionarios.css">
   <style>
@@ -60,7 +60,7 @@
 
     <section class="bignumeros bignumeros-quatro">
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone_funcionarios.png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone-funcionarios.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Total de funcionários</span>
           <strong class="bignumero-valor" title="Quantidade de funcionáriosl">${totalRegistros}</strong>
@@ -81,7 +81,7 @@
         </div>
       </div>
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/Agenda.png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/agenda.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Desligados</span>
           <strong class="bignumero-valor" title="Informação não disponível">—</strong>

@@ -8,7 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Produtos | Inventra</title>
-  <link rel="icon" href="${ctx}/utils/imagens/imagotipo.png">
+  <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
   <link rel="stylesheet" href="${ctx}/utils/css/base.css">
   <link rel="stylesheet" href="${ctx}/utils/css/produtos.css">
   <style>
@@ -58,7 +58,7 @@
 
     <section class="bignumeros bignumeros-quatro">
       <div class="bignumero">
-        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/fornecedor (1).png" alt=""></div>
+        <div class="bignumero-icone"><img src="${ctx}/utils/imagens/icone-pagamento.png" alt=""></div>
         <div class="bignumero-info">
           <span class="bignumero-rotulo">Produtos cadastrados</span>
           <strong class="bignumero-valor" title="Quantidade de produtos">${totalRegistros}</strong>

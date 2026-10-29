@@ -188,7 +188,7 @@ public class FornecedorDAO {
     }
 
     public int contarFornecedores(){
-        String sql = "select count(*) from fornecedores";
+        String sql = "select count(*) from fornecedor";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);

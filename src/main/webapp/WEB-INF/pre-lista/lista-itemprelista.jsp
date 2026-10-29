@@ -8,7 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pré-listas | Inventra</title>
-  <link rel="icon" href="${ctx}/utils/imagens/imagotipo.png">
+  <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
   <link rel="stylesheet" href="${ctx}/utils/css/base.css">
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css">
   <link rel="stylesheet" href="${ctx}/utils/css/preLista.css">

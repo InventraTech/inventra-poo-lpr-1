@@ -1,0 +1,226 @@
+*{
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 16px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../imagens/imagem-fundo.svg");
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "K2D", sans-serif;
+}
+#login {
+    position: relative;
+    width: 100%;
+    max-width: 555px;
+    min-height: 505px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 2px solid #D5D5D5;
+    box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+header {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    padding-bottom: 20px;
+    background-color: #fff;
+    text-align: center;
+}
+header img {
+    width: 65px;
+    max-width: 100%;
+    height: auto;
+}
+#img_voltar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: inline-block;
+    width: 100px;
+    height: 30px;
+    background-image: url("../imagens/voltar-log-icon-v1.jpg");
+    background-size: cover;
+    transition: background-image 0.3s ease;
+}
+#img_voltar:hover {
+    background-image: url("../imagens/voltar-log-icon-v2.jpg");
+}
+#title {
+    color: #3A3A3A;
+    font-weight: 600;
+    font-size: 33px;
+    margin: 10px 0 0 0;
+}
+#roxo {
+    color: #360082;
+}
+#separador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 470px;
+    height: 30px;
+}
+.linha {
+    width: 100%;
+    max-width: 450px;
+    height: 2px;
+    background-color: #D1D1D1;
+}
+
+#separador span {
+    margin: 0px 15px 0px 15px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #7A7A7A;
+}
+form {
+    width: 100%;
+    max-width: 470px;
+    margin: 20px auto 0;
+    padding: 0;
+}
+
+form label {
+    font-weight: 500;
+    font-size: 20px;
+    color: #3A3A3A;
+}
+
+form input {
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 10px;
+    width: 100%;
+    height: 45px;
+    margin: 10px 0 21px 0;
+    border-radius: 10px;
+    border: solid 2px #D6D6D6;
+    background-color: #FDFDFD;
+}
+
+form input:focus {
+    border: 2px solid #5301C9;
+    outline: none;
+}
+
+#entrar_site {
+    margin-top: 20px;
+    width: 100%;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #360082;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 20px;
+}
+
+#entrar_site:hover {
+    background-color: #5301C9;
+}
+
+#entrar_site:active {
+    background-color: #360082;
+}
+
+#entrar_site p {
+    margin: 0;
+}
+
+footer {
+    text-align: center;
+    color: #8B8B8B;
+}
+
+footer p {
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+
+    #login {
+        min-height: 0;
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    #img_voltar {
+        top: 16px;
+        left: 16px;
+        width: 85px;
+        height: 26px;
+    }
+
+    #title {
+        font-size: 28px;
+    }
+
+    form label {
+        font-size: 18px;
+    }
+
+    form input {
+        font-size: 16px;
+    }
+
+    #entrar_site {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 380px) {
+    #login {
+        padding: 14px 12px;
+    }
+
+    header img {
+        width: 52px;
+    }
+
+    #title {
+        font-size: 24px;
+    }
+
+    form label {
+        font-size: 16px;
+    }
+
+    #img_voltar {
+        width: 70px;
+        height: 22px;
+    }
+}
+
+@media (max-height: 600px) {
+    body {
+        align-items: flex-start;
+    }
+}
+
+@media (min-width: 1600px) {
+    #login {
+        max-width: 620px;
+    }
+
+    #login,form,#separador {
+        font-size: 1.05em;
+    }
+}

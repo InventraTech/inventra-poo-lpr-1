@@ -230,7 +230,7 @@ public class LoteDAO {
     }
 
     public int contarLotes(){
-        String sql = "SELECT COUNT(*) FROM lotes";
+        String sql = "SELECT COUNT(*) FROM lote";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
