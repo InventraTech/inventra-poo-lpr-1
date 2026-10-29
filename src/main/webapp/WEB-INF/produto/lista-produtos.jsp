@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="partesNome" value="${fn:split(fn:trim(sessionScope.funcionarioLogado.nome), ' ')}" />
+<c:set var="iniciais" value="${fn:toUpperCase(fn:substring(partesNome[0], 0, 1))}${fn:length(partesNome) gt 1 ? fn:toUpperCase(fn:substring(partesNome[fn:length(partesNome) - 1], 0, 1)) : ''}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -28,8 +30,8 @@
   <header class="barra-topo">
     <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
     <div class="usuario">
-      <span>Nelson Junior</span>
-      <div class="avatar">NJ</div>
+      <span><c:out value="${sessionScope.funcionarioLogado.nome}"/></span>
+      <div class="avatar"><c:out value="${iniciais}"/></div>
     </div>
   </header>
 
