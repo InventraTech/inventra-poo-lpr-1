@@ -244,8 +244,11 @@ public class ProdutoDAO {
         return null;
     }
 
-    public int contarProdutos(){
-        String sql = "SELECT COUNT(*) FROM produto";
+    public static final String contarBase = """
+            select count(*) from funcionario
+            """;
+
+    public int contarProdutos(String sql){
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -259,5 +262,21 @@ public class ProdutoDAO {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    public int contarProdutosPadrao(){
+        return contarProdutos(contarBase);
+    }
+
+    public int contarCategorias(){
+        return contarProdutos("select count(distinct fk_categoria) from produto p");
+    }
+
+    public int contarMarcas(){
+        return contarProdutos("select count(distinct p.fk_marca ) from produto p");
+    }
+
+    public int contarFornecedores(){
+        return contarProdutos("select count(distinct fk_fornecedor) from produto");
     }
 }
