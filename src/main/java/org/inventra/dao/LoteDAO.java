@@ -229,8 +229,12 @@ public class LoteDAO {
         return null;
     }
 
-    public int contarLotes(){
-        String sql = "SELECT COUNT(*) FROM lote";
+    public static final String sqlBaseContador = """
+            SELECT count(*)
+            FROM lote l
+        """;
+
+    public int contarLotes(String sql){
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -244,5 +248,17 @@ public class LoteDAO {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    public int contarLotesPadrao(){
+        return contarLotes(sqlBaseContador);
+    }
+
+    public int contarLotesVencidos(){
+        return contarLotes(sqlBaseContador.concat("where dt_validade < current_date"));
+    }
+
+    public int contarLotesVencendo30dias(){
+        return contarLotes(sqlBaseContador.concat("where dt_validade >= current_date and dt_validade <= current_date + interval '30 days';"));
     }
 }
