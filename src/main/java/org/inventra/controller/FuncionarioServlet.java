@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FuncionarioDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FuncionarioREGEX;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.PrintWriter;
 
@@ -126,6 +127,8 @@ public class FuncionarioServlet extends HttpServlet {
             request.setAttribute("totalAtivos", totalAtivos);
             request.setAttribute("totalAdmins", totalAdmins);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/funcionarios/lista-funcionarios.jsp"

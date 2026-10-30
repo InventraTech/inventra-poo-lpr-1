@@ -47,6 +47,9 @@
     </div>
 
     <div class="topo-direita">
+      <a href="#modal-notificacoes" class="topo-sino" aria-label="Notificações" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </a>
       <div class="usuario">
         <div class="avatar"><c:out value="${iniciais}"/></div>
         <div class="usuario-info">
@@ -238,6 +241,40 @@
         Saída
       </a>
     </nav>
+  </div>
+
+  <%-- Painel do sino. Atributos enviados por NotificacaoLotes.carregar(request), chamado no servlet da tela: lotesProximosValidade (LoteDAO.listarLoteDataValidade), totalLotesVencidos, totalLotesVencendo30dias.
+       Abre/fecha por :target, igual aos outros modais. O prazo ("Em 12 dias") é calculado pelo script a partir de data-validade. --%>
+  <div class="modal modal-notificacoes" id="modal-notificacoes" role="dialog" aria-modal="true" aria-labelledby="modal-notificacoes-titulo">
+    <a href="#" class="modal-fundo" aria-label="Fechar"></a>
+    <section class="painel-notificacoes">
+      <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
+      <h2 class="notificacoes-titulo" id="modal-notificacoes-titulo">Notificações</h2>
+      <p class="notificacoes-resumo">
+        <strong><c:out value="${totalLotesVencidos}"/></strong> vencido(s) &middot;
+        <strong><c:out value="${totalLotesVencendo30dias}"/></strong> vencendo em até 30 dias
+      </p>
+
+      <ul class="notificacoes-lista">
+        <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
+          <c:if test="${not empty l.dt_validade}">
+            <li class="notificacao" data-validade="${l.dt_validade}">
+              <div class="notificacao-texto">
+                <strong><c:out value="${l.produto}"/></strong>
+                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+              </div>
+              <span class="notificacao-prazo"></span>
+            </li>
+          </c:if>
+        </c:forEach>
+      </ul>
+      <c:if test="${empty requestScope.lotesProximosValidade}">
+        <p class="notificacoes-vazio">Nenhum lote com validade cadastrada.</p>
+      </c:if>
+
+      <a href="${ctx}/lote?filtro=validade_crescente" class="notificacoes-ver-todos">Ver todos os lotes</a>
+    </section>
   </div>
 
   <div class="modal" id="modal-funcionario" role="dialog" aria-modal="true" aria-labelledby="modal-funcionario-titulo">
@@ -513,6 +550,22 @@
       document.querySelectorAll('a[href^="#modal-"]').forEach(link => {
         link.addEventListener('click', () => { retorno = link; });
       });
+      // ---- Notificações: prazo de cada lote (mesmos limites da tela de lotes: vencido < 0, vencendo até 30 dias) ----
+      {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        document.querySelectorAll('.notificacao[data-validade]').forEach(item => {
+          const [ano, mes, dia] = item.dataset.validade.split('-').map(Number);
+          const dias = Math.round((new Date(ano, mes - 1, dia) - hoje) / 86400000);
+          const plural = n => n + (n === 1 ? ' dia' : ' dias');
+          item.dataset.estado = dias < 0 ? 'vencido' : dias <= 30 ? 'vencendo' : 'vigente';
+          item.querySelector('.notificacao-prazo').textContent =
+            dias < 0 ? 'Venceu há ' + plural(-dias) :
+            dias === 0 ? 'Vence hoje' :
+            dias === 1 ? 'Vence amanhã' : 'Em ' + plural(dias);
+        });
+      }
+
       function modalAtual() {
         const el = document.getElementById(location.hash.slice(1));
         return el?.matches('.modal, .menu-lateral') ? el : null;

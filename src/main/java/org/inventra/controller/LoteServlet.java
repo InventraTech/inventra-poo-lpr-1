@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.LoteDAO;
 import org.inventra.model.LoteMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -121,6 +122,9 @@ public class LoteServlet extends HttpServlet{
             request.setAttribute("totalRegistrosVencidos", totalRegistrosVencidos);
             request.setAttribute("totalRegistrosVencendo30dias", totalRegistrosVencendo30dias);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/lotes/lista-lotes.jsp"

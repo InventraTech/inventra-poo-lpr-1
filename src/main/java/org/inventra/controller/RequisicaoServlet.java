@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.RequisicaoDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.RequisicaoMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -121,6 +122,9 @@ public class RequisicaoServlet extends HttpServlet{
             request.setAttribute("totalRegistrosAprovados", totalAprovados);
             request.setAttribute("totalRegistrosPendentes", totalPendentes);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/requisicao/lista-requisicoes.jsp"

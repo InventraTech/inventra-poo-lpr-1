@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ProdutoMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -129,6 +130,9 @@ public class ProdutoServlet extends HttpServlet {
             request.setAttribute("totalFornecedores", totalFornecedores);
             request.setAttribute("totalMarcas", totalMarcas);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/produto/lista-produtos.jsp"

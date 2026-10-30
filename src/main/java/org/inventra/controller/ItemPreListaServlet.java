@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ItemPreListaDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -112,6 +113,9 @@ public class ItemPreListaServlet extends HttpServlet {
             request.setAttribute("totalRegistrosSomados", totalRegistrosSomados);
             request.setAttribute("totalFornecedoresVinculados", totalFornecedoresVinculados);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/pre-lista/lista-itemprelista.jsp"

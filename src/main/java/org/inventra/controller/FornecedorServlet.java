@@ -10,6 +10,7 @@ import org.inventra.model.FornecedorMolde;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FornecedorREGEX;
 import org.inventra.utils.FuncionarioREGEX;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -96,6 +97,7 @@ public class FornecedorServlet extends HttpServlet{
             int totalRegistros = fornecedorDAO.contarFornecedores();
             double mediaNotaVPQ = fornecedorDAO.mediaNotaVPQFornecedores();
             int totalFornecedoresComProduto = fornecedorDAO.contarProdutosVinculados();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -109,6 +111,9 @@ public class FornecedorServlet extends HttpServlet{
             request.setAttribute("totalFornecedoresComProduto", totalFornecedoresComProduto);
             request.setAttribute("mediaNotaVPQ", mediaNotaVPQ);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
+
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/fornecedor/lista-fornecedores.jsp"
