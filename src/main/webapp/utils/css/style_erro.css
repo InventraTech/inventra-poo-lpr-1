@@ -1,0 +1,127 @@
+body {
+    font-family: "K2D", sans-serif;
+    background-color: white;
+    margin: 0%;
+    padding: 0%;
+    overflow-x: hidden;
+}
+#corpo{
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+#banner_principal{
+    position: relative;
+    z-index: 4;
+    padding: clamp(30px, 4.6vw, 90px) 0px 0px clamp(30px, 8vw, 150px);
+}
+#voltar{
+    display: inline-block;
+    line-height: 0;
+}
+#voltar img{
+    display: block;
+    width: clamp(100px, 6.7vw, 196px);
+    height: auto;
+}
+#frase{
+    margin: clamp(10px, 1.6vw, 30px) 0px 0px 0px;
+    color: #360082;
+    font-size: clamp(40px, 8.8vw, 170px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+}
+#texto{
+    max-width: 900px;
+}
+#texto p{
+    margin: 0;
+    color: #000000;
+    font-size: clamp(20px, 1.95vw, 38px);
+    font-weight: 400;
+}
+#faixa_roxa{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: clamp(78px, 10.45vw, 196px);
+    background-color: #6D08FE;
+    z-index: 1;
+    pointer-events: none;
+}
+#meio_circulo{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: clamp(160px, 28vw, 540px);
+    height: clamp(160px, 28vw, 540px);
+    background-color: #ECC506;
+    border-radius: 0px 100% 0px 0px;
+    z-index: 2;
+    pointer-events: none;
+}
+#personagem{
+    position: absolute;
+    right: clamp(54px, 7.31vw, 137px);
+    bottom: clamp(28px, 3.78vw, 71px);
+    width: clamp(220px, 29.6vw, 554px);
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+}
+
+@media (max-width: 1415px){
+    #banner_principal{
+        padding-left: clamp(30px, 6vw, 100px);
+    }
+}
+
+@media (max-width: 1000px){
+    #personagem{
+        right: clamp(22px, 2.96vw, 55px);
+    }
+}
+
+@media (max-width: 900px){
+    #faixa_roxa{
+        height: clamp(78px, 16.25vw, 141px);
+    }
+    #meio_circulo{
+        width: clamp(140px, 34vw, 300px);
+        height: clamp(140px, 34vw, 300px);
+    }
+    #personagem{
+        right: 5vw;
+        bottom: clamp(28px, 5.87vw, 51px);
+        width: clamp(220px, 46vw, 400px);
+    }
+}
+
+@media (max-width: 768px){
+    #banner_principal{
+        padding: 30px 20px 0px 20px;
+    }
+    #frase{
+        font-size: clamp(40px, 12vw, 90px);
+    }
+    #texto p{
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 600px){
+    #faixa_roxa{
+        height: clamp(71px, 21.9vw, 106px);
+    }
+    #meio_circulo{
+        width: 38vw;
+        height: 38vw;
+    }
+    #personagem{
+        right: 4vw;
+        bottom: clamp(26px, 7.91vw, 38px);
+        width: clamp(200px, 62vw, 300px);
+    }
+}
