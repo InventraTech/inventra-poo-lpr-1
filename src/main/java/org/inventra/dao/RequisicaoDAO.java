@@ -235,8 +235,11 @@ public class RequisicaoDAO {
         return null;
     }
 
-    public int contarRequisicoes(){
-        String sql = "SELECT COUNT(*) FROM requisicao";
+    public static final String contadorBase = """
+            select count(*) from requisicao r
+            """;
+
+    public int contarRequisicoes(String sql){
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -250,5 +253,25 @@ public class RequisicaoDAO {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    public int contarRequisicoesPadrao(){
+        return contarRequisicoes(contadorBase);
+    }
+
+    public int contarRequisicoesPendentes(){
+        return contarRequisicoes(contadorBase.concat("where r.status = 'Pendente'"));
+    }
+
+    public int contarRequisicoesAprovadas(){
+        return contarRequisicoes(contadorBase.concat("where r.status = 'Aprovada'"));
+    }
+
+    public int contarRequisicoesFiltro(boolean status){
+        if (status){
+            return contarRequisicoes(contadorBase.concat("where r.status = 'Aprovada'"));
+        } else {
+            return contarRequisicoes(contadorBase.concat("where r.status = 'Pendente'"));
+        }
     }
 }

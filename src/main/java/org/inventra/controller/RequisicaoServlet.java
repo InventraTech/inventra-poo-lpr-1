@@ -105,7 +105,9 @@ public class RequisicaoServlet extends HttpServlet{
                 }
             }
 
-            int totalRegistros = requisicaoDAO.contarRequisicoes();
+            int totalRegistros = requisicaoDAO.contarRequisicoesPadrao();
+            int totalAprovados = requisicaoDAO.contarRequisicoesFiltro(true);
+            int totalPendentes = requisicaoDAO.contarRequisicoesFiltro(false);
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -116,6 +118,8 @@ public class RequisicaoServlet extends HttpServlet{
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistrosAprovados", totalAprovados);
+            request.setAttribute("totalRegistrosPendentes", totalPendentes);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(

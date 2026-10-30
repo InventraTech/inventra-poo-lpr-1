@@ -121,3 +121,261 @@
     transform: none;
   }
 }
+
+/* ==========================================================
+   HEADER INVENTRA (só nesta tela)
+   Para usar nas outras telas, mova este bloco para o base.css.
+   ========================================================== */
+:root {
+  --altura-topo: 84px;
+  --amarelo: #ffd93b;
+  --roxo: #8b5cf6;
+}
+
+.barra-inventra {
+  position: relative;
+  isolation: isolate;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  height: var(--altura-topo);
+  padding: 0 2rem 0 1.5rem;
+  background: #efe9ff;
+  border-bottom: 0;
+  box-shadow: none;
+  color: #1c1c28;
+}
+
+/* faixa roxa da direita, com a curva na ponta esquerda */
+.barra-inventra::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(420px, 38%, 620px);
+  background: linear-gradient(90deg, #5c10ea 0%, #4d1ccf 55%, #3e1e99 100%);
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 84' preserveAspectRatio='none'%3E%3Cpath d='M0 84L0 80Q0 75 5 75L70 75A28 28 0 0 0 98 47L98 40A40 40 0 0 1 138 0L170 0L170 84Z'/%3E%3C/svg%3E") left top / 170px 100% no-repeat,
+    linear-gradient(#000, #000) right top / calc(100% - 169px) 100% no-repeat;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 84' preserveAspectRatio='none'%3E%3Cpath d='M0 84L0 80Q0 75 5 75L70 75A28 28 0 0 0 98 47L98 40A40 40 0 0 1 138 0L170 0L170 84Z'/%3E%3C/svg%3E") left top / 170px 100% no-repeat,
+    linear-gradient(#000, #000) right top / calc(100% - 169px) 100% no-repeat;
+}
+
+/* esquerda: menu + marca (ficam por baixo do menu lateral quando ele abre) */
+.topo-marca {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex-shrink: 0;
+}
+
+.barra-inventra .botao-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ddd3f7;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #4B0090;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.barra-inventra .botao-menu:hover {
+  background: #fff;
+  border-color: #b9a4f0;
+}
+
+.barra-inventra .botao-menu:focus-visible,
+.topo-logo:focus-visible {
+  outline: 2px solid #4A25FF;
+  outline-offset: 2px;
+}
+
+.topo-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #2a1060;
+  text-decoration: none;
+}
+
+.topo-logo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.topo-logo-nome {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* direita: usuário */
+.topo-direita {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.barra-inventra .usuario {
+  gap: 0.8rem;
+}
+
+.barra-inventra .avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border: 2px solid #9d7bff;
+  font-size: 1.05rem;
+}
+
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.usuario-info strong {
+  max-width: 190px;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usuario-info span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+}
+
+/* o menu lateral acompanha a altura do novo header */
+.menu-painel {
+  padding-top: calc(var(--altura-topo) + 0.5rem);
+}
+
+.menu-fechar {
+  left: 1.5rem;
+  justify-content: center;
+  width: 48px;
+  height: var(--altura-topo);
+}
+
+/* ==========================================================
+   DETALHES AMARELO / ROXO
+   ========================================================== */
+
+/* cards: a cor do detalhe alterna entre amarelo e roxo */
+.cartao:nth-child(odd)  { --acento: var(--amarelo); }
+.cartao:nth-child(even) { --acento: var(--roxo); }
+
+/* em 2 colunas alterna em xadrez (A B / B A / A B) */
+@media (min-width: 701px) {
+  .cartao:nth-child(4n+3) { --acento: var(--roxo); }
+  .cartao:nth-child(4n+4) { --acento: var(--amarelo); }
+}
+
+/* avatar claro, com sombra deslocada (amarela ou roxa), como adesivo */
+.cartao-logo {
+  background: #e1d5fd;
+  color: #3d0986;
+  box-shadow: 4px 4px 0 var(--acento);
+}
+
+/* divisória pontilhada amarela */
+.cartao-contatos,
+.cartao .cartao-itens {
+  border-bottom: 2px dashed #f1d77a;
+}
+
+/* bignumbers: linha colorida na base */
+.bignumero {
+  position: relative;
+  overflow: hidden;
+}
+
+.bignumero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--amarelo);
+}
+
+.bignumero:nth-child(even)::after {
+  background: var(--roxo);
+}
+
+/* bignumbers parados: sem salto ao passar o mouse */
+.bignumero:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(75, 0, 144, 0.08);
+}
+
+/* botão "Novo fornecedor": cor sólida, sem degradê */
+.cabecalho-pagina .acoes-pagina .botao {
+  background: #5a22e0;
+  white-space: nowrap;
+}
+
+.cabecalho-pagina .acoes-pagina .botao:hover {
+  background: #4818c4;
+}
+
+/* botão exportar: branco, só o ícone fica verde */
+.botao-exportar {
+  border: 1px solid #e2e4ef;
+  background: #fff;
+  color: #1c1c28;
+}
+
+.botao-exportar:hover {
+  border-color: #b7dcc7;
+  background: #f3faf6;
+}
+
+@media (max-width: 900px) {
+  .barra-inventra {
+    padding: 0 1rem;
+  }
+
+  .barra-inventra::before {
+    width: 400px;
+  }
+}
+
+@media (max-width: 700px) {
+  .topo-logo-nome,
+  .usuario-info {
+    display: none;
+  }
+
+  .barra-inventra::before {
+    width: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .barra-inventra::before {
+    width: 170px;
+  }
+}
+
+/* título + botão não estouram em tela pequena */
+@media (max-width: 600px) {
+  .cabecalho-pagina {
+    flex-wrap: wrap;
+    gap: 1rem;
+    min-height: 0;
+  }
+}
