@@ -2,6 +2,12 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
+<%
+  String pastaCss = application.getRealPath("/utils/css");
+  request.setAttribute("vBase", pastaCss == null ? 0L : new java.io.File(pastaCss, "base.css").lastModified());
+  request.setAttribute("vCartoes", pastaCss == null ? 0L : new java.io.File(pastaCss, "fornecedores.css").lastModified());
+%>
 <c:set var="partesNome" value="${fn:split(fn:trim(sessionScope.funcionarioLogado.nome), ' ')}" />
 <c:set var="iniciais" value="${fn:toUpperCase(fn:substring(partesNome[0], 0, 1))}${fn:length(partesNome) gt 1 ? fn:toUpperCase(fn:substring(partesNome[fn:length(partesNome) - 1], 0, 1)) : ''}" />
 <!DOCTYPE html>
@@ -11,8 +17,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pré-listas | Inventra</title>
   <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
-  <link rel="stylesheet" href="${ctx}/utils/css/base.css">
-  <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css">
+  <link rel="stylesheet" href="${ctx}/utils/css/base.css?v=${vBase}">
+  <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/preLista.css">
   <style>
     .form-filtro { display: flex; gap: .5rem; }
@@ -30,11 +36,25 @@
        Propriedades do ItemPreListaMolde (getters): id_item_prelista, fornecedor, produto, qtd.
        ATENÇÃO: o servlet lê os parâmetros "fk_prduto" (sem o "o") e, na edição completa, o ID do item em "id_fornecedor". --%>
 
-  <header class="barra-topo">
-    <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
-    <div class="usuario">
-      <span><c:out value="${sessionScope.funcionarioLogado.nome}"/></span>
-      <div class="avatar"><c:out value="${iniciais}"/></div>
+  <header class="barra-topo barra-inventra">
+    <div class="topo-marca">
+      <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </a>
+      <a href="${ctx}/fornecedor" class="topo-logo" aria-label="Inventra">
+        <img src="${ctx}/utils/imagens/imagotipo.png" alt="" class="topo-logo-img">
+        <span class="topo-logo-nome">Inventra</span>
+      </a>
+    </div>
+
+    <div class="topo-direita">
+      <div class="usuario">
+        <div class="avatar"><c:out value="${iniciais}"/></div>
+        <div class="usuario-info">
+          <strong><c:out value="${sessionScope.funcionarioLogado.nome}"/></strong>
+          <span>Administrador</span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -42,7 +62,6 @@
 
     <section class="cabecalho-pagina">
       <div class="titulo-com-logo">
-        <img src="${ctx}/utils/imagens/imagotipo.png" alt="Logo da empresa" class="logo-pagina">
         <div class="titulo-pagina">
           <h1>Pré-lista</h1>
           <p>Sugestões de reposição para produtos com estoque baixo</p>
@@ -64,24 +83,24 @@
 
     <section class="bignumeros">
       <div class="bignumero">
-        <div class="bignumero-icone"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6L22 7H5"/></svg></div>
+        <div class="bignumero-icone"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Produtos para repor</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Pré listas cadastradas</span>
+          <strong class="bignumero-valor" title="Total de registros">${totalRegistros}</strong>
         </div>
       </div>
       <div class="bignumero">
         <div class="bignumero-icone"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.7a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Fornecedores</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Fornecedores Vinculados</span>
+          <strong class="bignumero-valor" title="Fornecedores vinculados">${totalFornecedoresVinculados}</strong>
         </div>
       </div>
       <div class="bignumero">
-        <div class="bignumero-icone"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <div class="bignumero-icone"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6L22 7H5"/></svg></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Custo estimado</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Produtos para repor</span>
+          <strong class="bignumero-valor" title="Informação não disponível">${totalRegistrosSomados}</strong>
         </div>
       </div>
     </section>
@@ -105,7 +124,7 @@
         <input type="hidden" name="filtro" value="${fn:escapeXml(filtroSelecionado)}">
         <button class="botao botao-exportar" type="submit" title="Baixar CSV compatível com Excel">
           <svg class="icone-exportar" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="8" y="3" width="14" height="18" rx="1.5" fill="#fff"/>
+            <rect x="8" y="3" width="14" height="18" rx="1.5" fill="#fff" stroke="#107c41" stroke-width="1.4"/>
             <path d="M12 8h7M12 12h7M12 16h7" stroke="#107c41" stroke-width="1.4"/>
             <rect x="2" y="6.5" width="11" height="11" rx="1.5" fill="#107c41" stroke="#fff"/>
             <path d="M5 9.5l5 5M10 9.5l-5 5" stroke="#fff" stroke-width="1.4"/>

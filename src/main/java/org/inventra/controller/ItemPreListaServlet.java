@@ -95,7 +95,10 @@ public class ItemPreListaServlet extends HttpServlet {
                 }
             }
 
-            int totalRegistros = itemPreListaDAO.contarItensPreLista();
+            int totalRegistros = itemPreListaDAO.contarItensPreListaPadrao();
+            int totalRegistrosSomados = itemPreListaDAO.somarUnidadesItensPreListaPadrao();
+            int totalFornecedoresVinculados = itemPreListaDAO.contarFornecedoresVinculados();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -105,7 +108,9 @@ public class ItemPreListaServlet extends HttpServlet {
             request.setAttribute("itensprelista", itensPreLista);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
-            request.setAttribute("totalRegistros", totalRegistros);
+            request.setAttribute("totalRegistros", totalRegistros );
+            request.setAttribute("totalRegistrosSomados", totalRegistrosSomados);
+            request.setAttribute("totalFornecedoresVinculados", totalFornecedoresVinculados);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
