@@ -187,21 +187,34 @@ public class FornecedorDAO {
         return null;
     }
 
-    public int contarFornecedores(){
-        String sql = "select count(*) from fornecedores";
 
+    public double funcaoDeGrupoFornecedor(String sql){
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery()){
 
             if (rs.next()) {
-                return rs.getInt(1);
+                return rs.getDouble(1);
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return 0;
+        return 0.0;
     }
+
+    public int contarFornecedores(){
+        return (int) funcaoDeGrupoFornecedor("select count(*) from fornecedor");
+    }
+
+    public double mediaNotaVPQFornecedores(){
+        return funcaoDeGrupoFornecedor("select round(AVG(f.nota_vpq)::numeric, 2) from fornecedor f");
+    }
+
+    public int contarProdutosVinculados(){
+        return (int) funcaoDeGrupoFornecedor("select count(distinct p.fk_fornecedor) from produto p where p.fk_fornecedor is not null");
+    }
+
+
 }
 

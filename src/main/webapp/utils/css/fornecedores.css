@@ -1,53 +1,3 @@
-.campo-cnpj{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
-}
-
-
-/*Fornecedores*/
-.bignumeros {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.bignumero {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  border: 1px solid #ece9f6;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(75, 0, 144, 0.08);
-}
-
-.bignumero-icone {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #ece4ff;
-}
-
-.bignumero-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.bignumero-rotulo {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.bignumero-valor {
-  font-size: 1.2rem;
-  color: #1c1c28;
-}
-
-
-/* ---------- Cards dos fornecedores ---------- */
 .lista-cartoes {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -62,9 +12,19 @@
   background: #f8f6ff;
   border: 1px solid #e8e4f3;
   border-radius: 16px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
-/* topo: logo, nome/CNPJ e selo */
+.cartao:hover {
+  transform: translateY(-3px);
+  border-color: #d9ccf5;
+  box-shadow: 0 10px 24px rgba(75, 0, 144, 0.14);
+}
+
+.cartao[hidden] {
+  display: none;
+}
+
 .cartao-topo {
   display: flex;
   align-items: flex-start;
@@ -79,7 +39,7 @@
   width: 50px;
   height: 50px;
   border-radius: 10px;
-  background: #5b0eaa;
+  background: #210150;
   color: #fff;
   font-size: 1.1rem;
   font-weight: 600;
@@ -101,20 +61,6 @@
   color: #6b6880;
 }
 
-.selo-status {
-  padding: 0.25rem 1.4rem;
-  border-radius: 999px;
-  background: #4B0090;
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.selo-inativo {
-  background: #f9b814;
-}
-
-/* contatos */
 .cartao-contatos {
   display: flex;
   flex-direction: column;
@@ -137,7 +83,6 @@
   height: 20px;
 }
 
-/* rodapé */
 .cartao-rodape {
   display: flex;
   align-items: flex-end;
@@ -161,70 +106,458 @@
   gap: 1rem;
 }
 
-.botao-cartao {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s;
+@media (max-width: 700px) {
+  .lista-cartoes {
+    grid-template-columns: 1fr;
+  }
 }
 
-.botao-cartao svg {
-  width: 100%;
-  height: 100%;
+@media (prefers-reduced-motion: reduce) {
+  .cartao {
+    transition: none;
+  }
+
+  .cartao:hover {
+    transform: none;
+  }
 }
 
-.botao-cartao:hover {
-  transform: scale(1.15);
+/* ==========================================================
+   HEADER INVENTRA (só nesta tela)
+   Para usar nas outras telas, mova este bloco para o base.css.
+   ========================================================== */
+:root {
+  --altura-topo: 84px;
+  --amarelo: #ffd93b;
+  --roxo: #8b5cf6;
 }
 
-.botao-cartao-editar {
-  color: #2a1a5e;
+.barra-inventra {
+  position: relative;
+  isolation: isolate;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  height: var(--altura-topo);
+  padding: 0 2rem 0 1.5rem;
+  background: #efe9ff;
+  border-bottom: 0;
+  box-shadow: none;
+  color: #1c1c28;
 }
 
-.botao-cartao-excluir {
-  color: #e0112b;
+/* faixa roxa da direita, com a curva na ponta esquerda */
+.barra-inventra::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(420px, 38%, 620px);
+  background: linear-gradient(90deg, #5c10ea 0%, #4d1ccf 55%, #3e1e99 100%);
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 84' preserveAspectRatio='none'%3E%3Cpath d='M0 84L0 80Q0 75 5 75L70 75A28 28 0 0 0 98 47L98 40A40 40 0 0 1 138 0L170 0L170 84Z'/%3E%3C/svg%3E") left top / 170px 100% no-repeat,
+    linear-gradient(#000, #000) right top / calc(100% - 169px) 100% no-repeat;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 84' preserveAspectRatio='none'%3E%3Cpath d='M0 84L0 80Q0 75 5 75L70 75A28 28 0 0 0 98 47L98 40A40 40 0 0 1 138 0L170 0L170 84Z'/%3E%3C/svg%3E") left top / 170px 100% no-repeat,
+    linear-gradient(#000, #000) right top / calc(100% - 169px) 100% no-repeat;
 }
 
-.acoes-pagina {
+/* esquerda: menu + marca (ficam por baixo do menu lateral quando ele abre) */
+.topo-marca {
   display: flex;
-  gap: 0.75rem;
-}
-
-.acoes-pagina .botao {
-  display: inline-flex;
   align-items: center;
-  justify-content: right;
-  gap: 8px;
-  line-height: 1;
+  gap: 1.75rem;
+  flex-shrink: 0;
 }
 
-.botao {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bignumero-icone {
+.barra-inventra .botao-menu {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ddd3f7;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #4B0090;
+  transition: background 0.2s, border-color 0.2s;
 }
 
-.bignumero-icone img {
-  width: 28px;
-  height: 28px;
+.barra-inventra .botao-menu:hover {
+  background: #fff;
+  border-color: #b9a4f0;
+}
+
+.barra-inventra .botao-menu:focus-visible,
+.topo-logo:focus-visible {
+  outline: 2px solid #4A25FF;
+  outline-offset: 2px;
+}
+
+.topo-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #2a1060;
+  text-decoration: none;
+}
+
+.topo-logo-img {
+  width: 44px;
+  height: 44px;
   object-fit: contain;
+  flex-shrink: 0;
+}
+
+.topo-logo-nome {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* direita: usuário */
+.topo-direita {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.barra-inventra .usuario {
+  gap: 0.8rem;
+}
+
+.barra-inventra .avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border: 2px solid #9d7bff;
+  font-size: 1.05rem;
+}
+
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.usuario-info strong {
+  max-width: 190px;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usuario-info span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+}
+
+/* o menu lateral acompanha a altura do novo header */
+.menu-painel {
+  padding-top: calc(var(--altura-topo) + 0.5rem);
+}
+
+.menu-fechar {
+  left: 1.5rem;
+  justify-content: center;
+  width: 48px;
+  height: var(--altura-topo);
+}
+
+/* ==========================================================
+   DETALHES AMARELO / ROXO
+   ========================================================== */
+
+/* cards: a cor do detalhe alterna entre amarelo e roxo */
+.cartao:nth-child(odd)  { --acento: var(--amarelo); }
+.cartao:nth-child(even) { --acento: var(--roxo); }
+
+/* em 2 colunas alterna em xadrez (A B / B A / A B) */
+@media (min-width: 701px) {
+  .cartao:nth-child(4n+3) { --acento: var(--roxo); }
+  .cartao:nth-child(4n+4) { --acento: var(--amarelo); }
+}
+
+/* avatar claro, com sombra deslocada (amarela ou roxa), como adesivo */
+.cartao-logo {
+  background: #e1d5fd;
+  color: #3d0986;
+  box-shadow: 4px 4px 0 var(--acento);
+}
+
+/* divisória pontilhada amarela */
+.cartao-contatos,
+.cartao .cartao-itens {
+  border-bottom: 2px dashed #f1d77a;
+}
+
+/* bignumbers: linha colorida na base */
+.bignumero {
+  position: relative;
+  overflow: hidden;
+}
+
+.bignumero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--amarelo);
+}
+
+.bignumero:nth-child(even)::after {
+  background: var(--roxo);
+}
+
+/* bignumbers parados: sem salto ao passar o mouse */
+.bignumero:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(75, 0, 144, 0.08);
+}
+
+/* botão "Novo fornecedor": cor sólida, sem degradê */
+.cabecalho-pagina .acoes-pagina .botao {
+  background: #5a22e0;
+  white-space: nowrap;
+}
+
+.cabecalho-pagina .acoes-pagina .botao:hover {
+  background: #4818c4;
+}
+
+/* botão exportar: branco, só o ícone fica verde */
+.botao-exportar {
+  border: 1px solid #e2e4ef;
+  background: #fff;
+  color: #1c1c28;
+}
+
+.botao-exportar:hover {
+  border-color: #b7dcc7;
+  background: #f3faf6;
+}
+
+@media (max-width: 900px) {
+  .barra-inventra {
+    padding: 0 1rem;
+  }
+
+  .barra-inventra::before {
+    width: 400px;
+  }
 }
 
 @media (max-width: 700px) {
-  .bignumeros {
-    grid-template-columns: 1fr;
+  .topo-logo-nome,
+  .usuario-info {
+    display: none;
   }
 
-  .lista-cartoes {
-    grid-template-columns: 1fr;
+  .barra-inventra::before {
+    width: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .barra-inventra::before {
+    width: 170px;
+  }
+}
+
+/* título + botão não estouram em tela pequena */
+@media (max-width: 600px) {
+  .cabecalho-pagina {
+    flex-wrap: wrap;
+    gap: 1rem;
+    min-height: 0;
+  }
+}
+
+/* ==========================================================
+   NOTIFICAÇÕES (sino do header + painel de lotes na validade)
+   ========================================================== */
+.topo-direita {
+  gap: 1.1rem;
+}
+
+.topo-sino {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.topo-sino:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.topo-sino:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.topo-sino svg {
+  width: 22px;
+  height: 22px;
+}
+
+
+/* painel: cai logo abaixo do header, no canto direito */
+.modal-notificacoes {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: calc(var(--altura-topo) + 0.6rem) 1.5rem 0;
+  background: transparent; /* sem escurecer a tela; clicar fora ainda fecha */
+}
+
+.painel-notificacoes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: min(420px, 100%);
+  max-height: calc(100vh - var(--altura-topo) - 2rem);
+  overflow-y: auto;
+  padding: 1.4rem 1.4rem 1.2rem;
+  border: 1px solid #e8e4f3;
+  border-top: 4px solid var(--amarelo);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(75, 0, 144, 0.18);
+}
+
+.notificacoes-titulo {
+  padding-right: 2rem;
+  color: #4B0090;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.notificacoes-resumo {
+  margin: 0;
+  color: #6b6880;
+  font-size: 0.85rem;
+}
+
+.notificacoes-resumo strong {
+  color: #111;
+}
+
+.notificacoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notificacao {
+  --estado: #6d3fe8;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #e8e4f3;
+  border-left: 4px solid var(--estado);
+  border-radius: 12px;
+  background: #f8f6ff;
+}
+
+.notificacao[data-estado="vencido"] {
+  --estado: #e0112b;
+}
+
+.notificacao[data-estado="vencendo"] {
+  --estado: #f5b800;
+}
+
+.notificacao-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  color: #6b6880;
+  font-size: 0.8rem;
+}
+
+.notificacao-texto strong {
+  overflow: hidden;
+  color: #111;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notificacao-prazo {
+  flex-shrink: 0;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--estado);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.notificacao[data-estado="vencendo"] .notificacao-prazo {
+  color: #3a2a00;
+}
+
+.notificacao-prazo:empty {
+  display: none;
+}
+
+.notificacoes-vazio {
+  margin: 0;
+  padding: 1rem 0;
+  color: #6b6880;
+  text-align: center;
+}
+
+.notificacoes-ver-todos {
+  align-self: flex-end;
+  color: #4A25FF;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notificacoes-ver-todos:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .modal-notificacoes {
+    padding: calc(var(--altura-topo) + 0.5rem) 0.75rem 0;
+  }
+}
+
+/* celular: o sino fica na divisa claro/roxo, então ganha fundo sólido para aparecer nos dois lados */
+@media (max-width: 700px) {
+  .topo-sino {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: #5a1fe0;
+  }
+
+  .topo-sino:hover {
+    background: #4818c4;
   }
 }

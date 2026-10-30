@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.RequisicaoDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.RequisicaoMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,7 +34,7 @@ public class RequisicaoServlet extends HttpServlet{
         String acao = request.getParameter("acao");
 
         //Definindo a páginação:
-        int limite = 6;
+        int limite = 4;
         int paginaAtual = 1;
 
         String pagina = request.getParameter("pagina");
@@ -105,7 +106,9 @@ public class RequisicaoServlet extends HttpServlet{
                 }
             }
 
-            int totalRegistros = requisicaoDAO.contarRequisicoes();
+            int totalRegistros = requisicaoDAO.contarRequisicoesPadrao();
+            int totalAprovados = requisicaoDAO.contarRequisicoesFiltro(true);
+            int totalPendentes = requisicaoDAO.contarRequisicoesFiltro(false);
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -114,11 +117,17 @@ public class RequisicaoServlet extends HttpServlet{
 
             request.setAttribute("requisicoes", requisicoes);
             request.setAttribute("paginaAtual", paginaAtual);
+            request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistrosAprovados", totalAprovados);
+            request.setAttribute("totalRegistrosPendentes", totalPendentes);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
+
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-requisicoes.jsp"
+                    "/WEB-INF/requisicao/lista-requisicoes.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

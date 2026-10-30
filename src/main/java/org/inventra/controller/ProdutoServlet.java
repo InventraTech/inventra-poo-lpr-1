@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ProdutoMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -109,7 +110,11 @@ public class ProdutoServlet extends HttpServlet {
                 }
             }
 
-            int totalRegistros = produtoDAO.contarProdutos();
+            int totalRegistros = produtoDAO.contarProdutosPadrao();
+            int totalCategorias = produtoDAO.contarCategorias();
+            int totalFornecedores = produtoDAO.contarFornecedores();
+            int totalMarcas = produtoDAO.contarMarcas();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -120,10 +125,17 @@ public class ProdutoServlet extends HttpServlet {
             request.setAttribute("produtos", produtos);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
+            request.setAttribute("totalCategorias", totalCategorias);
+            request.setAttribute("totalFornecedores", totalFornecedores);
+            request.setAttribute("totalMarcas", totalMarcas);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
+
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-produtos.jsp"
+                    "/WEB-INF/produto/lista-produtos.jsp"
             ).forward(request, response);
         }
         catch (NumberFormatException e){

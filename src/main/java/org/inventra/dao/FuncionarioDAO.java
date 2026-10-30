@@ -342,8 +342,11 @@ public class FuncionarioDAO {
         return null;
     }
 
-    public int contarFuncionarios(){
-        String sql = "SELECT COUNT(*) FROM funcionario";
+    public static final String contadorBase = """
+            select count(*) from funcionario
+            """;
+
+    public int contarFuncionarios(String sql){
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -359,4 +362,19 @@ public class FuncionarioDAO {
         return 0;
     }
 
+    public int contarFuncionariosPadrao(){
+        return contarFuncionarios(contadorBase);
+    }
+
+    public int contarFuncionáriosAdmins(){
+        return contarFuncionarios(contadorBase.concat(" where is_admin = true"));
+    }
+
+    public int contarSetores(){
+        return contarFuncionarios("select count(distinct f.fk_setor ) from funcionario f ");
+    }
+
+    public int contarAtivos(){
+        return contarFuncionarios("select count(*) from funcionario f where status = 'Ativo'");
+    }
 }

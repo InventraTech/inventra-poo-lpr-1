@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.LoteDAO;
-import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.LoteMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,7 +33,7 @@ public class LoteServlet extends HttpServlet{
         String filtroSelecionado = request.getParameter("filtro");
         String acao = request.getParameter("acao");
         //Definindo a páginação:
-        int limite = 6;
+        int limite = 4;
         int paginaAtual = 1;
 
         String pagina = request.getParameter("pagina");
@@ -105,7 +105,10 @@ public class LoteServlet extends HttpServlet{
                 }
             }
 
-            int totalRegistros = loteDao.contarLotes();
+            int totalRegistros = loteDao.contarLotesPadrao();
+            int totalRegistrosVencidos = loteDao.contarLotesVencidos();
+            int totalRegistrosVencendo30dias = loteDao.contarLotesVencendo30dias();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -115,10 +118,16 @@ public class LoteServlet extends HttpServlet{
             request.setAttribute("lotes", lotes);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros);
+            request.setAttribute("totalRegistrosVencidos", totalRegistrosVencidos);
+            request.setAttribute("totalRegistrosVencendo30dias", totalRegistrosVencendo30dias);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
+
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-lotes.jsp"
+                    "/WEB-INF/lotes/lista-lotes.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

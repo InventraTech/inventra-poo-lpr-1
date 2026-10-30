@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ItemPreListaDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
+import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -95,7 +96,10 @@ public class ItemPreListaServlet extends HttpServlet {
                 }
             }
 
-            int totalRegistros = itemPreListaDAO.contarItensPreLista();
+            int totalRegistros = itemPreListaDAO.contarItensPreListaPadrao();
+            int totalRegistrosSomados = itemPreListaDAO.somarUnidadesItensPreListaPadrao();
+            int totalFornecedoresVinculados = itemPreListaDAO.contarFornecedoresVinculados();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -105,10 +109,16 @@ public class ItemPreListaServlet extends HttpServlet {
             request.setAttribute("itensprelista", itensPreLista);
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalRegistros", totalRegistros );
+            request.setAttribute("totalRegistrosSomados", totalRegistrosSomados);
+            request.setAttribute("totalFornecedoresVinculados", totalFornecedoresVinculados);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
+            //Notificações do sino do header (lotes mais próximos da validade)
+            NotificacaoLotes.carregar(request);
+
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-itemprelista.jsp"
+                    "/WEB-INF/pre-lista/lista-itemprelista.jsp"
             ).forward(request, response);
 
         } catch (NumberFormatException e){

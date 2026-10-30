@@ -28,7 +28,6 @@ public class ItemPreListaDAO {
 
             stmt.executeUpdate();
 
-
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inserir um novo item pre-lista no banco de dados", e);
         }
@@ -198,8 +197,7 @@ public class ItemPreListaDAO {
         return null;
     }
 
-    public int contarItensPreLista(){
-        String sql = "SELECT COUNT(*) FROM Item_pre_lista";
+    public int contarItensPreLista(String sql){
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -214,4 +212,22 @@ public class ItemPreListaDAO {
         }
         return 0;
     }
+
+    public int contarItensPreListaPadrao(){
+        return contarItensPreLista("select count(*) from item_pre_lista");
+    }
+
+    public int somarUnidadesItensPreListaPadrao(){
+        return contarItensPreLista("select sum(qtd) from item_pre_lista ipl");
+    }
+
+    public int contarFornecedoresVinculados(){
+        return contarItensPreLista("""
+                SELECT COUNT(DISTINCT f.nome_juridico) AS total_fornecedores
+                FROM Item_pre_lista i
+                JOIN fornecedor f ON i.fk_fornecedor = f.id_fornecedor;
+                """);
+    }
+
+
 }

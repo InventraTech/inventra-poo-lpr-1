@@ -1,0 +1,87 @@
+.bignumeros-quatro {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.caixa-tabela {
+  overflow-x: auto;
+  border: 1px solid #e8e4f3;
+  border-radius: 16px;
+  background: #f8f6ff;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.tabela th {
+  padding: 1rem 1.1rem;
+  background: #ece4ff;
+  color: #4B0090;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tabela td {
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid #e3dff0;
+  color: #1c1c28;
+  white-space: nowrap;
+}
+
+.tabela tbody tr {
+  transition: background 0.2s;
+}
+
+.tabela tbody tr:hover {
+  background: #efe9ff;
+}
+
+.tabela .acoes {
+  text-align: right;
+}
+
+.tabela-acoes {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tabela .estado-vazio {
+  height: 220px;
+  text-align: center;
+  white-space: normal;
+  color: #6b6880;
+}
+
+.estado-vazio strong,
+.estado-vazio span {
+  display: block;
+}
+
+.estado-vazio strong {
+  margin-bottom: 0.4rem;
+  font-size: 1.05rem;
+  color: #4B0090;
+}
+
+@media (max-width: 1050px) {
+  .bignumeros-quatro {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .bignumeros-quatro {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabela tbody tr {
+    transition: none;
+  }
+}
