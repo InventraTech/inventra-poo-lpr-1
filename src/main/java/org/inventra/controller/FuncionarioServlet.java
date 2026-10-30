@@ -10,8 +10,6 @@ import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.FuncionarioREGEX;
 
 import java.io.PrintWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -108,7 +106,11 @@ public class FuncionarioServlet extends HttpServlet {
                 }
             }
 
-            int totalRegistros = funcionarioDAO.contarFuncionarios();
+            int totalRegistros = funcionarioDAO.contarFuncionariosPadrao();
+            int totalAdmins = funcionarioDAO.contarFuncionáriosAdmins();
+            int totalSetores = funcionarioDAO.contarSetores();
+            int totalAtivos = funcionarioDAO.contarAtivos();
+
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -120,6 +122,9 @@ public class FuncionarioServlet extends HttpServlet {
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalRegistros", totalRegistros);
             request.setAttribute("totalPaginas", totalPaginas);
+            request.setAttribute("totalSetores", totalSetores);
+            request.setAttribute("totalAtivos", totalAtivos);
+            request.setAttribute("totalAdmins", totalAdmins);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(

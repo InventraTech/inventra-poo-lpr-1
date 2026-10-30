@@ -2,6 +2,12 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
+<%
+  String pastaCss = application.getRealPath("/utils/css");
+  request.setAttribute("vBase", pastaCss == null ? 0L : new java.io.File(pastaCss, "base.css").lastModified());
+  request.setAttribute("vCartoes", pastaCss == null ? 0L : new java.io.File(pastaCss, "fornecedores.css").lastModified());
+%>
 <c:set var="partesNome" value="${fn:split(fn:trim(sessionScope.funcionarioLogado.nome), ' ')}" />
 <c:set var="iniciais" value="${fn:toUpperCase(fn:substring(partesNome[0], 0, 1))}${fn:length(partesNome) gt 1 ? fn:toUpperCase(fn:substring(partesNome[fn:length(partesNome) - 1], 0, 1)) : ''}" />
 <!DOCTYPE html>
@@ -11,7 +17,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Funcionários | Inventra</title>
   <link rel="icon" href="${pageContext.request.contextPath}/utils/imagens/imagotipo.png">
-  <link rel="stylesheet" href="${ctx}/utils/css/base.css">
+  <link rel="stylesheet" href="${ctx}/utils/css/base.css?v=${vBase}">
+  <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/funcionarios.css">
   <style>
     .form-filtro { display: flex; gap: .5rem; }
@@ -28,11 +35,25 @@
   <%-- Atributos enviados pelo FuncionarioServlet: funcionarios, paginaAtual, totalPaginas, filtroSelecionado.
        Propriedades do FuncionarioMolde (getters): id_funcionario, nome, email, telefone, cpf, dt_admissao, status, setor, admin. --%>
 
-  <header class="barra-topo">
-    <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">☰</a>
-    <div class="usuario">
-      <span><c:out value="${sessionScope.funcionarioLogado.nome}"/></span>
-      <div class="avatar"><c:out value="${iniciais}"/></div>
+  <header class="barra-topo barra-inventra">
+    <div class="topo-marca">
+      <a href="#modal-menu" class="botao-menu" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </a>
+      <a href="${ctx}/fornecedor" class="topo-logo" aria-label="Inventra">
+        <img src="${ctx}/utils/imagens/imagotipo.png" alt="" class="topo-logo-img">
+        <span class="topo-logo-nome">Inventra</span>
+      </a>
+    </div>
+
+    <div class="topo-direita">
+      <div class="usuario">
+        <div class="avatar"><c:out value="${iniciais}"/></div>
+        <div class="usuario-info">
+          <strong><c:out value="${sessionScope.funcionarioLogado.nome}"/></strong>
+          <span>Administrador</span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -40,7 +61,6 @@
 
     <section class="cabecalho-pagina">
       <div class="titulo-com-logo">
-        <img src="${ctx}/utils/imagens/imagotipo.png" alt="Logo da empresa" class="logo-pagina">
         <div class="titulo-pagina">
           <h1>Funcionários</h1>
           <p>Gerencie os colaboradores da sua empresa</p>
@@ -71,22 +91,22 @@
       <div class="bignumero">
         <div class="bignumero-icone"><img src="${ctx}/utils/imagens/ferramenta.png" alt=""></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Em processo</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Administradores</span>
+          <strong class="bignumero-valor" title="administradores">${totalAdmins}</strong>
         </div>
       </div>
       <div class="bignumero">
         <div class="bignumero-icone"><img src="${ctx}/utils/imagens/folhas.png" alt=""></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Contratos ativos</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Setores ativos</span>
+          <strong class="bignumero-valor" title="Setores ativos">${totalSetores}</strong>
         </div>
       </div>
       <div class="bignumero">
         <div class="bignumero-icone"><img src="${ctx}/utils/imagens/agenda.png" alt=""></div>
         <div class="bignumero-info">
-          <span class="bignumero-rotulo">Desligados</span>
-          <strong class="bignumero-valor" title="Informação não disponível">—</strong>
+          <span class="bignumero-rotulo">Ativados</span>
+          <strong class="bignumero-valor" title="Ativados">${totalAtivos}</strong>
         </div>
       </div>
     </section>
@@ -111,7 +131,7 @@
         <input type="hidden" name="filtro" value="${fn:escapeXml(filtroSelecionado)}">
         <button class="botao botao-exportar" type="submit" title="Baixar CSV compatível com Excel">
           <svg class="icone-exportar" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="8" y="3" width="14" height="18" rx="1.5" fill="#fff"/>
+            <rect x="8" y="3" width="14" height="18" rx="1.5" fill="#fff" stroke="#107c41" stroke-width="1.4"/>
             <path d="M12 8h7M12 12h7M12 16h7" stroke="#107c41" stroke-width="1.4"/>
             <rect x="2" y="6.5" width="11" height="11" rx="1.5" fill="#107c41" stroke="#fff"/>
             <path d="M5 9.5l5 5M10 9.5l-5 5" stroke="#fff" stroke-width="1.4"/>
