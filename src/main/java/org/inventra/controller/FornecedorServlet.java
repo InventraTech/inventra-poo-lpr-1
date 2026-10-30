@@ -94,6 +94,8 @@ public class FornecedorServlet extends HttpServlet{
             }
 
             int totalRegistros = fornecedorDAO.contarFornecedores();
+            double mediaNotaVPQ = fornecedorDAO.mediaNotaVPQFornecedores();
+            int totalFornecedoresComProduto = fornecedorDAO.contarProdutosVinculados();
             //Usamos o math ceil para ele arredondar o total de registros (double) para cima, tipo se tiver 21 registros são 3 páginas
             int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
             if (totalPaginas == 0){
@@ -104,6 +106,8 @@ public class FornecedorServlet extends HttpServlet{
             request.setAttribute("paginaAtual", paginaAtual);
             request.setAttribute("totalPaginas", totalPaginas);
             request.setAttribute("totalRegistros", totalRegistros);
+            request.setAttribute("totalFornecedoresComProduto", totalFornecedoresComProduto);
+            request.setAttribute("mediaNotaVPQ", mediaNotaVPQ);
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             request.getRequestDispatcher(
