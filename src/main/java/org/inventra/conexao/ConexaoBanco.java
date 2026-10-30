@@ -22,7 +22,7 @@ public class ConexaoBanco {
             config.setDriverClassName("org.postgresql.Driver");
 
             // Configurações recomendadas do Pool (Opcionais, mas ajustam a performance)
-            config.setMaximumPoolSize(10); // Quantidade máxima de conexões simultâneas no pool
+            config.setMaximumPoolSize(4); // Quantidade máxima de conexões simultâneas no pool
             config.setMinimumIdle(2);      // Quantidade mínima de conexões mantidas vivas
             config.setIdleTimeout(30000);  // Tempo máximo (ms) que uma conexão pode ficar ociosa (30 segundos)
             config.setConnectionTimeout(30000); // Tempo máximo (ms) (equivalente a 30 segundos)
