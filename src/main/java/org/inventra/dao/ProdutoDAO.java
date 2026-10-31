@@ -191,10 +191,6 @@ public class ProdutoDAO {
         return consultaProdutos(sqlBase.concat(" ORDER BY p.id_produto asc"), limite, offset);
     }
 
-    public List<ProdutoMolde> listarProdutosQuantidade(Integer limite, Integer offset) {
-        return consultaProdutos(sqlBase.concat(" ORDER BY l.qtd_atual desc"), limite, offset);
-    }
-
     public List<ProdutoMolde> listarProdutosPorMarca(Integer limite, Integer offset) {
         return consultaProdutos(sqlBase.concat(" ORDER BY m.nome, p.nome asc"), limite, offset);
     }
@@ -207,31 +203,14 @@ public class ProdutoDAO {
         }
     }
 
-    public List<ProdutoMolde> listarProdutosPorData(boolean ordem, Integer limite, Integer offset) {
-        if (ordem) {
-            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade asc"), limite, offset);
-        } else {
-            return consultaProdutos(sqlBase.concat(" ORDER BY l.dt_validade desc"), limite, offset);
-        }
-    }
-
     public List<ProdutoMolde> listarProdutosParaExportar(String filtragem){
         if (filtragem != null) {
             switch (filtragem) {
-                case "validade_proxima" -> {
-                    return listarProdutosPorData(true, null, null);
-                }
-                case "validade_distante" -> {
-                    return listarProdutosPorData(false, null, null);
-                }
                 case "az" -> {
                     return listarProdutosAlfabetica(true, null, null);
                 }
                 case "za" -> {
                     return listarProdutosAlfabetica(false, null, null);
-                }
-                case "quantidade" -> {
-                    return listarProdutosQuantidade(null, null);
                 }
                 case "marca" -> {
                     return listarProdutosPorMarca(null, null);

@@ -87,20 +87,11 @@ public class ProdutoServlet extends HttpServlet {
             }
 
             switch (filtroSelecionado) {
-                case "validade_proxima" -> {
-                    produtos = produtoDAO.listarProdutosPorData(true, limite, offSet);
-                }
-                case "validade_distante" -> {
-                    produtos = produtoDAO.listarProdutosPorData(false, limite, offSet);
-                }
                 case "az" -> {
                     produtos = produtoDAO.listarProdutosAlfabetica(true, limite, offSet);
                 }
                 case "za" -> {
                     produtos = produtoDAO.listarProdutosAlfabetica(false, limite, offSet);
-                }
-                case "quantidade" -> {
-                    produtos = produtoDAO.listarProdutosQuantidade(limite, offSet);
                 }
                 case "marca" -> {
                     produtos = produtoDAO.listarProdutosPorMarca(limite, offSet);

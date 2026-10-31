@@ -122,9 +122,6 @@
           <option value="az" ${filtroSelecionado eq 'az' ? 'selected' : ''}>Nome (A - Z)</option>
           <option value="za" ${filtroSelecionado eq 'za' ? 'selected' : ''}>Nome (Z - A)</option>
           <option value="marca" ${filtroSelecionado eq 'marca' ? 'selected' : ''}>Marca (A - Z)</option>
-          <option value="quantidade" ${filtroSelecionado eq 'quantidade' ? 'selected' : ''}>Quantidade</option>
-          <option value="validade_proxima" ${filtroSelecionado eq 'validade_proxima' ? 'selected' : ''}>Validade: mais próxima</option>
-          <option value="validade_distante" ${filtroSelecionado eq 'validade_distante' ? 'selected' : ''}>Validade: mais distante</option>
         </select>
       </form>
 
