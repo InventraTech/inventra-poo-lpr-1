@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventra-Suporte</title>
+
+    <link rel="stylesheet" href="../utils/css/style_suporte.css">
+    <link rel="icon" href="../utils/imagens/imagotipo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<header>
+    <div class="imagotipo">
+        <a href="../index.html">
+            <img src="../utils/imagens/imagotipo.png" alt="Imagotipo Caixa Inventra">
+        </a>
+    </div>
+
+    <div class="logotipo">
+        <a href="../index.html">
+            <img src="../utils/imagens/logotipo.png" alt="Logotipo Nome Inventra">
+        </a>
+    </div>
+</header>
+<div id = "corpo">
+    <div id ="banner_principal">
+        <div  id = "banner_ajuda">
+            <div id = "voltar">
+                <p><a href="../index.html">
+                    <img src="../utils/imagens/voltar-suporte.png" >
+                </a></p>
+            </div>
+            <div id="frase">
+                <p style="font-size: 80px; margin: 0;">Estamos prontos<br> para ajudar</p>
+            </div>
+        </div>
+        <div id = "banner_img" class="padrao" >
+            <img src="../utils/imagens/imagem-banner-suporte.png">
+        </div>
+    </div>
+    <div style="display: flex;">
+        <div id="faixa_amarelo"></div>
+        <div id="pt_baixo">
+            <div id = "texto">
+                <p>Preencha o formulário com alguns dados para que nossa equipe de suporte<br> consiga se contatar e auxiliar-lo em sua ocorrencia</p>
+            </div>
+            <div id ="relatorio">
+                <form>
+                    <div id="formulario">
+                        <div id="form_cabecalho">
+                            <img src="../utils/imagens/dados-pessoais-icon.png" >
+                            <p>Dados do Usuário</p>
+                        </div>
+                        <div id="form_resp">
+                            <label class ="label_padrao_e" for="nome">Nome&nbsp;&nbsp;</label>
+                            <label class="label_padrao_d" for="empresas">Empresas</label><br>
+                            <input type="text" name="nome" class="form_padrao_d" placeholder="Seu nome" required>
+                            <input type="text" name="empresas" class="form_padrao_e" placeholder="Sua empresa" required>
+
+                            <label class="label_padrao_e" for="email">E-mail</label>
+                            <label class="label_padrao_d" for="telefone">Telefone</label><br>
+                            <input type="email" name="email" class="form_padrao_d" placeholder="Seu E-mail" required>
+                            <input type="tel" name="telefone" class="form_padrao_e" placeholder="Seu telefone" required>
+
+                            <label class="label_padrao_e" for="motivo">Como podemos ajudar?</label><br>
+                            <textarea name="motivo" placeholder="Conte um pouco sobre seu desafio, quesionamento ou dúvida..." required></textarea>
+                        </div>
+                        <button id="botao_enviar"type="submit">
+                            Envie sua mensagem <img src="../utils/imagens/seta-enviar-icon.png">
+                        </button>
+                    </div>
+                </form>
+                <div id="avisos">
+                    <div id="email" class="infos">
+                        <img src="../utils/imagens/email-icon.png" >
+                        <p><b>E-mail</b><br><spam id="acinzentar">estoqueIventra@gmail.com.br</spam></p>
+                    </div>
+                    <div id="telefone" class="infos">
+                        <img src="../utils/imagens/telefone-icon.png">
+                        <p><b>Telefone</b><br><spam id="acinzentar">(55) +11 91234-5678</spam></p>
+                    </div>
+                    <div id="instagram" class="infos">
+                        <img src="../utils/imagens/instagram-icon.png" >
+                        <p><b>Instagram</b><br><spam id="acinzentar">inventra.oficial</spam></p>
+                    </div>
+                    <div id="horario_atend">
+                        <div id="hr_cabecalho">
+                            <p>Horários de atendimento</p>
+                        </div>
+                        <div id="hr_descricao">
+                            <p>Segunda a Sábado, das 9h às 18h<br>(horário de Brasília). </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="meio_circulo"></div>
+                <div id="pp_circulo"></div>
+                <div id="m_circulo"></div>
+            </div>
+        </div>
+    </div>
+    <footer class="rodape">
+        <div class="rodapeConteudo">
+            <div class="rodapeLogo">
+                <img src="../utils/imagens/logotipo-footer-icon.png" alt="Logo Inventra">
+                <p>Gestão inteligente de estoque para reduzir desperdícios.</p>
+                <a href="../login.jsp" class="linkAdmin">Inventra ADMIN</a>
+            </div>
+
+            <div class="rodapeColuna">
+                <h3>Navegação</h3>
+                <a href="../index.html">Recursos</a>
+                <a href="../index.html">Como funciona</a>
+                <a href="../index.html">Quem somos</a>
+                <a href="../index.html">Conheça nossa história</a>
+            </div>
+
+            <div class="rodapeColuna">
+                <h3>Informações legais</h3>
+                <a href="privacidade.html">Política de Privacidade</a>
+
+            </div>
+
+            <div class="rodapeColuna">
+                <h3>Suporte</h3>
+                <p>Precisa de ajuda? Entre em contato com nossa equipe.</p>
+                <a href="aba_suporte.html">Entre em contato →</a>
+            </div>
+        </div>
+
+        <div class="rodapeInferior">
+            <p>© 2026 Inventra. Todos os direitos reservados.</p>
+            <p>Gestão eficiente, desperdício reduzido.</p>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

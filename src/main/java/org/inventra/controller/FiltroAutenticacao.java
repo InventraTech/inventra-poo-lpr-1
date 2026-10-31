@@ -15,9 +15,8 @@ import java.util.Set;
 //Classe para autenticar o funcionário logado para garantir que seja ADMIN
 public class FiltroAutenticacao implements Filter {
 
-    //Caminhos que podem ser acessados sem login (comparação exata)
     private static final Set<String> PUBLICAS =
-            Set.of("/login", "/login.jsp", "/erro-403.jsp");
+            Set.of("", "/", "/index.html", "/login", "/login.jsp", "/erro-403.jsp");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -36,7 +35,9 @@ public class FiltroAutenticacao implements Filter {
         boolean paginasPublicas = PUBLICAS.contains(caminho) ||
                 caminho.startsWith("/css/") ||
                 caminho.startsWith("/js/") ||
+                caminho.startsWith("/paginas/") ||
                 caminho.toLowerCase().startsWith("/utils/");
+
 
         if (paginasPublicas) {
             chain.doFilter(request, response);
