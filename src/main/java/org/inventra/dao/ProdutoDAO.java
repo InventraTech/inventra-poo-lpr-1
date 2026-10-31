@@ -245,7 +245,7 @@ public class ProdutoDAO {
     }
 
     public static final String contarBase = """
-            select count(*) from funcionario
+            select count(*) from produto
             """;
 
     public int contarProdutos(String sql){
