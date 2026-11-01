@@ -61,7 +61,7 @@ public class ProdutoServlet extends HttpServlet {
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
-                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+                    writer.println("ID;Nome;Marca;Categoria;Medida;Estoque Min;Estoque Max;Fornecedor;Descricao;Ativo");
 
                     for (ProdutoMolde f : produtos) {
                         writer.print(f.getIdProduto() + ";");
@@ -73,7 +73,7 @@ public class ProdutoServlet extends HttpServlet {
                         writer.print(f.getEstoqueMax() + ";");
                         writer.print(f.getNomeFornecedor() + ";");
                         writer.print(f.getDescricao() + ";");
-                        writer.print(f.isAtivo());
+                        writer.println(f.isAtivo());
                     }
                     writer.flush();
                 }

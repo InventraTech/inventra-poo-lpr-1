@@ -66,7 +66,7 @@ public class ItemPreListaServlet extends HttpServlet {
                         writer.print(f.getId_item_prelista() + ";");
                         writer.print(f.getFornecedor() + ";");
                         writer.print(f.getProduto() + ";");
-                        writer.print(f.getQtd() + ";");
+                        writer.println(f.getQtd());
                     }
                     writer.flush();
                 }

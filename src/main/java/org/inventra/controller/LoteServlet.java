@@ -61,7 +61,7 @@ public class LoteServlet extends HttpServlet{
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); //Para o excel reconhecer os acentos corretamente
-                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+                    writer.println("ID;Produto;Número Lote;Qtd Inicial;Qtd Atual;Data Entrada;Data Validade;Valor Compra;Nota Fiscal");
 
                     for (LoteMolde f : lotes) {
                         writer.print(f.getId_lote() + ";");

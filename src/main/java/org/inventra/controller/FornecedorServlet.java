@@ -67,9 +67,10 @@ public class FornecedorServlet extends HttpServlet{
                     for (FornecedorMolde f : fornecedores) {
                         writer.print(f.getId_fornecedor() + ";");
                         writer.print(f.getNome_juridico() + ";");
-                        writer.print(f.getFk_endereco() + ";");
+                        writer.print(f.getEndereco() + ";");
+                        writer.print(f.getCnpj() + ";");
                         writer.print(f.getEmail() + ";");
-                        writer.print(f.getNota_vpq() + ";");
+                        writer.println(f.getNota_vpq());
                     }
                     writer.flush();
                 }

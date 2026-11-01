@@ -55,7 +55,7 @@ public class RequisicaoServlet extends HttpServlet{
             if ("exportar".equals(acao)){
                 //Diz para o navegador do usuario que a resposta é em CSV e obriga ele a baixar como anexo
                 response.setContentType("text/csv; charset=UTF-8");
-                response.setHeader("Content-Disposition", "attachment; filename=\"funcionarios.csv\"");
+                response.setHeader("Content-Disposition", "attachment; filename=\"requisicoes.csv\"");
 
                 List<RequisicaoMolde> requisicoes;
                 requisicoes = requisicaoDAO.listarRequisicaoParaExportar(filtroSelecionado);
@@ -66,13 +66,13 @@ public class RequisicaoServlet extends HttpServlet{
 
                     for (RequisicaoMolde f : requisicoes) {
                         writer.print(f.getIdRequisicao() + ";");
-                        writer.print(f.getIdTipoRequisicao() + ";");
-                        writer.print(f.getFkFuncionarioSolicitante() + ";");
-                        writer.print(f.getFkFuncionarioAprovador() + ";");
+                        writer.print(f.getTipoRequisicao() + ";");
+                        writer.print(f.getFuncionarioSolicitante() + ";");
+                        writer.print(f.getFuncionarioAprovador() + ";");
                         writer.print(f.getProduto() + ";");
                         writer.print(f.getQuantidadeProduto() + ";");
                         writer.print(f.getMotivo() + ";");
-                        writer.print(f.getStatus());
+                        writer.println(f.getStatus());
                     }
                     writer.flush();
                 }
