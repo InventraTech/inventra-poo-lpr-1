@@ -97,7 +97,7 @@ public class LoteDAO {
                 	dt_validade = ?,
                 	valor_compra = ?,
                 	nota_fiscal = ?
-                WHERE id_lote
+                WHERE id_lote = ?
                 """;
 
         try (Connection conexao = ConexaoBanco.conectar();
@@ -109,7 +109,7 @@ public class LoteDAO {
             stmt.setInt(4, lote.getQtd_atual());
             stmt.setObject(5, lote.getDt_entrada());
             stmt.setObject(6, lote.getDt_validade());
-            stmt.setBigDecimal(7, lote.getValor_compra()); // Utilização correta do BigDecimal
+            stmt.setBigDecimal(7, lote.getValor_compra());
             stmt.setString(8, lote.getNota_fiscal());
 
             stmt.setInt(9, id_lote);
