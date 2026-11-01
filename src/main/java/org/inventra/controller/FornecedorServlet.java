@@ -242,8 +242,8 @@ public class FornecedorServlet extends HttpServlet{
                     request.getParameter("telefone");
             int nota_vpq =
                     Integer.parseInt(request.getParameter("nota_vpq"));
-            int fk_regiao =
-                    Integer.parseInt(request.getParameter("fk_regiao"));
+            int fk_endereco =
+                    Integer.parseInt(request.getParameter("fk_endereco"));
 
             valoresValidos = FornecedorREGEX.validandoTodos(cnpj, email, telefone);
 
@@ -252,7 +252,7 @@ public class FornecedorServlet extends HttpServlet{
                 return;
             }
 
-            FornecedorMolde novoFornecedor = new FornecedorMolde(fk_regiao, nome, cnpj, email, nota_vpq);
+            FornecedorMolde novoFornecedor = new FornecedorMolde(fk_endereco, nome, cnpj, email, nota_vpq);
 
             fornecedorDAO.inserirFornecedor(novoFornecedor);
 
