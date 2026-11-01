@@ -56,7 +56,7 @@ public class ItemPreListaServlet extends HttpServlet {
                 response.setHeader("Content-Disposition", "attachment; filename=\"itens-pre-lista.csv\"");
 
                 List<ItemPreListaMolde> itensPreLista;
-                itensPreLista = itemPreListaDAO.listarItensPreLista(limite, offSet);
+                itensPreLista = itemPreListaDAO.listarItemPreListaParaExportar(filtroSelecionado);
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
