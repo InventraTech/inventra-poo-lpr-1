@@ -1,0 +1,641 @@
+body {
+    font-family: "K2D", sans-serif;
+    background-color: white;
+    margin: 0%;
+    padding: 0%;
+    overflow-x: hidden;
+}
+#corpo{
+    padding-top: 69px;
+}
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 40px;
+    background-color: #FDFDFD;
+    border-bottom: 2px solid #eaeaea;
+    z-index: 1000;
+}
+.imagotipo img {
+    width: 60px;
+    height: auto;
+}
+.logotipo img {
+    width: 120px;
+    height: auto;
+    margin-left: -9.6px;
+}
+.voltarPagina {
+    display: inline-flex;
+    align-items: center;
+    color: #5D5D5D;
+    font-size: 17px;
+    text-decoration: none;
+    font-family: 'K2D', sans-serif;
+    white-space: nowrap;
+    margin-left: 1030px;
+}
+#banner_principal{
+    display: flex;
+    width: 100%;
+    min-height: min(375px, 24vw);
+    background-image: linear-gradient(to right, #360082, #5F1AD2);
+}
+.resp{
+    width: 200px;
+    height: 50px;
+    background-color: #ffffff
+}
+.padrao{
+    flex: 0 1 auto;
+    max-width: 50%;
+    height: min(375px, 24vw);
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+}
+.padrao img{
+    display: block;
+    flex: none;
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+#banner_ajuda{
+    flex: 1 1 0;
+    min-width: 0;
+    height: min(375px, 24vw);
+    background-image: url("../imagens/logo-banner-pagamento.png");
+    background-size: calc(min(375px, 24vw) * 1.3333), cover;
+    background-position: left;
+    background-repeat: no-repeat;
+
+}
+#pt_baixo{
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 917px;
+    background-color:#ffffff;
+    padding-top: 23px;
+    padding-left: 130px;
+    padding-right: 40px;
+    box-sizing: border-box;
+
+}
+#faixa_amarelo{
+    width: 70px;
+    flex-shrink: 0;
+    background-color: #ECC506;
+}
+#frase{
+    box-sizing: border-box;
+    max-width: 830px;
+    margin: 0;
+    padding: calc(min(375px, 24vw) * 0.1333) 0px calc(min(375px, 24vw) * 0.08) clamp(20px, 6.8vw, 130px);
+    color: #ffffff;
+    font-weight:600;
+}
+#frase p{
+    font-size: clamp(34px, 4.8vw, 80px) !important;
+}
+#voltar{
+    max-width: 100%;
+    height: calc(min(375px, 24vw) * 0.1333);
+}
+#voltar img{
+    width: calc(min(375px, 24vw) * 0.2267);
+}
+#voltar p{
+    padding: calc(min(375px, 24vw) * 0.1333);
+    margin: 0;
+}
+#voltar a{
+    margin: 0px;
+}
+#texto{
+    max-width: 900px;
+    min-height: 100px;
+    background-color: #ffffff;
+}
+#texto p{
+    font-weight: 600;
+    font-size: 24px;
+    color: #4A4A4A;
+}
+
+
+#relatorio{
+    display: flex;
+    width: 100%;
+    max-width: 1215px;
+    margin-top: 10px;
+    margin-bottom: 70px;
+    background-color: #ffffff;
+}
+#relatorio > form{
+    flex: 0 1 775px;
+    width: 775px;
+    max-width: 775px;
+    min-width: 0;
+    margin: 0;
+}
+#formulario{
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 576px;
+    padding: 35px 45px 30px 45px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    border:2px solid #D5D5D5 ;
+    box-shadow: 0px 0px 1px 1px rgb(0, 0, 0,0.10);
+}
+#form_resp{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 17px;
+    align-content: start;
+    max-width: 693px;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+}
+#form_resp br{
+    display: none;
+}
+#form_resp label:last-of-type,
+#form_resp textarea{
+    grid-column: 1 / -1;
+}
+#form_cabecalho{
+    display: flex;
+    max-width: 600px;
+    height: 40px;
+    background-color: #ffffff;
+    margin-bottom: 45px;
+}
+#form_cabecalho p{
+    margin: 10px 0px 0px 0px;
+    font-size: 23px;
+    margin-left: 12px;
+    font-weight: 550;
+    color: #3A3A3A;
+}
+.label_padrao_e{
+    font-size: 17px;
+    font-weight: 500;
+    color: #3A3A3A;
+}
+.label_padrao_d{
+    font-size: 17px;
+    font-weight: 500;
+    color: #3A3A3A;
+}
+.form_padrao_d{
+    box-sizing: border-box;
+    margin: 10px 0px 20px 0px;
+    width: 100%;
+    min-width: 0;
+    height: 35px;
+    border-radius: 10px;
+    border:1px solid #ffffff;
+    box-shadow: 0px 0px 1.5px 1.5px rgb(0, 0, 0,0.10);
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 16px;
+    font-family: inherit;
+}
+.form_padrao_d:focus{
+    background-color: #ffffff;
+    border: 2px solid #5301C9;
+    outline: none;
+}
+.form_padrao_e{
+    box-sizing: border-box;
+    margin: 10px 0px 20px;
+    width: 100%;
+    min-width: 0;
+    height: 35px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    border:1px solid #ffffff;
+    box-shadow: 0px 0px 1.5px 1.5px rgb(0, 0, 0,0.10);
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 16px;
+    font-family: inherit;
+}
+.form_padrao_e:focus{
+    background-color: #ffffff;
+    border: 2px solid #5301C9;
+    outline: none;
+}
+textarea{
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
+    height: 142px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    box-shadow: 0px 0px 1.5px 1.5px rgb(0, 0, 0,0.10);
+    font-family: inherit;
+    font-size: 16px;
+    margin-top: 10px
+}
+textarea:focus{
+    background-color: #ffffff;
+    border: 2px solid #5301C9;
+    outline: none;
+}
+#botao_enviar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 17px;
+    width: 245px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #5500CF;
+    transition: background-color 0.3s ease;
+}
+#botao_enviar img{
+    width: 18px;
+}
+#botao_enviar:hover{
+    background-color: #2A0065;
+}
+#avisos{
+    margin-left: 35px;
+    width: 405px;
+    flex-shrink: 0;
+}
+.infos{
+    box-sizing: border-box;
+    width: 100%;
+    height: 80px;
+    padding: 13px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    border: 1px solid #D5D5D5;
+    box-shadow: 0px 0px 1.5px 1.5px rgb(0, 0, 0,0.10);
+    margin-bottom: 22px;
+    display: flex;
+}
+.infos p{
+    margin-top: 0px;
+    margin-left: 7px;
+    overflow-wrap: anywhere;
+}
+#horario_atend{
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 119px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 1.5px 1.5px rgb(0, 0, 0,0.10);
+}
+#hr_cabecalho{
+    box-sizing: border-box;
+    width: 100%;
+    height: 45px;
+    background-color: #5301C9;
+    border-radius: 15px 15px 0px 0px;
+    padding: 10px 0px 0px 15px;
+}
+#hr_cabecalho p{
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0px;
+}
+#hr_descricao{
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 74px;
+    padding: 10px 15px 10px 15px;
+    background-color: #ffffff;
+    border-radius: 0px 0px 15px 15px;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #D5D5D5;
+
+}
+#hr_descricao p{
+    margin: 0;
+    color: #4A4A4A;
+    font-size: 17px;
+    font-weight: 450;
+}
+#acinzentar{
+    color: #4A4A4A;
+}
+
+.rodape {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 50px 70px 20px;
+    background: linear-gradient(to right, #360182, #4A149F);
+    font-family: "K2D", sans-serif;
+    color: #FFFFFF;
+}
+
+.rodapeConteudo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-bottom: 35px;
+}
+
+.rodapeLogo {
+    max-width: 270px;
+}
+
+.rodapeLogo img {
+    display: block;
+    width: 150px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.rodapeLogo p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #DFDFDF;
+}
+
+.rodapeLogo .linkAdmin {
+    display: inline-block;
+    margin-top: 30px;
+    font-size: 16px;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.rodapeLogo .linkAdmin:hover {
+    color: #FFDC32;
+}
+
+.rodapeColuna {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 250px;
+}
+
+.rodapeColuna h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 500;
+    color: #FFDC32;
+}
+
+.rodapeColuna a {
+    font-size: 16px;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.rodapeColuna a:hover {
+    color: #FFDC32;
+}
+
+.rodapeColuna p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #DFDFDF;
+}
+
+.rodapeColuna .linkContato {
+    margin-top: 5px;
+    font-weight: 500;
+    color: #FFDC32;
+}
+
+.rodapeColuna .linkContato:hover {
+    text-decoration: underline;
+}
+
+.rodapeInferior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.rodapeInferior p {
+    margin: 0;
+    font-size: 14px;
+    color: #DFDFDF;
+}
+
+#meio_circulo{
+    width: clamp(150px, 19.6vw, 300px);
+    height: calc(clamp(150px, 19.6vw, 300px) / 2);
+    background-color: #5501CC;
+    border-radius: clamp(150px, 19.6vw, 300px) clamp(150px, 19.6vw, 300px) 0px 0px;
+    position: absolute;
+    right: calc(clamp(150px, 19.6vw, 300px) * -0.07);
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+#pp_circulo{
+    position: absolute;
+    width: calc(clamp(150px, 19.6vw, 300px) / 6);
+    height: calc(clamp(150px, 19.6vw, 300px) / 6);
+    border-radius: 50%;
+    background-color: #5501CC;
+    right: calc(clamp(150px, 19.6vw, 300px) * 0.597);
+    bottom: calc(clamp(150px, 19.6vw, 300px) / 2);
+    pointer-events: none;
+}
+#m_circulo{
+    position: absolute;
+    width: calc(clamp(150px, 19.6vw, 300px) / 3);
+    height: calc(clamp(150px, 19.6vw, 300px) / 3);
+    border-radius: 50%;
+    background-color: #5501CC;
+    right: calc(clamp(150px, 19.6vw, 300px) * 0.03);
+    bottom: calc(clamp(150px, 19.6vw, 300px) / 2);
+    pointer-events: none;
+}
+
+@media (max-width: 1415px){
+    #pt_baixo{
+        padding-left: 50px;
+        padding-right: 30px;
+    }
+}
+
+@media (max-width: 1000px){
+    #relatorio{
+        flex-direction: column;
+        margin-bottom: 50px;
+    }
+    #relatorio > form{
+        flex: none;
+        width: 100%;
+        max-width: none;
+    }
+    #formulario{
+        width: 100%;
+        min-height: 0;
+    }
+    #avisos{
+        width: 100%;
+        margin-left: 0;
+        margin-top: 30px;
+    }
+    #pt_baixo{
+        min-height: 0;
+    }
+    #meio_circulo,
+    #pp_circulo,
+    #m_circulo{
+        display: none;
+    }
+}
+
+@media (max-width: 900px){
+    #voltar{
+        height: 50px;
+    }
+    #voltar img{
+        width: 85px;
+    }
+    #banner_principal{
+        flex-direction: column;
+        min-height: 0;
+    }
+    #banner_ajuda{
+        flex: none;
+        width: 100%;
+        height: auto;
+        min-height: 260px;
+        background-size: min(500px, 90%) auto;
+    }
+    .padrao{
+        display: block;
+        flex: none;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        overflow: visible;
+        box-sizing: border-box;
+        padding: 0;
+    }
+    .padrao img{
+        width: 100%;
+        height: auto;
+    }
+    #frase{
+        padding-top: 50px;
+        padding-right: 20px;
+        padding-bottom: 30px;
+    }
+    #voltar p{
+        padding: 30px 20px;
+    }
+    .rodape{
+        padding: 40px 30px 20px;
+    }
+    .rodapeLogo{
+        flex: 1 1 100%;
+        max-width: none;
+    }
+    .rodapeColuna{
+        flex: 1 1 40%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px){
+    #barra_principal img{
+        padding-left: 20px !important;
+    }
+    #banner_img{
+        display: none;
+    }
+    #faixa_amarelo{
+        width: 20px;
+    }
+    #pt_baixo{
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    #texto p{
+        font-size: 18px;
+    }
+    #texto p br,
+    #hr_descricao p br{
+        display: none;
+    }
+    #formulario{
+        padding: 25px 20px;
+    }
+}
+
+@media (max-width: 600px){
+    #banner_img{
+        display: none;
+    }
+    #form_resp{
+        grid-template-columns: 1fr;
+    }
+    #form_resp > :nth-child(1){ order: 1; }
+    #form_resp > :nth-child(4){ order: 2; }
+    #form_resp > :nth-child(2){ order: 3; }
+    #form_resp > :nth-child(5){ order: 4; }
+    #form_resp > :nth-child(6){ order: 5; }
+    #form_resp > :nth-child(9){ order: 6; }
+    #form_resp > :nth-child(7){ order: 7; }
+    #form_resp > :nth-child(10){ order: 8; }
+    #form_resp > :nth-child(11){ order: 9; }
+    #form_resp > :nth-child(13){ order: 10; }
+    #botao_enviar{
+        width: 100%;
+    }
+    #form_cabecalho p{
+        font-size: 20px;
+    }
+    .rodape{
+        padding: 35px 20px 20px;
+    }
+    .rodapeConteudo{
+        flex-direction: column;
+        gap: 28px;
+    }
+    .rodapeColuna{
+        flex: none;
+        width: 100%;
+    }
+    .rodapeInferior{
+        flex-direction: column;
+        text-align: center;
+    }
+}

@@ -1,0 +1,336 @@
+body {
+    margin: 0;
+    background-color: #F5F5F5;
+    overflow-x: hidden;
+}
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 40px;
+    background-color: #FDFDFD;
+    border-bottom: 2px solid #eaeaea;
+    z-index: 1000;
+}
+.imagotipo img {
+    width: 60px;
+    height: auto;
+}
+.logotipo img {
+    width: 120px;
+    height: auto;
+    margin-left: -9.6px;
+}
+.voltarPagina {
+    display: inline-flex;
+    align-items: center;
+    color: #5D5D5D;
+    font-size: 17px;
+    text-decoration: none;
+    font-family: 'K2D', sans-serif;
+    white-space: nowrap;
+    margin-left: 1030px;
+}
+.paginaPrivacidade {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 130px 8% 80px;
+    background-color: #fcfcfc;
+    color: #5D5D5D;
+    font-family: 'K2D', sans-serif;
+}
+.voltarPagina:hover {
+    color: #3E1E99;
+}
+.privacidadeTitulo {
+    max-width: 850px;
+    margin: 0 auto 45px;
+    text-align: center;
+}
+.privacidadeEtiqueta {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #360182;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+}
+.privacidadeTitulo h1 {
+    margin: 0 0 20px;
+    color: #360182;
+    font-size: 60px;
+    font-weight: 600;
+}
+.privacidadeTituloTexto {
+    max-width: 650px;
+    margin: 0 auto 20px;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.8;
+}
+.dataAtualizacao {
+    color: #777777;
+    font-size: 16px;
+}
+.privacidadeConteudo {
+    max-width: 950px;
+    margin: 0 auto;
+}
+.privacidadeDestaque {
+    padding: 30px;
+    margin-bottom: 35px;
+    border-left: 4px solid #FFDC32;
+    border-radius: 8px;
+    background-color: #F5F2FC;
+}
+.privacidadeDestaque h2 {
+    margin: 0 0 12px;
+    color: #360182;
+    font-size: 30px;
+    font-weight: 600;
+}
+.privacidadeDestaque p {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.8;
+}
+.privacidadeSecao {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 28px 0;
+    border-bottom: 1px solid #eaeaea;
+}
+.numeroSecao {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background-color: #F0EAFB;
+    color: #360182;
+    font-size: 22px;
+    font-weight: 600;
+}
+.privacidadeSecao h2 {
+    margin: 3px 0 12px;
+    color: #360182;
+    font-size: 27px;
+    font-weight: 500;
+}
+.privacidadeSecao p {
+    margin: 0 0 12px;
+    font-size: 19px;
+    line-height: 1.9;
+}
+.privacidadeSecao p:last-child {
+    margin-bottom: 0;
+}
+.privacidadeContato {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    margin-top: 45px;
+    padding: 30px;
+    border-radius: 10px;
+    background: linear-gradient(to right, #360182, #4A149F);
+}
+.privacidadeContato h2 {
+    margin: 0 0 10px;
+    color: #FFDC32;
+    font-size: 25px;
+    font-weight: 500;
+}
+.privacidadeContato p {
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 19px;
+    line-height: 1.7;
+}
+.privacidadeContato a {
+    flex-shrink: 0;
+    color: #FFDC32;
+    font-size: 19px;
+    text-decoration: none;
+}
+.privacidadeContato a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .paginaPrivacidade {
+        padding: 110px 6% 55px;
+    }
+    .privacidadeTitulo h1 {
+        font-size: 39px;
+    }
+    .privacidadeDestaque {
+        padding: 22px;
+    }
+    .privacidadeSecao {
+        gap: 15px;
+    }
+    .privacidadeSecao h2 {
+        font-size: 18px;
+    }
+    .privacidadeContato {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 25px;
+    }
+}
+@media (max-width: 480px) {
+    .paginaPrivacidade {
+        padding: 100px 20px 45px;
+    }
+    .privacidadeTitulo h1 {
+        font-size: 28px;
+    }
+    .privacidadeSecao {
+        gap: 12px;
+    }
+    .numeroSecao {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+    }
+    .privacidadeSecao p {
+        font-size: 14px;
+    }
+}
+.rodape {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 50px 70px 20px;
+    background: linear-gradient(to right, #360182, #4A149F);
+    color: #FFFFFF;
+    font-family: 'K2D', sans-serif;
+}
+.rodapeConteudo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-bottom: 35px;
+}
+.rodapeLogo {
+    max-width: 270px;
+}
+.rodapeLogo img {
+    width: 150px;
+    height: auto;
+    display: block;
+    margin-bottom: 15px;
+}
+.rodapeLogo p {
+    color: #DFDFDF;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0;
+}
+.rodapeColuna {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 250px;
+}
+.rodapeColuna h3 {
+    color: #FFDC32;
+    font-size: 19px;
+    font-weight: 500;
+    margin: 0 0 8px;
+}
+.rodapeColuna a {
+    color: #FFFFFF;
+    font-size: 16px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.rodapeColuna a:hover {
+    color: #FFDC32;
+}
+.rodapeColuna p {
+    color: #DFDFDF;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0;
+}
+.rodapeColuna .linkContato {
+    color: #FFDC32;
+    font-weight: 500;
+    margin-top: 5px;
+}
+.rodapeColuna .linkContato:hover {
+    text-decoration: underline;
+}
+.rodapeInferior {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+.rodapeInferior p {
+    color: #DFDFDF;
+    font-size: 14px;
+    margin: 0;
+}
+
+.rodapeLogo .linkAdmin {
+    display: inline-block;
+    margin-top: 30px;
+    font-size: 16px;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.rodapeLogo .linkAdmin:hover {
+    color: #FFDC32;
+}
+
+@media (max-width: 900px) {
+    .rodape {
+        padding: 40px 30px 20px;
+    }
+    .rodapeConteudo {
+        flex-wrap: wrap;
+        gap: 35px;
+    }
+    .rodapeLogo,
+    .rodapeColuna {
+        flex: 1 1 200px;
+    }
+}
+@media (max-width: 500px) {
+    .rodape {
+        padding: 35px 22px 20px;
+    }
+    .rodapeConteudo {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .rodapeInferior {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+.voltarPagina {
+    transition: color 0.25s ease;
+}

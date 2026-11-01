@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventra-Pagamento</title>
+
+    <link rel="stylesheet" href="../utils/css/style_pagamento.css">
+    <link rel="icon" href="../utils/imagens/imagotipo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<header>
+    <div class="imagotipo">
+        <a href="../index.html">
+            <img src="../utils/imagens/imagotipo.png" alt="Imagotipo Caixa Inventra">
+        </a>
+    </div>
+
+    <div class="logotipo">
+        <a href="../index.html">
+            <img src="../utils/imagens/logotipo.png" alt="Logotipo Nome Inventra">
+        </a>
+    </div>
+</header>
+
+<div id="corpo">
+
+    <div id="faixa_lateral"></div>
+
+    <div id="banner_principal">
+        <a href="../index.html" id="voltar">
+            <img src="../utils/imagens/voltar-log-icon-v2.jpg" width="115px">
+        </a>
+        <div id="banner_ajuda"></div>
+        <h1 id="frase">Venha conferir nossos planos e pagamentos</h1>
+    </div>
+
+    <div id="pt_baixo">
+        <div id="texto">
+            <p>14 dias grátis em todos os planos. Cancele quando quiser.</p>
+        </div>
+        <div id="avisos">
+            <div class="infos">
+                <h2>Diferenciais</h2>
+                <h3>Diferenciais do nosso APP</h3>
+                <hr>
+                <ul>
+                    <li>Assistente virtual</li>
+                    <li>Pré-Listas</li>
+                    <li>Cadastro de fornecedores</li>
+                    <li>Entrada rápida (OCR)</li>
+                </ul>
+            </div>
+
+            <div class="infos">
+                <h2>Armazenamento</h2>
+                <h3>Capacidade de armazenar informações e dados</h3>
+                <hr>
+                <ul>
+                    <li>Produtos ilimitados</li>
+                    <li>15 usuários</li>
+                    <li>Fornecedores ilimitados</li>
+                    <li>Histórico de compras e requisições</li>
+                </ul>
+            </div>
+
+            <div class="infos">
+                <h2>Dados</h2>
+                <h3>Informações para ajudar a organizar o seu negócio</h3>
+                <hr>
+                <ul>
+                    <li>Dashboards avançados</li>
+                    <li>Performance VPQ</li>
+                    <li>Alerta de estoque baixo</li>
+                    <li>Requisições automaticas</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="relatorio">
+
+            <div id="formulario">
+                <div id="form_cabecalho">
+                    <img src="../utils/imagens/cartao-icon.svg">
+                    <p>Dados de pagamento</p>
+                    <img id="img_cartoes" src="../utils/imagens/cartoes-pagamento-icon.svg" alt="PicPay, Visa, Itaú e Mastercard">
+                </div>
+
+                <form id="form_resp">
+                    <div class="grupo">
+                        <label class="label_padrao_e" for="nome_cartao">Nome do cartão</label>
+                        <input class="form_padrao_e" type="text" id="nome_cartao" placeholder="Como está impresso no cartão" required   >
+                    </div>
+
+                    <div class="grupo">
+                        <label class="label_padrao_e" for="numero_cartao">Número do cartão</label>
+                        <input class="form_padrao_e" type="number" id="numero_cartao" placeholder="0000 0000 0000 0000" required>
+                    </div>
+
+                    <div id="grupo_validade">
+                        <div>
+                            <label class="label_padrao_e" for="validade">Validade</label>
+                            <input class="form_meio_e" type="date" id="validade" placeholder="MM/AA" required>
+                        </div>
+                        <div>
+                            <label class="label_padrao_d" for="cvc">CVC</label>
+                            <input class="form_meio_d" type="number" id="cvc" placeholder="123" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo" id="grupo_cpf">
+                        <label class="label_padrao_e" for="cpf_cnpj">CPF/CNPJ</label>
+                        <input class="form_padrao_e" type="number" id="cpf_cnpj" placeholder="000.000.000-00" required>
+                    </div>
+
+                    <button type="submit" id="botao_enviar">Começar teste grátis | R$599/mês depois</button>
+                </form>
+
+                <div id="aviso_seguro">
+                    <span>Pagamento seguro. Seus dados são criptografados de ponta a ponta.</span>
+                </div>
+
+                <p id="nota_teste">Você não será cobrado durante os 14 dias de teste.</p>
+            </div>
+
+            <div id="valor_final">
+                <h2>Valor final</h2>
+
+                <div class="vf_linha" id="vf_teste">
+                    <span class="vf_cinza">Teste grátis</span>
+                    <span class="vf_escuro">14 dias</span>
+                </div>
+                <hr>
+
+                <div class="vf_linha" id="vf_hoje">
+                    <span class="vf_cinza">Hoje você paga</span>
+                    <span id="vf_preco_hoje">R$ 0,00</span>
+                </div>
+                <div class="vf_linha" id="vf_depois">
+                    <span class="vf_cinza">Depois do teste</span>
+                    <span id="vf_preco_depois">R$ 599/mês</span>
+                </div>
+                <hr>
+
+                <ul>
+                    <li>Cancele quando quiser, sem multas</li>
+                    <li>Suporte por chat em português</li>
+                    <li>Migração dos seus dados incluída</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div id="meio_circulo"></div>
+        <div id="m_circulo"></div>
+        <div id="pp_circulo"></div>
+
+    </div>
+
+</div>
+
+<footer class="rodape">
+    <div class="rodapeConteudo">
+        <div class="rodapeLogo">
+            <img src="../utils/imagens/logotipo-footer-icon.png" alt="Logo Inventra">
+            <p>Gestão inteligente de estoque para reduzir desperdícios.</p>
+            <a href="../login.jsp" class="linkAdmin">Inventra ADMIN</a>
+        </div>
+
+        <div class="rodapeColuna">
+            <h3>Navegação</h3>
+            <a href="../index.html">Recursos</a>
+            <a href="../index.html">Como funciona</a>
+            <a href="../index.html">Quem somos</a>
+            <a href="../index.html">Conheça nossa história</a>
+        </div>
+
+        <div class="rodapeColuna">
+            <h3>Informações legais</h3>
+            <a href="privacidade.html">Política de Privacidade</a>
+        </div>
+
+        <div class="rodapeColuna">
+            <h3>Suporte</h3>
+            <p>Precisa de ajuda? Entre em contato com nossa equipe.</p>
+            <a href="aba_suporte.html">Entre em contato →</a>
+        </div>
+    </div>
+
+    <div class="rodapeInferior">
+        <p>© 2026 Inventra. Todos os direitos reservados.</p>
+        <p>Gestão eficiente, desperdício reduzido.</p>
+    </div>
+</footer>
+
+</body>
+</html>

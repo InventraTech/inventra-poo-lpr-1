@@ -28,7 +28,7 @@
 
 <div id="login">
     <header>
-        <a href="landing_1.html" id="img_voltar"></a>
+        <a href="index.html" id="img_voltar"></a>
         <img src="${pageContext.request.contextPath}/utils/imagens/logo-inventra-icon.png" width="65" alt="Logo Inventra">
         <h1 id="title">Acesse o <span id="roxo">Inventra</span></h1>
     </header>
