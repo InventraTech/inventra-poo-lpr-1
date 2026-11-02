@@ -10,8 +10,8 @@ public class FuncionarioREGEX {
 
     //REGEX CPF. Formato: 000.000.000-00 ou 00000000000
     private static final Pattern CPF_REGEX = Pattern.compile("^(\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11})$");
-    //REGEX EMAIL. Formato usuario@dominio, sem exigir extensão (.com, .br...).
-    private static final Pattern EMAIL_REGEX = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    //REGEX EMAIL. Formato usuario@dominio.extensao (ex.: .com, .br), igual ao usado para fornecedores.
+    private static final Pattern EMAIL_REGEX = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     //REGEX TELEFONE. Formato: (11) 99999-9999 ou 11999999999
     private static final Pattern TELEFONE_REGEX = Pattern.compile("^(\\(\\d{2}\\)\\s?)?\\d{4,5}-\\d{4}$|^\\d{10,11}$");
 

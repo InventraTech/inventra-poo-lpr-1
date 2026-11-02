@@ -28,13 +28,19 @@ public class LoteValidador {
 
         // Produto
         if (lote.getFkProduto() <= 0) {
-            erros.add("A FK do produto não pode ser menor que zero");
+            erros.add("Selecione um produto válido.");
         }
 
         // Número do lote
         if (lote.getNumeroLote() == null ||
                 lote.getNumeroLote().isBlank()) {
             erros.add("O número do lote é obrigatório.");
+        }
+
+        // Nota fiscal (obrigatória no formulário de cadastro e de edição)
+        if (lote.getNotaFiscal() == null ||
+                lote.getNotaFiscal().isBlank()) {
+            erros.add("A nota fiscal é obrigatória.");
         }
 
         // Quantidade inicial

@@ -216,8 +216,8 @@ public class ItemPreListaServlet extends HttpServlet {
                 return;
 
             } else if (acao.equals("atualizar_completo")) {
-                //O formulário de edição envia o ID do item no parâmetro "id_fornecedor" (nome mantido para não quebrar a tela)
-                int id = ParametrosHttp.lerInt(request.getParameter("id_fornecedor"), "ID do item", erros);
+                //O formulário de edição envia o ID do item no parâmetro "id_item_lista"
+                int id = ParametrosHttp.lerInt(request.getParameter("id_item_lista"), "ID do item", erros);
 
                 ItemPreListaMolde atualizarItemPreLista = lerItemPreLista(request, erros);
 
@@ -273,7 +273,7 @@ public class ItemPreListaServlet extends HttpServlet {
 
         int fkFornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
 
-        int fkProduto = ParametrosHttp.lerInt(request.getParameter("fk_prduto"), "Produto", erros);
+        int fkProduto = ParametrosHttp.lerInt(request.getParameter("fk_produto"), "Produto", erros);
 
         int qtd = ParametrosHttp.lerInt(request.getParameter("quantidade"), "Quantidade", erros);
 

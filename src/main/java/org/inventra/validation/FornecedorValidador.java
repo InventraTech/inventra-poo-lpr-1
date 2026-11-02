@@ -8,20 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Regras de cadastro e edição de fornecedor. CNPJ, e-mail e telefone são conferidos apenas quanto ao formato
- * (ver FornecedorREGEX); a nota VPQ não pode ser negativa.
+ * Regras de cadastro e edição de fornecedor. CNPJ e e-mail são conferidos apenas quanto ao formato
+ * (ver FornecedorREGEX); a nota VPQ deve estar entre 0 e 10. O fornecedor não tem telefone no banco.
  */
 public class FornecedorValidador {
 
     /**
      * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
-     * O telefone é recebido à parte porque o modelo do fornecedor não o guarda.
      *
      * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
      */
-    public static List<String> validar(
-            FornecedorMolde fornecedor,
-            String telefone) {
+    public static List<String> validar(FornecedorMolde fornecedor) {
 
         List<String> erros = new ArrayList<>();
 
@@ -61,17 +58,9 @@ public class FornecedorValidador {
             erros.add("O formato do e-mail é inválido.");
         }
 
-        // Telefone
-        if (telefone == null || telefone.isBlank()) {
-            erros.add("O telefone do fornecedor é obrigatório.");
-
-        } else if (!FornecedorREGEX.validarTelefone(telefone)) {
-            erros.add("O formato do telefone é inválido.");
-        }
-
-        // Nota VPQ
-        if (fornecedor.getNotaVpq() < 0) {
-            erros.add("A nota VPQ não pode ser negativa.");
+        // Nota VPQ (escala de 0 a 10, a mesma do formulário)
+        if (fornecedor.getNotaVpq() < 0 || fornecedor.getNotaVpq() > 10) {
+            erros.add("A nota VPQ deve estar entre 0 e 10.");
         }
 
         return erros;

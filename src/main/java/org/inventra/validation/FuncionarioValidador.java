@@ -67,9 +67,12 @@ public class FuncionarioValidador {
             erros.add("A data de admissão é obrigatória.");
         }
 
-        // Status
+        // Status (apenas os valores oferecidos no formulário)
         if (funcionario.getStatus() == null || funcionario.getStatus().isBlank()) {
             erros.add("O status do funcionário é obrigatório.");
+
+        } else if (!funcionario.getStatus().equals("Ativo") && !funcionario.getStatus().equals("Inativo")) {
+            erros.add("O status do funcionário deve ser Ativo ou Inativo.");
         }
 
         return erros;
