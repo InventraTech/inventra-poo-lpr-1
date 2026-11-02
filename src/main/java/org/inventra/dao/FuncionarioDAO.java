@@ -49,7 +49,7 @@ public class FuncionarioDAO {
     // 2.READ
     public static final String SQL_BASE = """
             SELECT f.id_funcionario, f.nome AS nome_funcionario, f. email, f.cpf,
-            f.dt_admissao, f.status, s.nome AS setor, f.is_admin
+            f.dt_admissao, f.status, s.nome AS setor, f.is_admin, f.fk_setor
             FROM funcionario f 
             JOIN setor s ON f.fk_setor = s.id_setor
             """;
@@ -87,6 +87,7 @@ public class FuncionarioDAO {
                     boolean isAdmin = rs.getBoolean("is_admin");
 
                     FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, cpf, dtAdmissao, status, setor, isAdmin);
+                    funcionario.setFkSetor(rs.getInt("fk_setor"));
                     listaFuncionarios.add(funcionario);
                 }
             }

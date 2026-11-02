@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
+import org.inventra.dao.OpcoesDAO;
 import org.inventra.model.ProdutoMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -131,6 +132,9 @@ public class ProdutoServlet extends HttpServlet {
             request.setAttribute("totalCategorias", totalCategorias);
             request.setAttribute("totalFornecedores", totalFornecedores);
             request.setAttribute("totalMarcas", totalMarcas);
+            request.setAttribute("opcoesFornecedores", OpcoesDAO.fornecedores());
+            request.setAttribute("opcoesMarcas", OpcoesDAO.marcas());
+            request.setAttribute("opcoesCategorias", OpcoesDAO.categorias());
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             //Notificações do sino do header (lotes mais próximos da validade)

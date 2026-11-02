@@ -39,7 +39,7 @@ public class ItemPreListaDAO {
     //READ
 
     public static final String SQL_BASE = """
-            SELECT i.id_item_lista, f.nome_juridico AS fornecedor, p.nome AS produto, i.qtd AS quantidade
+            SELECT i.id_item_lista, f.nome_juridico AS fornecedor, p.nome AS produto, i.qtd AS quantidade, i.fk_pre_lista, i.fk_fornecedor, i.fk_produto
             FROM Item_pre_lista i
             JOIN fornecedor f ON i.fk_fornecedor = f.id_fornecedor
             JOIN produto p ON i.fk_produto = p.id_produto
@@ -75,6 +75,9 @@ public class ItemPreListaDAO {
                     int qtd = rs.getInt("quantidade");
 
                     ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(idItemPreLista, fornecedor, produto, qtd);
+                    novoItemPreLista.setFkPreLista(rs.getInt("fk_pre_lista"));
+                    novoItemPreLista.setFkFornecedor(rs.getInt("fk_fornecedor"));
+                    novoItemPreLista.setFkProduto(rs.getInt("fk_produto"));
                     listaItensPreLista.add(novoItemPreLista);
                 }
             }
@@ -245,7 +248,6 @@ public class ItemPreListaDAO {
                 """);
     }
 
-    //BUSCAR POR ID (leitura apenas; usado pelo ItemPreListaServlet para validar edições por coluna)
     public ItemPreListaMolde buscarItemPreListaPorId(int idItemPreLista){
         String sql = "SELECT id_item_lista, fk_pre_lista, fk_fornecedor, fk_produto, qtd FROM item_pre_lista WHERE id_item_lista = ?";
 

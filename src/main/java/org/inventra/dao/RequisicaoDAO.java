@@ -45,7 +45,8 @@ public class RequisicaoDAO {
     //SQL base:
     public static final String SQL_BASE = """
             SELECT r.id_requisicao, t.tipo AS tipo_requisicao, fs.nome AS funcionario_solicitante, fa.nome AS funcionario_aprovador,
-            p.nome AS produto, r.quantidade_prod, r.motivo, r.status, r.dt_requisicao
+            p.nome AS produto, r.quantidade_prod, r.motivo, r.status, r.dt_requisicao,
+            r.fk_tipo_requisicao, r.fk_funcionario_solicitante, r.fk_funcionario_aprovador, r.fk_produto
             FROM requisicao r
             JOIN tipo_requisicao t ON r.fk_tipo_requisicao = t.id_tipo_requisicao
             JOIN funcionario fs ON r.fk_funcionario_solicitante = fs.id_funcionario
@@ -86,6 +87,10 @@ public class RequisicaoDAO {
                     LocalDateTime dataHora = rs.getObject("dt_requisicao", LocalDateTime.class);
 
                     RequisicaoMolde requisicao = new RequisicaoMolde(id, idTipoRequisicao, funcionarioSolicitante, funcionarioAprovador, produto, qtd, motivo, status, dataHora);
+                    requisicao.setIdTipoRequisicao(rs.getInt("fk_tipo_requisicao"));
+                    requisicao.setFkFuncionarioSolicitante(rs.getInt("fk_funcionario_solicitante"));
+                    requisicao.setFkFuncionarioAprovador(rs.getInt("fk_funcionario_aprovador"));
+                    requisicao.setFkProduto(rs.getInt("fk_produto"));
                     array.add(requisicao);
                 }
             }

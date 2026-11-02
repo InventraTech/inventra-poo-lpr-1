@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
 <%
@@ -21,6 +22,7 @@
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/funcionarios.css">
   <style>
+    .novo-valor-fk[hidden] { display: none !important; }
     .form-filtro { display: flex; gap: .5rem; }
     .form-exportar { display: flex; }
     .acoes-formulario { display: flex; gap: .65rem; justify-content: flex-end; flex-wrap: wrap; }
@@ -160,7 +162,8 @@
                 data-cpf="${fn:escapeXml(f.cpf)}"
                 data-admissao="${f.dtAdmissao}"
                 data-status="${fn:escapeXml(f.status)}"
-                data-admin="${f.admin}">
+                data-admin="${f.admin}"
+                data-setor="${f.fkSetor gt 0 ? f.fkSetor : ''}">
               <td><c:out value="${f.idFuncionario}"/></td>
               <td><c:out value="${f.nome}"/></td>
               <td><c:out value="${f.cpf}"/></td>
@@ -299,8 +302,8 @@
         </label>
       </div>
       <div class="linha-campos">
-        <label class="campo" for="func-setor">ID Setor (fk_setor)
-          <input type="number" name="fk_setor" id="func-setor" placeholder="Ex: 1" min="1" required>
+        <label class="campo" for="func-setor">Setor
+          <t:selectFK name="fk_setor" id="func-setor" opcoes="${opcoesSetores}" />
         </label>
         <label class="campo" for="func-admissao">Data de Admissão
           <input type="date" name="dt_admissao" id="func-admissao" required>
@@ -328,7 +331,7 @@
       <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
       <h2 class="modal-titulo" id="titulo-edicao">Editar Funcionário</h2>
       <%-- A consulta da listagem (JOIN) não devolve os IDs das chaves estrangeiras: esses campos exigem preenchimento manual. --%>
-      <p>Preencha o ID do setor para salvar. A senha só é alterada se você digitar uma nova.</p>
+      <p>Escolha o setor para salvar. A senha só é alterada se você digitar uma nova.</p>
 
       <input type="hidden" name="acao" value="atualizar_completo">
       <input type="hidden" name="id_funcionario" id="edicao-id">
@@ -350,8 +353,8 @@
         </label>
       </div>
       <div class="linha-campos">
-        <label class="campo" for="edicao-setor">ID Setor (fk_setor)
-          <input type="number" name="fk_setor" id="edicao-setor" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-setor">Setor
+          <t:selectFK name="fk_setor" id="edicao-setor" opcoes="${opcoesSetores}" />
         </label>
         <label class="campo" for="edicao-admissao">Data de Admissão
           <input type="date" name="dt_admissao" id="edicao-admissao" required>
@@ -386,7 +389,7 @@
         <select name="coluna" id="coluna">
           <option value="nome">Nome</option>
           <option value="senha">Senha</option>
-          <option value="fk_setor">ID do Setor</option>
+          <option value="fk_setor">Setor</option>
           <option value="email">E-mail</option>
           <option value="cpf">CPF</option>
           <option value="dt_admissao">Data de Admissão</option>
@@ -397,6 +400,7 @@
 
       <label class="campo" for="novoValor">Novo valor
         <input type="text" id="novoValor" name="novoValor" required>
+        <t:selectFK name="novoValor" id="novo-fk-setor" coluna="fk_setor" opcoes="${opcoesSetores}" />
       </label>
 
       <div class="acoes-formulario">
@@ -414,7 +418,7 @@
       const itens = [...document.querySelectorAll('.tabela [data-id]')];
       let selecionado = null;
       let retorno = null;
-      const propriedades = ["nome", "email", "cpf", "admissao", "status", "admin"];
+      const propriedades = ["nome", "email", "cpf", "admissao", "status", "admin", "setor"];
 
       // ---- Busca (sem diferenciar maiúsculas nem acentos) ----
       const busca = document.querySelector('.busca');
@@ -481,11 +485,7 @@
                 "password",
                 "Nova senha"
         ],
-        "fk_setor": [
-                null,
-                "number",
-                "Informe o ID"
-        ],
+        "fk_setor": ["setor", "number", ""],
         "email": [
                 "email",
                 "email",
@@ -517,6 +517,16 @@
       function preencherCampo() {
         if (!selecionado) return;
         const [chave, tipo, dica] = campos[coluna.value];
+        const selectFk = document.querySelector('.novo-valor-fk[data-coluna="' + coluna.value + '"]');
+        novoValor.hidden = Boolean(selectFk);
+        novoValor.disabled = Boolean(selectFk);
+        document.querySelectorAll('.novo-valor-fk').forEach(sel => {
+          const ativo = sel === selectFk;
+          sel.hidden = !ativo;
+          sel.disabled = !ativo;
+          sel.required = ativo;
+          if (ativo) sel.value = (chave && selecionado[chave]) || '';
+        });
         novoValor.type = tipo;
         novoValor.placeholder = dica || '';
         novoValor.value = (chave && selecionado[chave]) || '';

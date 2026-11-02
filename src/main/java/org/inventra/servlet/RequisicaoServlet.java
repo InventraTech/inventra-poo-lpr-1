@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.RequisicaoDAO;
+import org.inventra.dao.OpcoesDAO;
 import org.inventra.model.RequisicaoMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -132,6 +133,9 @@ public class RequisicaoServlet extends HttpServlet{
             request.setAttribute("totalPaginas", totalPaginas);
             request.setAttribute("totalRegistrosAprovados", totalAprovados);
             request.setAttribute("totalRegistrosPendentes", totalPendentes);
+            request.setAttribute("opcoesTiposRequisicao", OpcoesDAO.tiposRequisicao());
+            request.setAttribute("opcoesFuncionarios", OpcoesDAO.funcionarios());
+            request.setAttribute("opcoesProdutos", OpcoesDAO.produtos());
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             //Notificações do sino do header (lotes mais próximos da validade)

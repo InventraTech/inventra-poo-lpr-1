@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
 <%
@@ -21,6 +22,7 @@
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/produtos.css">
   <style>
+    .novo-valor-fk[hidden] { display: none !important; }
     .form-filtro { display: flex; gap: .5rem; }
     .form-exportar { display: flex; }
     .tabela-acoes { display: flex; align-items: center; gap: .8rem; }
@@ -305,17 +307,17 @@
       </label>
 
       <div class="linha-campos">
-        <label class="campo" for="produto-fornecedor">ID do Fornecedor
-          <input type="number" name="fk_fornecedor" id="produto-fornecedor" min="1" required>
+        <label class="campo" for="produto-fornecedor">Fornecedor
+          <t:selectFK name="fk_fornecedor" id="produto-fornecedor" opcoes="${opcoesFornecedores}" />
         </label>
-        <label class="campo" for="produto-marca">ID da Marca
-          <input type="number" name="fk_marca" id="produto-marca" min="1" required>
+        <label class="campo" for="produto-marca">Marca
+          <t:selectFK name="fk_marca" id="produto-marca" opcoes="${opcoesMarcas}" />
         </label>
       </div>
 
       <div class="linha-campos">
-        <label class="campo" for="produto-categoria">ID da Categoria
-          <input type="number" name="fk_categoria" id="produto-categoria" min="1" required>
+        <label class="campo" for="produto-categoria">Categoria
+          <t:selectFK name="fk_categoria" id="produto-categoria" opcoes="${opcoesCategorias}" />
         </label>
         <label class="campo" for="produto-unidade">Unidade de Medida
           <input type="text" name="unidadeMedida" id="produto-unidade" required>
@@ -354,8 +356,8 @@
     <form action="${ctx}/produto" method="post" class="formulario" id="form-edicao">
       <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
       <h2 class="modal-titulo" id="titulo-edicao">Editar Produto</h2>
-      <%-- A consulta original não preenche os IDs das FKs: esses campos exigem preenchimento manual. --%>
-      <p>Preencha os IDs de fornecedor, marca e categoria para salvar a edição completa.</p>
+      <%-- Os campos de chave estrangeira são listas de seleção com os valores atuais do registro. --%>
+      <p>Escolha fornecedor, marca e categoria na lista para salvar a edição completa.</p>
 
       <input type="hidden" name="acao" value="atualizar_completo">
       <input type="hidden" name="id_produto" id="edicao-id">
@@ -365,17 +367,17 @@
       </label>
 
       <div class="linha-campos">
-        <label class="campo" for="edicao-fornecedor">ID do Fornecedor
-          <input type="number" name="fk_fornecedor" id="edicao-fornecedor" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-fornecedor">Fornecedor
+          <t:selectFK name="fk_fornecedor" id="edicao-fornecedor" opcoes="${opcoesFornecedores}" />
         </label>
-        <label class="campo" for="edicao-marca">ID da Marca
-          <input type="number" name="fk_marca" id="edicao-marca" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-marca">Marca
+          <t:selectFK name="fk_marca" id="edicao-marca" opcoes="${opcoesMarcas}" />
         </label>
       </div>
 
       <div class="linha-campos">
-        <label class="campo" for="edicao-categoria">ID da Categoria
-          <input type="number" name="fk_categoria" id="edicao-categoria" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-categoria">Categoria
+          <t:selectFK name="fk_categoria" id="edicao-categoria" opcoes="${opcoesCategorias}" />
         </label>
         <label class="campo" for="edicao-unidade">Unidade de Medida
           <input type="text" name="unidadeMedida" id="edicao-unidade" required>
@@ -421,18 +423,21 @@
       <label class="campo" for="coluna">Campo
         <select name="coluna" id="coluna">
           <option value="nome">Nome</option>
-          <option value="fk_marca">ID da Marca</option>
-          <option value="fk_categoria">ID da Categoria</option>
+          <option value="fk_marca">Marca</option>
+          <option value="fk_categoria">Categoria</option>
           <option value="unidade_medida">Unidade de Medida</option>
           <option value="estoque_min">Estoque Mínimo</option>
           <option value="estoque_max">Estoque Máximo</option>
-          <option value="fk_fornecedor">ID do Fornecedor</option>
+          <option value="fk_fornecedor">Fornecedor</option>
           <option value="descricao">Descrição</option>
         </select>
       </label>
 
       <label class="campo" for="novoValor">Novo valor
         <input type="text" id="novoValor" name="novoValor" required>
+        <t:selectFK name="novoValor" id="novo-fk-marca" coluna="fk_marca" opcoes="${opcoesMarcas}" />
+        <t:selectFK name="novoValor" id="novo-fk-categoria" coluna="fk_categoria" opcoes="${opcoesCategorias}" />
+        <t:selectFK name="novoValor" id="novo-fk-fornecedor" coluna="fk_fornecedor" opcoes="${opcoesFornecedores}" />
       </label>
 
       <div class="acoes-formulario">
@@ -521,6 +526,16 @@
       function preencherCampo() {
         if (!selecionado) return;
         const [chave, tipo] = campos[coluna.value];
+        const selectFk = document.querySelector('.novo-valor-fk[data-coluna="' + coluna.value + '"]');
+        novoValor.hidden = Boolean(selectFk);
+        novoValor.disabled = Boolean(selectFk);
+        document.querySelectorAll('.novo-valor-fk').forEach(sel => {
+          const ativo = sel === selectFk;
+          sel.hidden = !ativo;
+          sel.disabled = !ativo;
+          sel.required = ativo;
+          if (ativo) sel.value = (chave && selecionado[chave]) || '';
+        });
         novoValor.type = tipo;
         novoValor.value = selecionado[chave] ?? '';
         novoValor.required = coluna.value !== 'descricao';

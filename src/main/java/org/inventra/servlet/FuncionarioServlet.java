@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FuncionarioDAO;
+import org.inventra.dao.OpcoesDAO;
 import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -136,6 +137,7 @@ public class FuncionarioServlet extends HttpServlet {
             request.setAttribute("totalSetores", totalSetores);
             request.setAttribute("totalAtivos", totalAtivos);
             request.setAttribute("totalAdmins", totalAdmins);
+            request.setAttribute("opcoesSetores", OpcoesDAO.setores());
             request.setAttribute("filtroSelecionado", filtroSelecionado);
 
             NotificacaoLotes.carregar(request);
