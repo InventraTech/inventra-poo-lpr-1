@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.inventra.utils.ParametrosHttp;
+import org.inventra.validation.RequisicaoValidador;
+import java.util.ArrayList;
+import java.util.Locale;
 @WebServlet(name = "RequisicaoServlet", value = "/requisicao")
 public class RequisicaoServlet extends HttpServlet{
 
@@ -156,8 +160,10 @@ public class RequisicaoServlet extends HttpServlet{
             acao = "";
         }
 
-        try {
+        //Mensagens específicas para o usuário: erros de leitura dos parâmetros + lista devolvida pelo validador
+        List<String> erros = new ArrayList<>();
 
+        try {
             if (acao.equals("excluir")) {
                 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -167,10 +173,36 @@ public class RequisicaoServlet extends HttpServlet{
                         request.getContextPath() + "/requisicao"
                 );
                 return;
-            } else if (acao.equals("atualizar_coluna")) {
-                int id = Integer.parseInt(request.getParameter("id"));
+            }
+
+            else if (acao.equals("atualizar_coluna")) {
+                int id = ParametrosHttp.lerInt(request.getParameter("id"), "ID da requisição", erros);
                 String coluna = request.getParameter("coluna");
                 String novoValor = request.getParameter("novoValor");
+
+                if (coluna == null || coluna.isBlank() || novoValor == null) {
+                    erros.add("Coluna ou valor não informado.");
+                }
+
+                //Aplica o novo valor sobre a requisição atual e valida o resultado (inclui solicitante x aprovador)
+                if (erros.isEmpty()) {
+                    RequisicaoMolde requisicao = requisicaoDAO.buscarRequisicaoPorId(id);
+
+                    if (requisicao == null) {
+                        erros.add("Requisição não encontrada.");
+                    } else {
+                        aplicarColuna(requisicao, coluna, novoValor, erros);
+
+                        if (erros.isEmpty()) {
+                            erros.addAll(RequisicaoValidador.validar(requisicao));
+                        }
+                    }
+                }
+
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/requisicao", erros);
+                    return;
+                }
 
                 requisicaoDAO.atualizarColunaRequisicao(coluna, novoValor, id);
 
@@ -179,38 +211,18 @@ public class RequisicaoServlet extends HttpServlet{
                 //Return faz com que pare aqui caso seja escolhido
                 return;
             } else if (acao.equals("atualizar_completo")) {
-                int id = Integer.parseInt(request.getParameter("id_requisicao"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id_requisicao"), "ID da requisição", erros);
 
-                int idTipoRequisicao =
-                        Integer.parseInt(request.getParameter("idTipoRequisicao"));
-                int quantidadeProduto =
-                        Integer.parseInt(request.getParameter("quantidadeProduto"));
-                String motivo =
-                        request.getParameter("motivo");
-                String status =
-                        request.getParameter("status");
+                RequisicaoMolde atualizarRequisicao = lerRequisicao(request, erros);
 
-                String dataHora =
-                        request.getParameter("dataHora");
-
-                LocalDateTime dataHoraRequisicao = null;
-
-                if (
-                        dataHora != null &&
-                                !dataHora.isBlank()
-                ) {
-                    dataHoraRequisicao = LocalDateTime.parse(dataHora);
+                if (erros.isEmpty()) {
+                    erros.addAll(RequisicaoValidador.validar(atualizarRequisicao));
                 }
 
-                int fkFuncionarioSolicitante =
-                        Integer.parseInt(request.getParameter("fkFuncionarioSolicitante"));
-                int fkFuncionarioAprovador =
-                        Integer.parseInt(request.getParameter("fkFuncionarioAprovador"));
-                int fkProduto =
-                        Integer.parseInt(request.getParameter("fkProduto"));
-
-
-                RequisicaoMolde atualizarRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/requisicao", erros);
+                    return;
+                }
 
                 requisicaoDAO.atualizarRequisicaoCompleta(atualizarRequisicao, id);
 
@@ -221,37 +233,16 @@ public class RequisicaoServlet extends HttpServlet{
                 return;
             }
 
+            RequisicaoMolde novaRequisicao = lerRequisicao(request, erros);
 
-            int idTipoRequisicao =
-                    Integer.parseInt(request.getParameter("idTipoRequisicao"));
-            int quantidadeProduto =
-                    Integer.parseInt(request.getParameter("quantidadeProduto"));
-            String motivo =
-                    request.getParameter("motivo");
-            String status =
-                    request.getParameter("status");
-
-            String dataHora =
-                    request.getParameter("dataHora");
-
-            LocalDateTime dataHoraRequisicao = null;
-
-            if (
-                    dataHora != null &&
-                            !dataHora.isBlank()
-            ) {
-                dataHoraRequisicao = LocalDateTime.parse(dataHora);
+            if (erros.isEmpty()) {
+                erros.addAll(RequisicaoValidador.validar(novaRequisicao));
             }
 
-            int fkFuncionarioSolicitante =
-                    Integer.parseInt(request.getParameter("fkFuncionarioSolicitante"));
-            int fkFuncionarioAprovador =
-                    Integer.parseInt(request.getParameter("fkFuncionarioAprovador"));
-            int fkProduto =
-                    Integer.parseInt(request.getParameter("fkProduto"));
-
-
-            RequisicaoMolde novaRequisicao = new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
+            if (!erros.isEmpty()) {
+                ParametrosHttp.redirecionarComErros(request, response, "/requisicao", erros);
+                return;
+            }
 
             requisicaoDAO.inserirRequisicao(novaRequisicao);
 
@@ -274,4 +265,38 @@ public class RequisicaoServlet extends HttpServlet{
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
+    //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
+    private RequisicaoMolde lerRequisicao(HttpServletRequest request, List<String> erros) {
+        int idTipoRequisicao = ParametrosHttp.lerInt(request.getParameter("idTipoRequisicao"), "Tipo de requisição", erros);
+        int quantidadeProduto = ParametrosHttp.lerInt(request.getParameter("quantidadeProduto"), "Quantidade", erros);
+        String motivo = request.getParameter("motivo");
+        String status = request.getParameter("status");
+        LocalDateTime dataHoraRequisicao = ParametrosHttp.lerDataHora(request.getParameter("dataHora"), "requisição", erros);
+        int fkFuncionarioSolicitante = ParametrosHttp.lerInt(request.getParameter("fkFuncionarioSolicitante"), "Solicitante", erros);
+        int fkFuncionarioAprovador = ParametrosHttp.lerInt(request.getParameter("fkFuncionarioAprovador"), "Aprovador", erros);
+        int fkProduto = ParametrosHttp.lerInt(request.getParameter("fkProduto"), "Produto", erros);
+
+        return new RequisicaoMolde(idTipoRequisicao, fkFuncionarioSolicitante, fkFuncionarioAprovador, fkProduto, quantidadeProduto, motivo, status, dataHoraRequisicao);
+    }
+
+    //Edição por coluna: troca na requisição atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
+    private void aplicarColuna(RequisicaoMolde requisicao, String coluna, String novoValor, List<String> erros) {
+        switch (coluna.toLowerCase(Locale.ROOT)) {
+            case "fk_tipo_requisicao" -> requisicao.setIdTipoRequisicao(ParametrosHttp.lerInt(novoValor, "Tipo de requisição", erros));
+            case "quantidade_prod" -> requisicao.setQuantidadeProduto(ParametrosHttp.lerInt(novoValor, "Quantidade", erros));
+            case "motivo" -> requisicao.setMotivo(novoValor);
+            case "status" -> requisicao.setStatus(novoValor);
+            case "dt_requisicao" -> {
+                if (novoValor.isBlank()) {
+                    erros.add("A data e hora da requisição é obrigatória.");
+                } else {
+                    requisicao.setDataHora(ParametrosHttp.lerDataHora(novoValor, "requisição", erros));
+                }
+            }
+            case "fk_funcionario_solicitante" -> requisicao.setFkFuncionarioSolicitante(ParametrosHttp.lerInt(novoValor, "Solicitante", erros));
+            case "fk_funcionario_aprovador" -> requisicao.setFkFuncionarioAprovador(ParametrosHttp.lerInt(novoValor, "Aprovador", erros));
+            case "fk_produto" -> requisicao.setFkProduto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
+            default -> erros.add("A coluna informada não pode ser alterada.");
+        }
+    }
 }

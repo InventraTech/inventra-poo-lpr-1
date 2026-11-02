@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.inventra.utils.ParametrosHttp;
+import org.inventra.validation.ProdutoValidador;
+import java.util.ArrayList;
+import java.util.Locale;
 @WebServlet(name = "ProdutoServlet", value = "/produto")
 public class ProdutoServlet extends HttpServlet {
 
@@ -154,8 +158,10 @@ public class ProdutoServlet extends HttpServlet {
             acao = "";
         }
 
-        try {
+        //Mensagens específicas para o usuário: erros de leitura dos parâmetros + lista devolvida pelo validador
+        List<String> erros = new ArrayList<>();
 
+        try {
             if (acao.equals("excluir")) {
                 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -167,11 +173,35 @@ public class ProdutoServlet extends HttpServlet {
                 return;
             }
 
-//        Atualiza apenas UMA coluna
+            //Atualiza apenas UMA coluna
             else if (acao.equals("atualizar_coluna")) {
-                int id = Integer.parseInt(request.getParameter("id"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id"), "ID do produto", erros);
                 String coluna = request.getParameter("coluna");
                 String novoValor = request.getParameter("novoValor");
+
+                if (coluna == null || coluna.isBlank() || novoValor == null) {
+                    erros.add("Coluna ou valor não informado.");
+                }
+
+                //Aplica o novo valor sobre o produto atual e valida o resultado (inclui estoque mínimo x máximo)
+                if (erros.isEmpty()) {
+                    ProdutoMolde produto = produtoDAO.buscarProdutoPorId(id);
+
+                    if (produto == null) {
+                        erros.add("Produto não encontrado.");
+                    } else {
+                        aplicarColuna(produto, coluna, novoValor, erros);
+
+                        if (erros.isEmpty()) {
+                            erros.addAll(ProdutoValidador.validar(produto));
+                        }
+                    }
+                }
+
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/produto", erros);
+                    return;
+                }
 
                 produtoDAO.atualizarColunaProduto(coluna, novoValor, id);
 
@@ -180,28 +210,18 @@ public class ProdutoServlet extends HttpServlet {
                 //Return faz com que pare aqui caso seja escolhido
                 return;
             } else if (acao.equals("atualizar_completo")) {
-                int id = Integer.parseInt(request.getParameter("id_produto"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id_produto"), "ID do produto", erros);
 
-                String nome =
-                        request.getParameter("nome");
-                int fk_marca =
-                        Integer.parseInt(request.getParameter("fk_marca"));
-                int fk_categoria =
-                        Integer.parseInt(request.getParameter("fk_categoria"));
-                String unidadeMedida =
-                        request.getParameter("unidadeMedida");
-                int estoqueMin =
-                        Integer.parseInt(request.getParameter("estoqueMin"));
-                int estoqueMax =
-                        Integer.parseInt(request.getParameter("estoqueMax"));
-                int fk_fornecedor =
-                        Integer.parseInt(request.getParameter("fk_fornecedor"));
-                String descricao =
-                        request.getParameter("descricao");
-                boolean ativo =
-                        Boolean.parseBoolean(request.getParameter("ativo"));
+                ProdutoMolde atualizandoProduto = lerProduto(request, erros);
 
-                ProdutoMolde atualizandoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+                if (erros.isEmpty()) {
+                    erros.addAll(ProdutoValidador.validar(atualizandoProduto));
+                }
+
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/produto", erros);
+                    return;
+                }
 
                 produtoDAO.atualizarProdutoCompleto(atualizandoProduto, id);
 
@@ -212,32 +232,23 @@ public class ProdutoServlet extends HttpServlet {
                 return;
             }
 
-            String nome =
-                    request.getParameter("nome");
-            int fk_marca =
-                    Integer.parseInt(request.getParameter("fk_marca"));
-            int fk_categoria =
-                    Integer.parseInt(request.getParameter("fk_categoria"));
-            String unidadeMedida =
-                    request.getParameter("unidadeMedida");
-            int estoqueMin =
-                    Integer.parseInt(request.getParameter("estoqueMin"));
-            int estoqueMax =
-                    Integer.parseInt(request.getParameter("estoqueMax"));
-            int fk_fornecedor =
-                    Integer.parseInt(request.getParameter("fk_fornecedor"));
-            String descricao =
-                    request.getParameter("descricao");
-            boolean ativo =
-                    Boolean.parseBoolean(request.getParameter("ativo"));
+            ProdutoMolde novoProduto = lerProduto(request, erros);
 
-            ProdutoMolde novoProduto = new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+            if (erros.isEmpty()) {
+                erros.addAll(ProdutoValidador.validar(novoProduto));
+            }
+
+            if (!erros.isEmpty()) {
+                ParametrosHttp.redirecionarComErros(request, response, "/produto", erros);
+                return;
+            }
 
             produtoDAO.inserirProduto(novoProduto);
 
             response.sendRedirect(
                     request.getContextPath() + "/produto"
             );
+
         } catch (NumberFormatException e){
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
             response.sendRedirect(request.getContextPath() + "/produto");
@@ -247,5 +258,35 @@ public class ProdutoServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/produto");
         }
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
+    }
+
+    //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
+    private ProdutoMolde lerProduto(HttpServletRequest request, List<String> erros) {
+        String nome = request.getParameter("nome");
+        int fk_marca = ParametrosHttp.lerInt(request.getParameter("fk_marca"), "Marca", erros);
+        int fk_categoria = ParametrosHttp.lerInt(request.getParameter("fk_categoria"), "Categoria", erros);
+        String unidadeMedida = request.getParameter("unidadeMedida");
+        int estoqueMin = ParametrosHttp.lerInt(request.getParameter("estoqueMin"), "Estoque mínimo", erros);
+        int estoqueMax = ParametrosHttp.lerInt(request.getParameter("estoqueMax"), "Estoque máximo", erros);
+        int fk_fornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
+        String descricao = request.getParameter("descricao");
+        boolean ativo = Boolean.parseBoolean(request.getParameter("ativo"));
+
+        return new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+    }
+
+    //Edição por coluna: troca no produto atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
+    private void aplicarColuna(ProdutoMolde produto, String coluna, String novoValor, List<String> erros) {
+        switch (coluna.toLowerCase(Locale.ROOT)) {
+            case "fk_fornecedor" -> produto.setFk_fornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
+            case "fk_marca" -> produto.setFk_marca(ParametrosHttp.lerInt(novoValor, "Marca", erros));
+            case "fk_categoria" -> produto.setFk_categoria(ParametrosHttp.lerInt(novoValor, "Categoria", erros));
+            case "nome" -> produto.setNome(novoValor);
+            case "unidade_medida" -> produto.setUnidadeMedida(novoValor);
+            case "estoque_min" -> produto.setEstoqueMin(ParametrosHttp.lerInt(novoValor, "Estoque mínimo", erros));
+            case "estoque_max" -> produto.setEstoqueMax(ParametrosHttp.lerInt(novoValor, "Estoque máximo", erros));
+            case "descricao" -> produto.setDescricao(novoValor);
+            default -> erros.add("A coluna informada não pode ser alterada.");
+        }
     }
 }

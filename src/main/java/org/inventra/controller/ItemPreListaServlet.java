@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.inventra.utils.ParametrosHttp;
+import org.inventra.validation.ItemPreListaValidador;
+import java.util.ArrayList;
+import java.util.Locale;
 @WebServlet(name = "ItemPreListaServlet", value = "/itemprelista")
 public class ItemPreListaServlet extends HttpServlet {
 
@@ -133,7 +137,6 @@ public class ItemPreListaServlet extends HttpServlet {
 
 }
 
-
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -143,12 +146,15 @@ public class ItemPreListaServlet extends HttpServlet {
 
         String acao = request.getParameter("acao");
 
+        //Validando ação para evitar erro por ser NULL
         if (acao == null){
             acao = "";
         }
 
-        try {
+        //Mensagens específicas para o usuário: erros de leitura dos parâmetros + lista devolvida pelo validador
+        List<String> erros = new ArrayList<>();
 
+        try {
             if (acao.equals("excluir")) {
                 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -158,10 +164,36 @@ public class ItemPreListaServlet extends HttpServlet {
                         request.getContextPath() + "/itemprelista"
                 );
                 return;
-            } else if (acao.equals("atualizar_coluna")) {
-                int id = Integer.parseInt(request.getParameter("id"));
+            }
+
+            else if (acao.equals("atualizar_coluna")) {
+                int id = ParametrosHttp.lerInt(request.getParameter("id"), "ID do item", erros);
                 String coluna = request.getParameter("coluna");
                 String novoValor = request.getParameter("novoValor");
+
+                if (coluna == null || coluna.isBlank() || novoValor == null) {
+                    erros.add("Coluna ou valor não informado.");
+                }
+
+                //Aplica o novo valor sobre o item atual e valida o resultado
+                if (erros.isEmpty()) {
+                    ItemPreListaMolde item = itemPreListaDAO.buscarItemPreListaPorId(id);
+
+                    if (item == null) {
+                        erros.add("Item da pré-lista não encontrado.");
+                    } else {
+                        aplicarColuna(item, coluna, novoValor, erros);
+
+                        if (erros.isEmpty()) {
+                            erros.addAll(ItemPreListaValidador.validar(item));
+                        }
+                    }
+                }
+
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/itemprelista", erros);
+                    return;
+                }
 
                 itemPreListaDAO.atualizarColunaItemPreLista(coluna, novoValor, id);
 
@@ -171,19 +203,19 @@ public class ItemPreListaServlet extends HttpServlet {
                 return;
 
             } else if (acao.equals("atualizar_completo")) {
-                int id = Integer.parseInt(request.getParameter("id_fornecedor"));
+                //O formulário de edição envia o ID do item no parâmetro "id_fornecedor" (nome mantido para não quebrar a tela)
+                int id = ParametrosHttp.lerInt(request.getParameter("id_fornecedor"), "ID do item", erros);
 
-                int fk_pre_lista =
-                        Integer.parseInt(request.getParameter("fk_pre_lista"));
-                int fk_fornecedor =
-                        Integer.parseInt(request.getParameter("fk_fornecedor"));
-                int fk_produto =
-                        Integer.parseInt(request.getParameter("fk_prduto"));
-                int qtd =
-                        Integer.parseInt(request.getParameter("quantidade"));
+                ItemPreListaMolde atualizarItemPreLista = lerItemPreLista(request, erros);
 
+                if (erros.isEmpty()) {
+                    erros.addAll(ItemPreListaValidador.validar(atualizarItemPreLista));
+                }
 
-                ItemPreListaMolde atualizarItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/itemprelista", erros);
+                    return;
+                }
 
                 itemPreListaDAO.atualizarItemPreListaCompleto(atualizarItemPreLista, id);
 
@@ -194,23 +226,23 @@ public class ItemPreListaServlet extends HttpServlet {
                 return;
             }
 
-            int fk_pre_lista =
-                    Integer.parseInt(request.getParameter("fk_pre_lista"));
-            int fk_fornecedor =
-                    Integer.parseInt(request.getParameter("fk_fornecedor"));
-            int fk_produto =
-                    Integer.parseInt(request.getParameter("fk_prduto"));
-            int qtd =
-                    Integer.parseInt(request.getParameter("quantidade"));
+            ItemPreListaMolde novoItemPreLista = lerItemPreLista(request, erros);
 
+            if (erros.isEmpty()) {
+                erros.addAll(ItemPreListaValidador.validar(novoItemPreLista));
+            }
 
-            ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+            if (!erros.isEmpty()) {
+                ParametrosHttp.redirecionarComErros(request, response, "/itemprelista", erros);
+                return;
+            }
 
             itemPreListaDAO.inserirItemPreLista(novoItemPreLista);
 
             response.sendRedirect(
                     request.getContextPath() + "/itemprelista"
             );
+
         } catch (NumberFormatException e){
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
             response.sendRedirect(request.getContextPath() + "/itemprelista");
@@ -221,5 +253,36 @@ public class ItemPreListaServlet extends HttpServlet {
         }
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
-}
 
+    //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
+    private ItemPreListaMolde lerItemPreLista(HttpServletRequest request, List<String> erros) {
+        int fk_pre_lista = ParametrosHttp.lerInt(request.getParameter("fk_pre_lista"), "Pré-lista", erros);
+
+        int fk_fornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
+
+        int fk_produto = ParametrosHttp.lerInt(request.getParameter("fk_prduto"), "Produto", erros);
+
+        int qtd = ParametrosHttp.lerInt(request.getParameter("quantidade"), "Quantidade", erros);
+
+        return new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+    }
+
+    //Edição por coluna: troca no item atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
+    private void aplicarColuna(ItemPreListaMolde item, String coluna, String novoValor, List<String> erros) {
+        switch (coluna.toLowerCase(Locale.ROOT)) {
+            case "fk_pre_lista" -> {
+                item.setFk_pre_lista(ParametrosHttp.lerInt(novoValor, "Pré-lista", erros));
+            }
+            case "fk_fornecedor" -> {
+                item.setFk_fornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
+            }
+            case "fk_produto" -> {
+                item.setFk_produto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
+            }
+            case "qtd" -> {
+                item.setQtd(ParametrosHttp.lerInt(novoValor, "Quantidade", erros));
+            }
+            default -> erros.add("A coluna informada não pode ser alterada.");
+        }
+    }
+}
