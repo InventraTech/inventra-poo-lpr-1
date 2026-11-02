@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Regras de cadastro e edição de funcionário: nome, setor, e-mail, telefone, CPF, admissão e status são obrigatórios.
- * E-mail, telefone e CPF são conferidos apenas quanto ao formato (ver FuncionarioREGEX); a senha é tratada no servlet e no DAO.
+ * Regras de cadastro e edição de funcionário: nome, setor, e-mail, CPF, admissão e status são obrigatórios.
+ * E-mail e CPF são conferidos apenas quanto ao formato (ver FuncionarioREGEX); a senha é tratada no servlet e no DAO.
  */
 public class FuncionarioValidador {
 
@@ -44,14 +44,6 @@ public class FuncionarioValidador {
 
         } else if (!FuncionarioREGEX.validarEmail(funcionario.getEmail())) {
             erros.add("O formato do e-mail é inválido.");
-        }
-
-        // Telefone
-        if (funcionario.getTelefone() == null || funcionario.getTelefone().isBlank()) {
-            erros.add("O telefone é obrigatório.");
-
-        } else if (!FuncionarioREGEX.validarTelefone(funcionario.getTelefone())) {
-            erros.add("O formato do telefone é inválido.");
         }
 
         // CPF

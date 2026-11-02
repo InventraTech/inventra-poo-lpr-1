@@ -23,7 +23,7 @@ public class FuncionarioDAO {
     public void inserirFuncionario(FuncionarioMolde funcionario){
 
         //String sql: É o código SQL que será enviado para ser executado no banco.
-        String sql = "INSERT INTO funcionario (fk_setor, nome, senha, email, telefone, cpf, dt_admissao, status, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO funcionario (fk_setor, nome, senha, email, cpf, dt_admissao, status, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
@@ -32,11 +32,10 @@ public class FuncionarioDAO {
             stmt.setString(2, funcionario.getNome());
             stmt.setString(3, SenhaUtil.gerarHash(funcionario.getSenha()));
             stmt.setString(4, funcionario.getEmail());
-            stmt.setString(5, funcionario.getTelefone());
-            stmt.setString(6, funcionario.getCpf() );
-            stmt.setObject(7, funcionario.getDtAdmissao());
-            stmt.setString(8, funcionario.getStatus());
-            stmt.setBoolean(9, funcionario.isAdmin());
+            stmt.setString(5, funcionario.getCpf() );
+            stmt.setObject(6, funcionario.getDtAdmissao());
+            stmt.setString(7, funcionario.getStatus());
+            stmt.setBoolean(8, funcionario.isAdmin());
 
             stmt.executeUpdate();
             System.out.println("Cadastro concluída.");
@@ -49,7 +48,7 @@ public class FuncionarioDAO {
 
     // 2.READ
     public static final String SQL_BASE = """
-            SELECT f.id_funcionario, f.nome AS nome_funcionario, f. email, f.telefone, f.cpf,
+            SELECT f.id_funcionario, f.nome AS nome_funcionario, f. email, f.cpf,
             f.dt_admissao, f.status, s.nome AS setor, f.is_admin
             FROM funcionario f 
             JOIN setor s ON f.fk_setor = s.id_setor
@@ -81,14 +80,13 @@ public class FuncionarioDAO {
                     int id = rs.getInt("id_funcionario");
                     String nome = rs.getString("nome_funcionario");
                     String email = rs.getString("email");
-                    String telefone = rs.getString("telefone");
                     String cpf = rs.getString("cpf");
                     LocalDate dtAdmissao = rs.getObject("dt_admissao", LocalDate.class);
                     String status = rs.getString("status");
                     String setor = rs.getString("setor");
                     boolean isAdmin = rs.getBoolean("is_admin");
 
-                    FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, telefone, cpf, dtAdmissao, status, setor, isAdmin);
+                    FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, cpf, dtAdmissao, status, setor, isAdmin);
                     listaFuncionarios.add(funcionario);
                 }
             }
@@ -116,7 +114,6 @@ public class FuncionarioDAO {
                 	nome = ?,
                 	senha = ?,
                 	email = ?,
-                	telefone = ?,
                 	cpf = ?,
                 	dt_admissao = ?,
                 	status = ?,
@@ -129,7 +126,6 @@ public class FuncionarioDAO {
                 SET fk_setor = ?,
                 	nome = ?,
                 	email = ?,
-                	telefone = ?,
                 	cpf = ?,
                 	dt_admissao = ?,
                 	status = ?,
@@ -150,7 +146,6 @@ public class FuncionarioDAO {
                 stmt.setString(index++, SenhaUtil.gerarHash(funcionario.getSenha()));
             }
             stmt.setString(index++, funcionario.getEmail());
-            stmt.setString(index++, funcionario.getTelefone());
             stmt.setString(index++, funcionario.getCpf() );
             stmt.setObject(index++, funcionario.getDtAdmissao());
             stmt.setString(index++, funcionario.getStatus());
@@ -200,9 +195,6 @@ public class FuncionarioDAO {
             }
             else if (nomeColuna.equalsIgnoreCase("email")){
                 stmt.setString(1, novoValor);
-            }
-            else if (nomeColuna.equalsIgnoreCase("telefone")){
-            stmt.setString(1, novoValor);
             }
             else if (nomeColuna.equalsIgnoreCase("cpf")){
                 stmt.setString(1, novoValor);
@@ -294,7 +286,6 @@ public class FuncionarioDAO {
                                 rs.getInt("id_funcionario"),
                                 rs.getString("nome"),
                                 rs.getString("email"),
-                                rs.getString("telefone"),
                                 rs.getString("cpf"),
                                 rs.getObject("dt_admissao", LocalDate.class), //aceita data nula
                                 rs.getString("status"),

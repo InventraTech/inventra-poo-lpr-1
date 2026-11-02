@@ -12,7 +12,6 @@ public class FuncionarioMolde {
     private String senha;
     private int fkSetor;
     private String email;
-    private String telefone;
     private String cpf;
     private LocalDate dtAdmissao;
     private String status;
@@ -21,12 +20,11 @@ public class FuncionarioMolde {
     //VÁRIAVEL PARA SUBSTITUIR A FK
     private String setor;
 
-    public FuncionarioMolde(int fkSetor, String nome, String senha, String email, String telefone, String cpf, LocalDate dtAdmissao, String status, boolean isAdmin) {
+    public FuncionarioMolde(int fkSetor, String nome, String senha, String email, String cpf, LocalDate dtAdmissao, String status, boolean isAdmin) {
         this.nome = nome;
         this.senha = senha;
         this.fkSetor = fkSetor;
         this.email = email;
-        this.telefone = telefone;
         this.cpf = cpf;
         this.dtAdmissao = dtAdmissao;
         this.status = status;
@@ -35,12 +33,11 @@ public class FuncionarioMolde {
 
 
     //SOBRECARGA PARA USAR O JOIN E SUBSTITUIR A FK
-    public FuncionarioMolde(int idFuncionario, String nome, String email, String telefone, String cpf, LocalDate dtAdmissao, String status, String setor, boolean isAdmin) {
+    public FuncionarioMolde(int idFuncionario, String nome, String email, String cpf, LocalDate dtAdmissao, String status, String setor, boolean isAdmin) {
         this.idFuncionario = idFuncionario;
         this.nome = nome;
         this.setor = setor;
         this.email = email;
-        this.telefone = telefone;
         this.cpf = cpf;
         this.dtAdmissao = dtAdmissao;
         this.status = status;
@@ -89,14 +86,6 @@ public class FuncionarioMolde {
         this.email = email;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public String getCpf() {
         return cpf;
     }
@@ -139,6 +128,6 @@ public class FuncionarioMolde {
 
     @Override
     public String toString(){
-        return "id: "+ idFuncionario + " nome: " + nome + " email: " + email + " telefone: " + telefone + " cpf: " + cpf + "dt_adimissao" + dtAdmissao + " status" + status + " fk_setor: " + fkSetor + " isAdmin: "+ isAdmin;
+        return "id: "+ idFuncionario + " nome: " + nome + " email: " + email + " cpf: " + cpf + "dt_adimissao" + dtAdmissao + " status" + status + " fk_setor: " + fkSetor + " isAdmin: "+ isAdmin;
     }
 }

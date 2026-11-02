@@ -73,13 +73,12 @@ public class FuncionarioServlet extends HttpServlet {
 
                 try (PrintWriter writer = response.getWriter()) {
                     writer.write('\ufeff'); // Para o excel reconhecer os acentos corretamente
-                    writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
+                    writer.println("ID;Nome;Email;CPF;Data Admissão;Status;Setor;Admin");
 
                     for (FuncionarioMolde f : funcionarios) {
                         writer.print(f.getIdFuncionario() + ";");
                         writer.print(f.getNome() + ";");
                         writer.print(f.getEmail() + ";");
-                        writer.print(f.getTelefone() + ";");
                         writer.print(f.getCpf() + ";");
                         writer.print(f.getDtAdmissao() + ";");
                         writer.print(f.getStatus() + ";");
@@ -201,7 +200,7 @@ public class FuncionarioServlet extends HttpServlet {
                     erros.add("Coluna ou valor não informado.");
                 }
 
-                //Valida o novo valor (inclui o formato de CPF, e-mail e telefone) usando o FuncionarioValidador
+                //Valida o novo valor (inclui o formato de CPF e e-mail) usando o FuncionarioValidador
                 if (erros.isEmpty()) {
                     validarColuna(coluna, novoValor, erros);
                 }
@@ -226,7 +225,7 @@ public class FuncionarioServlet extends HttpServlet {
                 //INSTANCIANDO OBJETO FUNCIONARIO
                 FuncionarioMolde atualizandoTudo = lerFuncionario(request, erros);
 
-                //APLICANDO VALIDAÇÕES (nome, setor, e-mail, telefone, CPF, admissão e status)
+                //APLICANDO VALIDAÇÕES (nome, setor, e-mail, CPF, admissão e status)
                 if (erros.isEmpty()) {
                     erros.addAll(FuncionarioValidador.validar(atualizandoTudo));
                 }
@@ -288,19 +287,18 @@ public class FuncionarioServlet extends HttpServlet {
         String senha = request.getParameter("senha");
         int fkSetor = ParametrosHttp.lerInt(request.getParameter("fk_setor"), "Setor", erros);
         String email = request.getParameter("email");
-        String telefone = request.getParameter("telefone");
         String cpf = request.getParameter("cpf");
         LocalDate dataAdmissao = ParametrosHttp.lerData(request.getParameter("dt_admissao"), "admissão", erros);
         String status = request.getParameter("status");
         boolean isAdmin = Boolean.parseBoolean(request.getParameter("is_admin"));
 
-        return new FuncionarioMolde(fkSetor, nome, senha, email, telefone, cpf, dataAdmissao, status, isAdmin);
+        return new FuncionarioMolde(fkSetor, nome, senha, email, cpf, dataAdmissao, status, isAdmin);
     }
 
     //Edição por coluna: parte de um funcionário "base" válido e troca só o campo editado, para o FuncionarioValidador
     //avaliar apenas o novo valor. A senha não passa pelo validador (o DAO a transforma em hash e recusa vazio).
     private void validarColuna(String coluna, String novoValor, List<String> erros) {
-        FuncionarioMolde funcionario = new FuncionarioMolde(1, "Nome", null, "valido@inventra.com", "11999999999",
+        FuncionarioMolde funcionario = new FuncionarioMolde(1, "Nome", null, "valido@inventra.com",
                 "12345678909", LocalDate.of(2000, 1, 1), "Ativo", false);
 
         // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
@@ -318,9 +316,6 @@ public class FuncionarioServlet extends HttpServlet {
             }
             case "email" -> {
                 funcionario.setEmail(novoValor);
-            }
-            case "telefone" -> {
-                funcionario.setTelefone(novoValor);
             }
             case "cpf" -> {
                 funcionario.setCpf(novoValor);

@@ -33,10 +33,10 @@ Projeto do 1º ano desenvolvido pela equipe **InventraTech** para as disciplinas
 
 | Módulo | O que permite |
 |---|---|
-| **Fornecedores** | Cadastro com CNPJ, e-mail, telefone, endereço (estado e cidade) e nota VPQ. Resumo com total de fornecedores, média das notas e fornecedores com produtos vinculados. |
+| **Fornecedores** | Cadastro com CNPJ, e-mail, endereço (estado e cidade) e nota VPQ. Resumo com total de fornecedores, média das notas e fornecedores com produtos vinculados. |
 | **Produtos** | Catálogo de produtos (marca, categoria, fornecedor, unidade de medida, estoque mínimo e máximo, status ativo). Quantidade e validade **não** ficam aqui: pertencem ao lote. |
 | **Lotes** | Cada entrada de produto, com número do lote, quantidade inicial e atual, datas de entrada e validade, valor de compra e nota fiscal. |
-| **Funcionários** | Cadastro com setor, CPF, e-mail, telefone, data de admissão, status e perfil de administrador. |
+| **Funcionários** | Cadastro com setor, CPF, e-mail, data de admissão, status e perfil de administrador. |
 | **Requisições** | Pedidos de produtos feitos por um funcionário e aprovados por outro, com tipo, quantidade, motivo e status. |
 | **Pré-lista** | Itens a comprar, por fornecedor e produto, com quantidade. |
 
@@ -224,7 +224,7 @@ Tabelas e colunas utilizadas pelo código (PostgreSQL):
 | `marca` | `id_marca`, `nome` |
 | `categoria` | `id_categoria`, `nome` |
 | `lote` | `id_lote`, `fk_produto`, `numero_lote`, `qtd_inicial`, `qtd_atual`, `dt_entrada`, `dt_validade`, `valor_compra`, `nota_fiscal` |
-| `funcionario` | `id_funcionario`, `fk_setor`, `nome`, `senha` (hash), `email`, `telefone`, `cpf`, `dt_admissao`, `status`, `is_admin` |
+| `funcionario` | `id_funcionario`, `fk_setor`, `nome`, `senha` (hash), `email`, `cpf`, `dt_admissao`, `status`, `is_admin` |
 | `setor` | `id_setor`, `nome` |
 | `requisicao` | `id_requisicao`, `fk_tipo_requisicao`, `fk_funcionario_solicitante`, `fk_funcionario_aprovador`, `fk_produto`, `quantidade_prod`, `motivo`, `status`, `dt_requisicao` |
 | `tipo_requisicao` | `id_tipo_requisicao`, `tipo` |
@@ -249,7 +249,7 @@ As telas de listagem usam `JOIN` para exibir nomes (marca, categoria, setor, pro
 
 - **Pacote `validation`:** um validador por entidade (`ProdutoValidador`, `LoteValidador`, `RequisicaoValidador`, `ItemPreListaValidador`, `FuncionarioValidador`, `FornecedorValidador`). Cada um devolve a lista de mensagens de erro; lista vazia significa dados válidos.
 - **`ParametrosHttp`:** leitura defensiva de parâmetros (inteiros, datas, decimais, booleanos). Em vez de lançar exceção, registra a mensagem e devolve um valor neutro, para o usuário ver todos os problemas de uma vez.
-- **REGEX:** CPF, CNPJ, e-mail e telefone são conferidos **apenas quanto ao formato**; os dígitos verificadores do CPF e do CNPJ não são calculados.
+- **REGEX:** CPF, CNPJ e e-mail são conferidos **apenas quanto ao formato**; os dígitos verificadores do CPF e do CNPJ não são calculados.
 - **Regras de negócio:** por exemplo, a quantidade atual do lote não pode superar a inicial, a validade não pode ser anterior à entrada, o estoque mínimo não pode superar o máximo e o solicitante não pode aprovar a própria requisição.
 - **Erros de banco e do servidor:** os DAOs lançam `RuntimeException` com mensagem clara; o contêiner mostra as páginas de erro configuradas no `web.xml` (400, 403, 404, 405 e 500).
 

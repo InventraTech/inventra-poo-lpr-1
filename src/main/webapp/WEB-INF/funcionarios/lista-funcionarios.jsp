@@ -33,7 +33,7 @@
 </head>
 <body>
   <%-- Atributos enviados pelo FuncionarioServlet: funcionarios, paginaAtual, totalPaginas, filtroSelecionado.
-       Propriedades do FuncionarioMolde (getters): id_funcionario, nome, email, telefone, cpf, dt_admissao, status, setor, admin. --%>
+       Propriedades do FuncionarioMolde (getters): id_funcionario, nome, email, cpf, dt_admissao, status, setor, admin. --%>
 
   <header class="barra-topo barra-inventra">
     <div class="topo-marca">
@@ -148,7 +148,7 @@
       <table class="tabela" aria-label="Lista de funcionários">
         <thead>
           <tr>
-            <th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Telefone</th><th>Setor</th><th>Admissão</th><th>Admin</th><th>Status</th><th class="acoes">Ações</th>
+            <th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Setor</th><th>Admissão</th><th>Admin</th><th>Status</th><th class="acoes">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -157,7 +157,6 @@
                 data-rotulo="${fn:escapeXml(f.nome)}"
                 data-nome="${fn:escapeXml(f.nome)}"
                 data-email="${fn:escapeXml(f.email)}"
-                data-telefone="${fn:escapeXml(f.telefone)}"
                 data-cpf="${fn:escapeXml(f.cpf)}"
                 data-admissao="${f.dtAdmissao}"
                 data-status="${fn:escapeXml(f.status)}"
@@ -166,7 +165,6 @@
               <td><c:out value="${f.nome}"/></td>
               <td><c:out value="${f.cpf}"/></td>
               <td><c:out value="${f.email}"/></td>
-              <td><c:out value="${f.telefone}"/></td>
               <td><c:out value="${f.setor}"/></td>
               <td>
                 <c:if test="${not empty f.dtAdmissao}">${fn:substring(f.dtAdmissao, 8, 10)}/${fn:substring(f.dtAdmissao, 5, 7)}/${fn:substring(f.dtAdmissao, 0, 4)}</c:if>
@@ -291,9 +289,6 @@
         <label class="campo" for="func-cpf">CPF
           <input type="text" name="cpf" id="func-cpf" placeholder="000.000.000-00" required>
         </label>
-        <label class="campo" for="func-telefone">Telefone
-          <input type="text" name="telefone" id="func-telefone" placeholder="(11) 90000-0000" required>
-        </label>
       </div>
       <div class="linha-campos">
         <label class="campo" for="func-email">E-mail
@@ -345,9 +340,6 @@
         <label class="campo" for="edicao-cpf">CPF
           <input type="text" name="cpf" id="edicao-cpf" placeholder="000.000.000-00" required>
         </label>
-        <label class="campo" for="edicao-telefone">Telefone
-          <input type="text" name="telefone" id="edicao-telefone" placeholder="(11) 90000-0000" required>
-        </label>
       </div>
       <div class="linha-campos">
         <label class="campo" for="edicao-email">E-mail
@@ -396,7 +388,6 @@
           <option value="senha">Senha</option>
           <option value="fk_setor">ID do Setor</option>
           <option value="email">E-mail</option>
-          <option value="telefone">Telefone</option>
           <option value="cpf">CPF</option>
           <option value="dt_admissao">Data de Admissão</option>
           <option value="status">Status</option>
@@ -423,7 +414,7 @@
       const itens = [...document.querySelectorAll('.tabela [data-id]')];
       let selecionado = null;
       let retorno = null;
-      const propriedades = ["nome", "email", "telefone", "cpf", "admissao", "status", "admin"];
+      const propriedades = ["nome", "email", "cpf", "admissao", "status", "admin"];
 
       // ---- Busca (sem diferenciar maiúsculas nem acentos) ----
       const busca = document.querySelector('.busca');
@@ -499,11 +490,6 @@
                 "email",
                 "email",
                 ""
-        ],
-        "telefone": [
-                "telefone",
-                "text",
-                "(11) 90000-0000"
         ],
         "cpf": [
                 "cpf",
