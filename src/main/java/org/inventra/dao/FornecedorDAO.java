@@ -38,7 +38,7 @@ public class FornecedorDAO {
     }
 
     public static final String SQL_BASE = """
-            SELECT f.id_fornecedor, f.nome_juridico, f.cnpj, f.email, f.nota_vpq, CONCAT(e.estado, ' | ', e.cidade) AS endereco
+            SELECT f.id_fornecedor, f.nome_juridico, f.cnpj, f.email, f.nota_vpq, CONCAT(e.estado, ' | ', e.cidade) AS endereco, f.fk_endereco
             FROM fornecedor f
             JOIN endereco e ON f.fk_endereco = e.id_endereco
             """;
@@ -74,6 +74,7 @@ public class FornecedorDAO {
                     int notaVpq = rs.getInt("nota_vpq");
 
                     FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nomeJuridico, cnpj, email, notaVpq);
+                    novoFornecedor.setFkEndereco(rs.getInt("fk_endereco"));
                     listaFornecedores.add(novoFornecedor);
                 }
             }

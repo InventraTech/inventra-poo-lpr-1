@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
@@ -22,6 +23,7 @@
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/lote.css">
   <style>
+    .novo-valor-fk[hidden] { display: none !important; }
     .form-filtro { display: flex; gap: .5rem; }
     .form-exportar { display: flex; }
     .acoes-formulario { display: flex; gap: .65rem; justify-content: flex-end; flex-wrap: wrap; }
@@ -145,6 +147,7 @@
                  data-id="${l.idLote}"
                  data-rotulo="${fn:escapeXml(l.numeroLote)}"
                  data-numero="${fn:escapeXml(l.numeroLote)}"
+                 data-produto="${l.fkProduto gt 0 ? l.fkProduto : ''}"
                  data-qtdinicial="${l.qtdInicial}"
                  data-qtdatual="${l.qtdAtual}"
                  data-entrada="${l.dtEntrada}"
@@ -280,8 +283,8 @@
         <label class="campo" for="lote-numero">Número do Lote
           <input type="text" name="numero_lote" id="lote-numero" placeholder="Ex: L-2026-007" required>
         </label>
-        <label class="campo" for="lote-produto">ID Produto (fk_produto)
-          <input type="number" name="fk_produto" id="lote-produto" placeholder="Ex: 1" min="1" required>
+        <label class="campo" for="lote-produto">Produto
+          <t:selectFK name="fk_produto" id="lote-produto" opcoes="${opcoesProdutos}" />
         </label>
       </div>
       <div class="linha-campos">
@@ -331,8 +334,8 @@
         <label class="campo" for="edicao-numero">Número do Lote
           <input type="text" name="numero_lote" id="edicao-numero" required>
         </label>
-        <label class="campo" for="edicao-produto">ID Produto (fk_produto)
-          <input type="number" name="fk_produto" id="edicao-produto" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-produto">Produto
+          <t:selectFK name="fk_produto" id="edicao-produto" opcoes="${opcoesProdutos}" />
         </label>
       </div>
       <div class="linha-campos">
@@ -378,7 +381,7 @@
 
       <label class="campo" for="coluna">Campo
         <select name="coluna" id="coluna">
-          <option value="fk_produto">ID do Produto</option>
+          <option value="fk_produto">Produto</option>
           <option value="numero_lote">Número do Lote</option>
           <option value="qtd_inicial">Quantidade Inicial</option>
           <option value="qtd_atual">Quantidade Atual</option>
@@ -391,6 +394,7 @@
 
       <label class="campo" for="novoValor">Novo valor
         <input type="text" id="novoValor" name="novoValor" required>
+        <t:selectFK name="novoValor" id="novo-fk-produto" coluna="fk_produto" opcoes="${opcoesProdutos}" />
       </label>
 
       <div class="acoes-formulario">
@@ -408,7 +412,7 @@
       const itens = [...document.querySelectorAll('.lista-cartoes [data-id]')];
       let selecionado = null;
       let retorno = null;
-      const propriedades = ["numero", "qtdinicial", "qtdatual", "entrada", "validade", "valor", "nota"];
+      const propriedades = ["produto", "numero", "qtdinicial", "qtdatual", "entrada", "validade", "valor", "nota"];
 
       // ---- Status do lote (a partir da validade) ----
       const hoje = new Date();
@@ -482,11 +486,7 @@
       // ---- Editar somente um campo (acao=atualizar_coluna) ----
       // coluna do banco: [chave do data-*, tipo do input, dica]
       const campos = {
-        "fk_produto": [
-                null,
-                "number",
-                "Informe o ID"
-        ],
+        "fk_produto": ["produto", "number", ""],
         "numero_lote": [
                 "numero",
                 "text",
@@ -528,6 +528,16 @@
       function preencherCampo() {
         if (!selecionado) return;
         const [chave, tipo, dica] = campos[coluna.value];
+        const selectFk = document.querySelector('.novo-valor-fk[data-coluna="' + coluna.value + '"]');
+        novoValor.hidden = Boolean(selectFk);
+        novoValor.disabled = Boolean(selectFk);
+        document.querySelectorAll('.novo-valor-fk').forEach(sel => {
+          const ativo = sel === selectFk;
+          sel.hidden = !ativo;
+          sel.disabled = !ativo;
+          sel.required = ativo;
+          if (ativo) sel.value = (chave && selecionado[chave]) || '';
+        });
         novoValor.type = tipo;
         novoValor.placeholder = dica || '';
         novoValor.value = (chave && selecionado[chave]) || '';

@@ -42,7 +42,7 @@ public class LoteDAO {
     // 2. READ
 
     public static final String SQL_BASE = """
-            SELECT l.id_lote, p.nome AS nome_produto, l.numero_lote, l.qtd_inicial, l.qtd_atual, l.dt_entrada, l.dt_validade, l.valor_compra, l.nota_fiscal
+            SELECT l.id_lote, p.nome AS nome_produto, l.numero_lote, l.qtd_inicial, l.qtd_atual, l.dt_entrada, l.dt_validade, l.valor_compra, l.nota_fiscal, l.fk_produto
             FROM lote l
             JOIN produto p ON l.fk_produto = p.id_produto
             """;
@@ -81,6 +81,7 @@ public class LoteDAO {
                     String notaFiscal = rs.getString("nota_fiscal");
 
                     LoteMolde lote = new LoteMolde(id, produto, numeroLote, qtdInicial, qtdAtual, dtEntrada, dtValidade, valorCompra, notaFiscal);
+                    lote.setFkProduto(rs.getInt("fk_produto"));
                     array.add(lote);
                 }
             }

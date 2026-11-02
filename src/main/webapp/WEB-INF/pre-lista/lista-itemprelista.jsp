@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
 <%
@@ -21,6 +22,7 @@
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vCartoes}">
   <link rel="stylesheet" href="${ctx}/utils/css/preLista.css">
   <style>
+    .novo-valor-fk[hidden] { display: none !important; }
     .form-filtro { display: flex; gap: .5rem; }
     .form-exportar { display: flex; }
     .acoes-formulario { display: flex; gap: .65rem; justify-content: flex-end; flex-wrap: wrap; }
@@ -142,7 +144,10 @@
         <article class="cartao"
                  data-id="${i.idItemPreLista}"
                  data-rotulo="${fn:escapeXml(i.produto)}"
-                 data-qtd="${i.qtd}">
+                 data-qtd="${i.qtd}"
+                 data-prelista="${i.fkPreLista gt 0 ? i.fkPreLista : ''}"
+                 data-fornecedor="${i.fkFornecedor gt 0 ? i.fkFornecedor : ''}"
+                 data-produto="${i.fkProduto gt 0 ? i.fkProduto : ''}">
           <header class="cartao-topo">
             <div class="cartao-logo"><c:out value="${fn:toUpperCase(fn:substring(i.fornecedor, 0, 2))}"/></div>
             <div class="cartao-identificacao">
@@ -264,13 +269,13 @@
         <label class="campo" for="item-prelista">ID da Pré-lista (fk_pre_lista)
           <input type="number" name="fk_pre_lista" id="item-prelista" placeholder="Ex: 1" min="1" required>
         </label>
-        <label class="campo" for="item-fornecedor">ID do Fornecedor (fk_fornecedor)
-          <input type="number" name="fk_fornecedor" id="item-fornecedor" placeholder="Ex: 1" min="1" required>
+        <label class="campo" for="item-fornecedor">Fornecedor
+          <t:selectFK name="fk_fornecedor" id="item-fornecedor" opcoes="${opcoesFornecedores}" />
         </label>
       </div>
       <div class="linha-campos">
-        <label class="campo" for="item-produto">ID do Produto (fk_produto)
-          <input type="number" name="fk_produto" id="item-produto" placeholder="Ex: 1" min="1" required>
+        <label class="campo" for="item-produto">Produto
+          <t:selectFK name="fk_produto" id="item-produto" opcoes="${opcoesProdutos}" />
         </label>
         <label class="campo" for="item-quantidade">Quantidade a repor
           <input type="number" name="quantidade" id="item-quantidade" placeholder="0" min="1" required>
@@ -299,13 +304,13 @@
         <label class="campo" for="edicao-prelista">ID da Pré-lista (fk_pre_lista)
           <input type="number" name="fk_pre_lista" id="edicao-prelista" placeholder="Informe o ID" min="1" required>
         </label>
-        <label class="campo" for="edicao-fornecedor">ID do Fornecedor (fk_fornecedor)
-          <input type="number" name="fk_fornecedor" id="edicao-fornecedor" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-fornecedor">Fornecedor
+          <t:selectFK name="fk_fornecedor" id="edicao-fornecedor" opcoes="${opcoesFornecedores}" />
         </label>
       </div>
       <div class="linha-campos">
-        <label class="campo" for="edicao-produto">ID do Produto (fk_produto)
-          <input type="number" name="fk_produto" id="edicao-produto" placeholder="Informe o ID" min="1" required>
+        <label class="campo" for="edicao-produto">Produto
+          <t:selectFK name="fk_produto" id="edicao-produto" opcoes="${opcoesProdutos}" />
         </label>
         <label class="campo" for="edicao-qtd">Quantidade a repor
           <input type="number" name="quantidade" id="edicao-qtd" min="1" required>
@@ -330,15 +335,17 @@
 
       <label class="campo" for="coluna">Campo
         <select name="coluna" id="coluna">
-          <option value="fk_pre_lista">ID da Pré-lista</option>
-          <option value="fk_fornecedor">ID do Fornecedor</option>
-          <option value="fk_produto">ID do Produto</option>
+          <option value="fk_pre_lista">Pré-lista</option>
+          <option value="fk_fornecedor">Fornecedor</option>
+          <option value="fk_produto">Produto</option>
           <option value="qtd">Quantidade</option>
         </select>
       </label>
 
       <label class="campo" for="novoValor">Novo valor
         <input type="text" id="novoValor" name="novoValor" required>
+        <t:selectFK name="novoValor" id="novo-fk-fornecedor" coluna="fk_fornecedor" opcoes="${opcoesFornecedores}" />
+        <t:selectFK name="novoValor" id="novo-fk-produto" coluna="fk_produto" opcoes="${opcoesProdutos}" />
       </label>
 
       <div class="acoes-formulario">
@@ -356,7 +363,7 @@
       const itens = [...document.querySelectorAll('.lista-cartoes [data-id]')];
       let selecionado = null;
       let retorno = null;
-      const propriedades = ["qtd"];
+      const propriedades = ["prelista", "fornecedor", "produto", "qtd"];
 
       // ---- Busca (sem diferenciar maiúsculas nem acentos) ----
       const busca = document.querySelector('.busca');
@@ -419,16 +426,8 @@
                 "number",
                 "Informe o ID"
         ],
-        "fk_fornecedor": [
-                null,
-                "number",
-                "Informe o ID"
-        ],
-        "fk_produto": [
-                null,
-                "number",
-                "Informe o ID"
-        ],
+        "fk_fornecedor": ["fornecedor", "number", ""],
+        "fk_produto": ["produto", "number", ""],
         "qtd": [
                 "qtd",
                 "number",
@@ -440,6 +439,16 @@
       function preencherCampo() {
         if (!selecionado) return;
         const [chave, tipo, dica] = campos[coluna.value];
+        const selectFk = document.querySelector('.novo-valor-fk[data-coluna="' + coluna.value + '"]');
+        novoValor.hidden = Boolean(selectFk);
+        novoValor.disabled = Boolean(selectFk);
+        document.querySelectorAll('.novo-valor-fk').forEach(sel => {
+          const ativo = sel === selectFk;
+          sel.hidden = !ativo;
+          sel.disabled = !ativo;
+          sel.required = ativo;
+          if (ativo) sel.value = (chave && selecionado[chave]) || '';
+        });
         novoValor.type = tipo;
         novoValor.placeholder = dica || '';
         novoValor.value = (chave && selecionado[chave]) || '';

@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Regras de cadastro e edição de fornecedor. CNPJ e e-mail são conferidos apenas quanto ao formato
- * (ver FornecedorREGEX); a nota VPQ deve estar entre 0 e 10. O fornecedor não tem telefone no banco.
+ * (ver FornecedorREGEX); a nota VPQ deve estar entre 0 e 10.
  */
 public class FornecedorValidador {
 

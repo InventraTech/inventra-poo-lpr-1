@@ -12,8 +12,6 @@ public class FuncionarioREGEX {
     private static final Pattern CPF_REGEX = Pattern.compile("^(\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11})$");
     //REGEX EMAIL. Formato usuario@dominio.extensao (ex.: .com, .br), igual ao usado para fornecedores.
     private static final Pattern EMAIL_REGEX = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    //REGEX TELEFONE. Formato: (11) 99999-9999 ou 11999999999
-    private static final Pattern TELEFONE_REGEX = Pattern.compile("^(\\(\\d{2}\\)\\s?)?\\d{4,5}-\\d{4}$|^\\d{10,11}$");
 
     public static boolean validarCpf(String cpf) {
         return cpf != null && CPF_REGEX.matcher(cpf).matches();
@@ -23,19 +21,14 @@ public class FuncionarioREGEX {
         return email != null && EMAIL_REGEX.matcher(email).matches();
     }
 
-    public static boolean validarTelefone(String telefone) {
-        return telefone != null && TELEFONE_REGEX.matcher(telefone).matches();
-    }
-
     /**
-     * Atalho que confere CPF, e-mail e telefone de uma vez; só é verdadeiro se os três tiverem formato válido.
+     * Atalho que confere CPF e e-mail de uma vez; só é verdadeiro se os dois tiverem formato válido.
      */
-    public static boolean validandoTodos (String cpf, String email, String telefone){
+    public static boolean validandoTodos (String cpf, String email){
         boolean emailValido = FuncionarioREGEX.validarEmail(email);
-        boolean telefoneValido = FuncionarioREGEX.validarTelefone(telefone);
         boolean cpfValido = FuncionarioREGEX.validarCpf(cpf);
 
-        if(!emailValido || !telefoneValido || !cpfValido){
+        if(!emailValido || !cpfValido){
             return false;
         }
 

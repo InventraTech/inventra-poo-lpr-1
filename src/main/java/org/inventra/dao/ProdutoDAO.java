@@ -46,7 +46,8 @@ public class ProdutoDAO {
     //SQL base que será modificado para cada uma das filtragens posteriormente
     public static final String SQL_BASE = """
             SELECT p.id_produto, f.nome_juridico AS nome_fornecedor, m.nome AS nome_marca, c.nome AS nome_categoria,
-                       p.nome, p.unidade_medida, p.estoque_min, p.estoque_max, p.descricao, p.ativo
+                       p.nome, p.unidade_medida, p.estoque_min, p.estoque_max, p.descricao, p.ativo,
+                       p.fk_fornecedor, p.fk_marca, p.fk_categoria
                 FROM produto p
                 JOIN marca m ON p.fk_marca = m.id_marca
                 JOIN categoria c ON p.fk_categoria = c.id_categoria
@@ -88,6 +89,9 @@ public class ProdutoDAO {
                     boolean ativo = rs.getBoolean("ativo");
 
                     ProdutoMolde produto = new ProdutoMolde(id, fornecedor, marca, categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+                    produto.setFkFornecedor(rs.getInt("fk_fornecedor"));
+                    produto.setFkMarca(rs.getInt("fk_marca"));
+                    produto.setFkCategoria(rs.getInt("fk_categoria"));
                     listaProdutos.add(produto);
                 }
             }

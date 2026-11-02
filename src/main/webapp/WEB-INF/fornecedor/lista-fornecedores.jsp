@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Versão do CSS = data de modificação do arquivo. O navegador baixa o CSS de novo sempre que ele mudar (evita ficar com CSS antigo em cache). --%>
 <%
@@ -21,6 +22,7 @@
   <link rel="stylesheet" href="${ctx}/utils/css/base.css?v=${vBase}">
   <link rel="stylesheet" href="${ctx}/utils/css/fornecedores.css?v=${vPagina}">
   <style>
+    .novo-valor-fk[hidden] { display: none !important; }
     .form-filtro { display: flex; gap: .5rem; }
     .form-exportar { display: flex; }
     .acoes-formulario { display: flex; gap: .65rem; justify-content: flex-end; flex-wrap: wrap; }
@@ -139,6 +141,7 @@
         <article class="cartao"
                  data-id="${f.idFornecedor}"
                  data-rotulo="${fn:escapeXml(f.nomeJuridico)}"
+                 data-endereco="${f.fkEndereco gt 0 ? f.fkEndereco : ''}"
                  data-nome="${fn:escapeXml(f.nomeJuridico)}"
                  data-cnpj="${fn:escapeXml(f.cnpj)}"
                  data-email="${fn:escapeXml(f.email)}"
@@ -279,8 +282,8 @@
       <label class="campo" for="forn-nota">Nota VPQ
           <input type="number" name="nota_vpq" id="forn-nota" placeholder="Ex: 8" min="0" max="10" required>
         </label>
-      <label class="campo" for="forn-endereco">ID Endereço (fk_endereco)
-          <input type="number" name="fk_endereco" id="forn-endereco" placeholder="Ex: 1" min="1" required>
+      <label class="campo" for="forn-endereco">Endereço
+          <t:selectFK name="fk_endereco" id="forn-endereco" opcoes="${opcoesEnderecos}" />
         </label>
 
       <div class="acoes-formulario">
@@ -296,7 +299,7 @@
       <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
       <h2 class="modal-titulo" id="titulo-edicao">Editar Fornecedor</h2>
       <%-- A consulta da listagem (JOIN) não devolve os IDs das chaves estrangeiras: esses campos exigem preenchimento manual. --%>
-      <p>Preencha o ID do endereço para salvar a edição completa.</p>
+      <p>Escolha o endereço para salvar a edição completa.</p>
 
       <input type="hidden" name="acao" value="atualizar_completo">
       <input type="hidden" name="id_fornecedor" id="edicao-id">
@@ -315,8 +318,8 @@
       <label class="campo" for="edicao-nota">Nota VPQ
           <input type="number" name="nota_vpq" id="edicao-nota" min="0" max="10" required>
         </label>
-      <label class="campo" for="edicao-endereco">ID Endereço (fk_endereco)
-          <input type="number" name="fk_endereco" id="edicao-endereco" placeholder="Informe o ID" min="1" required>
+      <label class="campo" for="edicao-endereco">Endereço
+          <t:selectFK name="fk_endereco" id="edicao-endereco" opcoes="${opcoesEnderecos}" />
         </label>
 
       <div class="acoes-formulario">
@@ -338,7 +341,7 @@
       <label class="campo" for="coluna">Campo
         <select name="coluna" id="coluna">
           <option value="nome_juridico">Nome Jurídico</option>
-          <option value="fk_endereco">ID do Endereço</option>
+          <option value="fk_endereco">Endereço</option>
           <option value="cnpj">CNPJ</option>
           <option value="email">E-mail</option>
           <option value="nota_vpq">Nota VPQ</option>
@@ -347,6 +350,7 @@
 
       <label class="campo" for="novoValor">Novo valor
         <input type="text" id="novoValor" name="novoValor" required>
+        <t:selectFK name="novoValor" id="novo-fk-endereco" coluna="fk_endereco" opcoes="${opcoesEnderecos}" />
       </label>
 
       <div class="acoes-formulario">
@@ -364,7 +368,7 @@
       const itens = [...document.querySelectorAll('.lista-cartoes [data-id]')];
       let selecionado = null;
       let retorno = null;
-      const propriedades = ["nome", "cnpj", "email", "nota"];
+      const propriedades = ["nome", "cnpj", "email", "nota", "endereco"];
 
       // ---- Busca (sem diferenciar maiúsculas nem acentos) ----
       const busca = document.querySelector('.busca');
@@ -427,11 +431,7 @@
                 "text",
                 ""
         ],
-        "fk_endereco": [
-                null,
-                "number",
-                "Informe o ID"
-        ],
+        "fk_endereco": ["endereco", "number", ""],
         "cnpj": [
                 "cnpj",
                 "text",
@@ -453,6 +453,16 @@
       function preencherCampo() {
         if (!selecionado) return;
         const [chave, tipo, dica] = campos[coluna.value];
+        const selectFk = document.querySelector('.novo-valor-fk[data-coluna="' + coluna.value + '"]');
+        novoValor.hidden = Boolean(selectFk);
+        novoValor.disabled = Boolean(selectFk);
+        document.querySelectorAll('.novo-valor-fk').forEach(sel => {
+          const ativo = sel === selectFk;
+          sel.hidden = !ativo;
+          sel.disabled = !ativo;
+          sel.required = ativo;
+          if (ativo) sel.value = (chave && selecionado[chave]) || '';
+        });
         novoValor.type = tipo;
         novoValor.placeholder = dica || '';
         novoValor.value = (chave && selecionado[chave]) || '';
