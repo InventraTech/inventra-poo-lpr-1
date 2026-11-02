@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,15 +7,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FornecedorDAO;
 import org.inventra.model.FornecedorMolde;
-import org.inventra.model.FuncionarioMolde;
-import org.inventra.utils.FornecedorREGEX;
-import org.inventra.utils.FuncionarioREGEX;
 import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.inventra.utils.ParametrosHttp;
+import org.inventra.validation.FornecedorValidador;
+import java.util.ArrayList;
+import java.util.Locale;
+/**
+ * Controla a tela de fornecedores: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo FornecedorValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "FornecedorServlet", value = "/fornecedor")
 public class FornecedorServlet extends HttpServlet{
 
@@ -26,6 +31,10 @@ public class FornecedorServlet extends HttpServlet{
         fornecedorDAO = new FornecedorDAO();
     }
 
+    /**
+     * Exibe a lista de fornecedores. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -65,11 +74,12 @@ public class FornecedorServlet extends HttpServlet{
                     writer.println("ID;Nome;Endereço;CNPJ;email;nota_vpq");
 
                     for (FornecedorMolde f : fornecedores) {
-                        writer.print(f.getId_fornecedor() + ";");
-                        writer.print(f.getNome_juridico() + ";");
-                        writer.print(f.getFk_endereco() + ";");
+                        writer.print(f.getIdFornecedor() + ";");
+                        writer.print(f.getNomeJuridico() + ";");
+                        writer.print(f.getEndereco() + ";");
+                        writer.print(f.getCnpj() + ";");
                         writer.print(f.getEmail() + ";");
-                        writer.print(f.getNota_vpq() + ";");
+                        writer.println(f.getNotaVpq());
                     }
                     writer.flush();
                 }
@@ -130,6 +140,12 @@ public class FornecedorServlet extends HttpServlet{
     //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
 }
 
+    /**
+     * Trata o formulário de fornecedores. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -138,15 +154,16 @@ public class FornecedorServlet extends HttpServlet{
         request.setCharacterEncoding("UTF-8");
 
         String acao = request.getParameter("acao");
-        boolean valoresValidos;
 
         //Validando ação para evitar erro por ser NULL
         if (acao == null){
             acao = "";
         }
 
-        try {
+        //Mensagens específicas para o usuário: erros de leitura dos parâmetros + lista devolvida pelo validador
+        List<String> erros = new ArrayList<>();
 
+        try {
             if (acao.equals("excluir")) {
                 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -160,34 +177,21 @@ public class FornecedorServlet extends HttpServlet{
 
             //Atualiza apenas UMA coluna
             else if (acao.equals("atualizar_coluna")) {
-                int id = Integer.parseInt(request.getParameter("id"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id"), "ID do fornecedor", erros);
                 String coluna = request.getParameter("coluna");
                 String novoValor = request.getParameter("novoValor");
 
                 if (coluna == null || coluna.isBlank() || novoValor == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Coluna ou valor não informado");
-                    return;
+                    erros.add("Coluna ou valor não informado.");
                 }
 
-                boolean valorValido;
-
-                switch (coluna) {
-                    case "cnpj" -> {
-                        valorValido = FornecedorREGEX.validarCNPJ(novoValor);
-                    }
-                    case "telefone" -> {
-                        valorValido = FornecedorREGEX.validarTelefone(novoValor);
-                    }
-                    case "email" -> {
-                        valorValido = FornecedorREGEX.validarEmail(novoValor);
-                    }
-                    default -> {
-                        valorValido = true;
-                    }
+                //Valida o novo valor (inclui o formato de CNPJ e e-mail) usando o FornecedorValidador
+                if (erros.isEmpty()) {
+                    validarColuna(coluna, novoValor, erros);
                 }
 
-                if (!valorValido) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "O valor informado para " + coluna + " é inválido");
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/fornecedor", erros);
                     return;
                 }
 
@@ -199,29 +203,19 @@ public class FornecedorServlet extends HttpServlet{
                 return;
 
             } else if (acao.equals("atualizar_completo")) {
-                int id = Integer.parseInt(request.getParameter("id_fornecedor"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id_fornecedor"), "ID do fornecedor", erros);
 
-                int fk_endereco =
-                        Integer.parseInt(request.getParameter("fk_endereco"));
-                String nome =
-                        request.getParameter("nome");
-                String cnpj =
-                        request.getParameter("cnpj");
-                String email =
-                        request.getParameter("email");
-                String telefone =
-                        request.getParameter("telefone");
-                int nota_vpq =
-                        Integer.parseInt(request.getParameter("nota_vpq"));
+                FornecedorMolde atualizarFornecedor = lerFornecedor(request, erros);
 
-                valoresValidos = FornecedorREGEX.validandoTodos(cnpj, email, telefone);
-
-                if (!valoresValidos) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CNPJ, Email ou Telefone com formatos inválidos");
-                    return;
+                //O telefone não é gravado no modelo, mas continua sendo validado como antes
+                if (erros.isEmpty()) {
+                    erros.addAll(FornecedorValidador.validar(atualizarFornecedor, request.getParameter("telefone")));
                 }
 
-                FornecedorMolde atualizarFornecedor = new FornecedorMolde(fk_endereco, nome, cnpj, email, nota_vpq);
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/fornecedor", erros);
+                    return;
+                }
 
                 fornecedorDAO.atualizarFornecedorCompleto(atualizarFornecedor, id);
 
@@ -231,27 +225,16 @@ public class FornecedorServlet extends HttpServlet{
                 return;
             }
 
-            String nome =
-                    request.getParameter("nome");
-            String cnpj =
-                    request.getParameter("cnpj");
-            String email =
-                    request.getParameter("email");
-            String telefone =
-                    request.getParameter("telefone");
-            int nota_vpq =
-                    Integer.parseInt(request.getParameter("nota_vpq"));
-            int fk_regiao =
-                    Integer.parseInt(request.getParameter("fk_regiao"));
+            FornecedorMolde novoFornecedor = lerFornecedor(request, erros);
 
-            valoresValidos = FornecedorREGEX.validandoTodos(cnpj, email, telefone);
-
-            if (!valoresValidos) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CNPJ, Email ou Telefone com formatos inválidos");
-                return;
+            if (erros.isEmpty()) {
+                erros.addAll(FornecedorValidador.validar(novoFornecedor, request.getParameter("telefone")));
             }
 
-            FornecedorMolde novoFornecedor = new FornecedorMolde(fk_regiao, nome, cnpj, email, nota_vpq);
+            if (!erros.isEmpty()) {
+                ParametrosHttp.redirecionarComErros(request, response, "/fornecedor", erros);
+                return;
+            }
 
             fornecedorDAO.inserirFornecedor(novoFornecedor);
 
@@ -263,10 +246,54 @@ public class FornecedorServlet extends HttpServlet{
             request.getSession().setAttribute("mensagemErro", "Erro: Parâmetro numérico inválido");
             response.sendRedirect(request.getContextPath() + "/fornecedor");
         }
-            catch (IllegalArgumentException e){
+        catch (IllegalArgumentException e){
             request.getSession().setAttribute("mensagemErro", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/fornecedor");
         }
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
+    }
+
+    //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
+    private FornecedorMolde lerFornecedor(HttpServletRequest request, List<String> erros) {
+        String nome = request.getParameter("nome");
+        String cnpj = request.getParameter("cnpj");
+        String email = request.getParameter("email");
+        int notaVpq = ParametrosHttp.lerInt(request.getParameter("nota_vpq"), "Nota VPQ", erros);
+        int fkEndereco = ParametrosHttp.lerInt(request.getParameter("fk_endereco"), "Endereço", erros);
+
+        return new FornecedorMolde(fkEndereco, nome, cnpj, email, notaVpq);
+    }
+
+    //Edição por coluna: parte de um fornecedor "base" válido e troca só o campo editado, para o FornecedorValidador
+    //avaliar apenas o novo valor. Só aceita as colunas que o DAO sabe atualizar.
+    private void validarColuna(String coluna, String novoValor, List<String> erros) {
+        FornecedorMolde candidato = new FornecedorMolde(1, "Fornecedor", "11222333000181", "valido@inventra.com", 0);
+
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
+        switch (coluna.toLowerCase(Locale.ROOT)) {
+            case "nome_juridico" -> {
+                candidato.setNomeJuridico(novoValor);
+            }
+            case "fk_endereco" -> {
+                candidato.setFkEndereco(ParametrosHttp.lerInt(novoValor, "Endereço", erros));
+            }
+            case "cnpj" -> {
+                candidato.setCnpj(novoValor);
+            }
+            case "email" -> {
+                candidato.setEmail(novoValor);
+            }
+            case "nota_vpq" -> {
+                candidato.setNotaVpq(ParametrosHttp.lerInt(novoValor, "Nota VPQ", erros));
+            }
+            default -> {
+                erros.add("A coluna informada não pode ser alterada.");
+            }
+        }
+
+        if (erros.isEmpty()) {
+            erros.addAll(FornecedorValidador.validar(candidato, "11999999999"));
+        }
     }
 }

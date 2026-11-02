@@ -2,6 +2,10 @@ package org.inventra.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Requisição de produtos feita por um funcionário e aprovada por outro. {@code dataHora} corresponde à
+ * coluna {@code dt_requisicao}. O construtor com textos ({@code tipoRequisicao}, solicitante, aprovador, produto) é o do JOIN.
+ */
 public class RequisicaoMolde {
     private int idRequisicao;
     private int idTipoRequisicao;
@@ -19,8 +23,8 @@ public class RequisicaoMolde {
     private String funcionarioAprovador;
     private String produto;
 
-    public RequisicaoMolde(int id_tipoRequisicao, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora) {
-        this.idTipoRequisicao = id_tipoRequisicao;
+    public RequisicaoMolde(int idTipoRequisicao, int fkFuncionarioSolicitante, int fkFuncionarioAprovador, int fkProduto, int quantidadeProduto, String motivo, String status, LocalDateTime dataHora) {
+        this.idTipoRequisicao = idTipoRequisicao;
         this.quantidadeProduto = quantidadeProduto;
         this.motivo = motivo;
         this.status = status;

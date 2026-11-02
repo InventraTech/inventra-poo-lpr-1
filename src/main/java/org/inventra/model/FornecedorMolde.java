@@ -1,54 +1,58 @@
 package org.inventra.model;
 
+/**
+ * Fornecedor cadastrado. Há um construtor para cadastro (sem id), um completo (com a chave do endereço) e um
+ * para leituras com JOIN, em que {@code endereco} já vem como texto.
+ */
 public class FornecedorMolde {
-    private int id_fornecedor;
-    private int fk_endereco;
-    private String nome_juridico;
+    private int idFornecedor;
+    private int fkEndereco;
+    private String nomeJuridico;
     private String cnpj;
     private String email;
-    private int nota_vpq;
+    private int notaVpq;
 
     //VÁRIAVEL PARA SUBSTITUIR A FK
     private String endereco;
 
-    public FornecedorMolde(int id_fornecedor, int fk_endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
-        this.id_fornecedor = id_fornecedor;
-        this.fk_endereco = fk_endereco;
-        this.nome_juridico = nome_juridico;
+    public FornecedorMolde(int idFornecedor, int fkEndereco, String nomeJuridico, String cnpj, String email, int notaVpq) {
+        this.idFornecedor = idFornecedor;
+        this.fkEndereco = fkEndereco;
+        this.nomeJuridico = nomeJuridico;
         this.cnpj = cnpj;
         this.email = email;
-        this.nota_vpq = nota_vpq;
+        this.notaVpq = notaVpq;
     }
 
-    public FornecedorMolde(int fk_endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
-        this.nome_juridico = nome_juridico;
-        this.fk_endereco = fk_endereco;
+    public FornecedorMolde(int fkEndereco, String nomeJuridico, String cnpj, String email, int notaVpq) {
+        this.nomeJuridico = nomeJuridico;
+        this.fkEndereco = fkEndereco;
         this.cnpj = cnpj;
         this.email = email;
-        this.nota_vpq = nota_vpq;
+        this.notaVpq = notaVpq;
     }
 
-    public FornecedorMolde(int id_fornecedor, String endereco, String nome_juridico, String cnpj, String email, int nota_vpq) {
-        this.id_fornecedor = id_fornecedor;
-        this.nome_juridico = nome_juridico;
+    public FornecedorMolde(int idFornecedor, String endereco, String nomeJuridico, String cnpj, String email, int notaVpq) {
+        this.idFornecedor = idFornecedor;
+        this.nomeJuridico = nomeJuridico;
         this.cnpj = cnpj;
         this.email = email;
-        this.nota_vpq = nota_vpq;
+        this.notaVpq = notaVpq;
         this.endereco = endereco;
     }
 
 
 
-    public int getId_fornecedor() {
-        return id_fornecedor;
+    public int getIdFornecedor() {
+        return idFornecedor;
     }
 
-    public String getNome_juridico() {
-        return nome_juridico;
+    public String getNomeJuridico() {
+        return nomeJuridico;
     }
 
-    public void setNome_juridico(String nome_juridico) {
-        this.nome_juridico = nome_juridico;
+    public void setNomeJuridico(String nomeJuridico) {
+        this.nomeJuridico = nomeJuridico;
     }
 
     public String getCnpj() {
@@ -67,20 +71,20 @@ public class FornecedorMolde {
         this.email = email;
     }
 
-    public int getNota_vpq() {
-        return nota_vpq;
+    public int getNotaVpq() {
+        return notaVpq;
     }
 
-    public void setNota_vpq(int nota_vpq) {
-        this.nota_vpq = nota_vpq;
+    public void setNotaVpq(int notaVpq) {
+        this.notaVpq = notaVpq;
     }
 
-    public int getFk_endereco() {
-        return fk_endereco;
+    public int getFkEndereco() {
+        return fkEndereco;
     }
 
-    public void setFk_endereco(int fk_endereco) {
-        this.fk_endereco = fk_endereco;
+    public void setFkEndereco(int fkEndereco) {
+        this.fkEndereco = fkEndereco;
     }
 
     public String getEndereco() {

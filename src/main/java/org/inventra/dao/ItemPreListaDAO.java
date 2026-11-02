@@ -12,6 +12,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acesso aos itens da pré-lista de compras. A listagem junta fornecedor e produto para mostrar os nomes
+ * em vez das chaves estrangeiras.
+ */
 public class ItemPreListaDAO {
     //CREATE
     public void inserirItemPreLista(ItemPreListaMolde itemPreLista){
@@ -21,9 +25,9 @@ public class ItemPreListaDAO {
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreLista.getFk_pre_lista());
-            stmt.setInt(2, itemPreLista.getFk_fornecedor());
-            stmt.setInt(3, itemPreLista.getFk_produto());
+            stmt.setInt(1, itemPreLista.getFkPreLista());
+            stmt.setInt(2, itemPreLista.getFkFornecedor());
+            stmt.setInt(3, itemPreLista.getFkProduto());
             stmt.setInt(4, itemPreLista.getQtd());
 
             stmt.executeUpdate();
@@ -34,13 +38,17 @@ public class ItemPreListaDAO {
     }
     //READ
 
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT i.id_item_lista, f.nome_juridico AS fornecedor, p.nome AS produto, i.qtd AS quantidade
             FROM Item_pre_lista i
             JOIN fornecedor f ON i.fk_fornecedor = f.id_fornecedor
             JOIN produto p ON i.fk_produto = p.id_produto
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<ItemPreListaMolde> consultarItensPreLista(String sql, Integer limite, Integer offset){
         List<ItemPreListaMolde> listaItensPreLista = new ArrayList<>();
 
@@ -61,12 +69,12 @@ public class ItemPreListaDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
 
-                    int id_ItemPreLista = rs.getInt("id_item_lista");
+                    int idItemPreLista = rs.getInt("id_item_lista");
                     String fornecedor = rs.getString("fornecedor");
                     String produto = rs.getString("produto");
                     int qtd = rs.getInt("quantidade");
 
-                    ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(id_ItemPreLista, fornecedor, produto, qtd);
+                    ItemPreListaMolde novoItemPreLista = new ItemPreListaMolde(idItemPreLista, fornecedor, produto, qtd);
                     listaItensPreLista.add(novoItemPreLista);
                 }
             }
@@ -78,7 +86,7 @@ public class ItemPreListaDAO {
 
     }
 
-    public void atualizarItemPreListaCompleto(ItemPreListaMolde itemPreListaMolde, int id_itemPreLista){
+    public void atualizarItemPreListaCompleto(ItemPreListaMolde itemPreListaMolde, int idItemPreLista){
 
         String sql = """
                 UPDATE item_pre_lista
@@ -92,12 +100,12 @@ public class ItemPreListaDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, itemPreListaMolde.getFk_pre_lista());
-            stmt.setInt(2, itemPreListaMolde.getFk_fornecedor());
-            stmt.setInt(3, itemPreListaMolde.getFk_produto());
+            stmt.setInt(1, itemPreListaMolde.getFkPreLista());
+            stmt.setInt(2, itemPreListaMolde.getFkFornecedor());
+            stmt.setInt(3, itemPreListaMolde.getFkProduto());
             stmt.setInt(4, itemPreListaMolde.getQtd());
 
-            stmt.setInt(5, id_itemPreLista);
+            stmt.setInt(5, idItemPreLista);
 
             stmt.executeUpdate();
 
@@ -107,27 +115,31 @@ public class ItemPreListaDAO {
         }
     }
 
-    public void atualizarColunaItemPreLista(String NomeColuna, String novoValor, int id_item_prelista) {
-        String sql = ("UPDATE item_pre_lista SET " + NomeColuna + " = ? WHERE id_item_lista = ?");
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     */
+    public void atualizarColunaItemPreLista(String nomeColuna, String novoValor, int idItemPreLista) {
+        String sql = ("UPDATE item_pre_lista SET " + nomeColuna + " = ? WHERE id_item_lista = ?");
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            if (NomeColuna.equalsIgnoreCase("fk_pre_lista")) {
+            if (nomeColuna.equalsIgnoreCase("fk_pre_lista")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("fk_fornecedor")) {
+            else if (nomeColuna.equalsIgnoreCase("fk_fornecedor")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("fk_produto")) {
+            else if (nomeColuna.equalsIgnoreCase("fk_produto")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("qtd")) {
+            else if (nomeColuna.equalsIgnoreCase("qtd")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
 
             //! Passa o segundo parâmetro, o ID
-            stmt.setInt(2, id_item_prelista);
+            stmt.setInt(2, idItemPreLista);
 
             stmt.executeUpdate();
 
@@ -137,14 +149,14 @@ public class ItemPreListaDAO {
     }
 
     //DELETE
-    public void deletarItemPreLista(int id_itemPreLista){
+    public void deletarItemPreLista(int idItemPreLista){
 
         String sql = "DELETE FROM Item_pre_lista WHERE id_item_lista = ?";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_itemPreLista);
+            stmt.setInt(1, idItemPreLista);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -155,25 +167,29 @@ public class ItemPreListaDAO {
     //FILTRAGENS
 
     public List<ItemPreListaMolde> listarItensPreLista(Integer limite, Integer offset){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"), limite, offset);
+        return consultarItensPreLista(SQL_BASE.concat(" ORDER BY i.id_item_lista"), limite, offset);
     }
 
     public List<ItemPreListaMolde> listarItensPreListaPorFornecedores(Integer limite, Integer offset){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY i.id_item_lista"), limite, offset);
+        return consultarItensPreLista(SQL_BASE.concat(" ORDER BY i.id_item_lista"), limite, offset);
     }
 
     public List<ItemPreListaMolde> listarItensPreListaPorProduto(Integer limite, Integer offset){
-        return consultarItensPreLista(sqlBase.concat(" ORDER BY p.nome"), limite, offset);
+        return consultarItensPreLista(SQL_BASE.concat(" ORDER BY p.nome"), limite, offset);
     }
 
     public List<ItemPreListaMolde> listarItensPreListaPorQuantidade(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd ASC"), limite, offset);
+            return consultarItensPreLista(SQL_BASE.concat(" ORDER BY i.qtd ASC"), limite, offset);
         } else {
-            return consultarItensPreLista(sqlBase.concat(" ORDER BY i.qtd DESC"), limite, offset);
+            return consultarItensPreLista(SQL_BASE.concat(" ORDER BY i.qtd DESC"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<ItemPreListaMolde> listarItemPreListaParaExportar(String filtragem){
         if (filtragem != null){
             switch (filtragem){
@@ -229,5 +245,29 @@ public class ItemPreListaDAO {
                 """);
     }
 
+    //BUSCAR POR ID (leitura apenas; usado pelo ItemPreListaServlet para validar edições por coluna)
+    public ItemPreListaMolde buscarItemPreListaPorId(int idItemPreLista){
+        String sql = "SELECT id_item_lista, fk_pre_lista, fk_fornecedor, fk_produto, qtd FROM item_pre_lista WHERE id_item_lista = ?";
 
+        try (Connection conexao = ConexaoBanco.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)){
+
+            stmt.setInt(1, idItemPreLista);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new ItemPreListaMolde(
+                            rs.getInt("id_item_lista"),
+                            rs.getInt("fk_pre_lista"),
+                            rs.getInt("fk_fornecedor"),
+                            rs.getInt("fk_produto"),
+                            rs.getInt("qtd"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar item pre-lista no banco de dados", e);
+        }
+        return null;
+    }
 }

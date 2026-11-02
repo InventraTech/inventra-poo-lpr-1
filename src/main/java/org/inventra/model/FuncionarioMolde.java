@@ -2,55 +2,59 @@ package org.inventra.model;
 
 import java.time.LocalDate;
 
+/**
+ * Funcionário do sistema. Um construtor serve ao cadastro e à edição (chave do setor e senha); o outro
+ * às leituras com JOIN (nome do setor, sem senha). {@code isAdmin} define quem pode acessar o sistema.
+ */
 public class FuncionarioMolde {
-    private int id_funcionario;
+    private int idFuncionario;
     private String nome;
     private String senha;
-    private int fk_setor;
+    private int fkSetor;
     private String email;
     private String telefone;
     private String cpf;
-    private LocalDate dt_admissao;
+    private LocalDate dtAdmissao;
     private String status;
     private boolean isAdmin;
 
     //VÁRIAVEL PARA SUBSTITUIR A FK
     private String setor;
 
-    public FuncionarioMolde(int fk_setor, String nome, String senha, String email, String telefone, String cpf, LocalDate dt_admissao, String status, boolean isAdmin) {
+    public FuncionarioMolde(int fkSetor, String nome, String senha, String email, String telefone, String cpf, LocalDate dtAdmissao, String status, boolean isAdmin) {
         this.nome = nome;
         this.senha = senha;
-        this.fk_setor = fk_setor;
+        this.fkSetor = fkSetor;
         this.email = email;
         this.telefone = telefone;
         this.cpf = cpf;
-        this.dt_admissao = dt_admissao;
+        this.dtAdmissao = dtAdmissao;
         this.status = status;
         this.isAdmin = isAdmin;
     }
 
 
     //SOBRECARGA PARA USAR O JOIN E SUBSTITUIR A FK
-    public FuncionarioMolde(int id_funcionario, String nome, String email, String telefone, String cpf, LocalDate dt_admissao, String status, String setor, boolean isAdmin) {
-        this.id_funcionario = id_funcionario;
+    public FuncionarioMolde(int idFuncionario, String nome, String email, String telefone, String cpf, LocalDate dtAdmissao, String status, String setor, boolean isAdmin) {
+        this.idFuncionario = idFuncionario;
         this.nome = nome;
         this.setor = setor;
         this.email = email;
         this.telefone = telefone;
         this.cpf = cpf;
-        this.dt_admissao = dt_admissao;
+        this.dtAdmissao = dtAdmissao;
         this.status = status;
         this.isAdmin = isAdmin;
         this.senha = null;
     }
 
 
-    public int getId_funcionario() {
-        return id_funcionario;
+    public int getIdFuncionario() {
+        return idFuncionario;
     }
 
-    public void setId_funcionario(int id_funcionario) {
-        this.id_funcionario = id_funcionario;
+    public void setIdFuncionario(int idFuncionario) {
+        this.idFuncionario = idFuncionario;
     }
 
     public String getNome() {
@@ -69,12 +73,12 @@ public class FuncionarioMolde {
         this.senha = senha;
     }
 
-    public int getFk_setor() {
-        return fk_setor;
+    public int getFkSetor() {
+        return fkSetor;
     }
 
-    public void setFk_setor(int fk_setor) {
-        this.fk_setor = fk_setor;
+    public void setFkSetor(int fkSetor) {
+        this.fkSetor = fkSetor;
     }
 
     public String getEmail() {
@@ -101,12 +105,12 @@ public class FuncionarioMolde {
         this.cpf = cpf;
     }
 
-    public LocalDate getDt_admissao() {
-        return dt_admissao;
+    public LocalDate getDtAdmissao() {
+        return dtAdmissao;
     }
 
-    public void setDt_admissao(LocalDate dt_admissao) {
-        this.dt_admissao = dt_admissao;
+    public void setDtAdmissao(LocalDate dtAdmissao) {
+        this.dtAdmissao = dtAdmissao;
     }
 
     public String getStatus() {
@@ -135,6 +139,6 @@ public class FuncionarioMolde {
 
     @Override
     public String toString(){
-        return "id: "+ id_funcionario + " nome: " + nome + " email: " + email + " telefone: " + telefone + " cpf: " + cpf + "dt_adimissao" + dt_admissao + " status" + status + " fk_setor: " + fk_setor + " isAdmin: "+ isAdmin;
+        return "id: "+ idFuncionario + " nome: " + nome + " email: " + email + " telefone: " + telefone + " cpf: " + cpf + "dt_adimissao" + dtAdmissao + " status" + status + " fk_setor: " + fkSetor + " isAdmin: "+ isAdmin;
     }
 }

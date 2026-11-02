@@ -153,23 +153,23 @@
         </thead>
         <tbody>
           <c:forEach var="f" items="${requestScope.funcionarios}">
-            <tr data-id="${f.id_funcionario}"
+            <tr data-id="${f.idFuncionario}"
                 data-rotulo="${fn:escapeXml(f.nome)}"
                 data-nome="${fn:escapeXml(f.nome)}"
                 data-email="${fn:escapeXml(f.email)}"
                 data-telefone="${fn:escapeXml(f.telefone)}"
                 data-cpf="${fn:escapeXml(f.cpf)}"
-                data-admissao="${f.dt_admissao}"
+                data-admissao="${f.dtAdmissao}"
                 data-status="${fn:escapeXml(f.status)}"
                 data-admin="${f.admin}">
-              <td><c:out value="${f.id_funcionario}"/></td>
+              <td><c:out value="${f.idFuncionario}"/></td>
               <td><c:out value="${f.nome}"/></td>
               <td><c:out value="${f.cpf}"/></td>
               <td><c:out value="${f.email}"/></td>
               <td><c:out value="${f.telefone}"/></td>
               <td><c:out value="${f.setor}"/></td>
               <td>
-                <c:if test="${not empty f.dt_admissao}">${fn:substring(f.dt_admissao, 8, 10)}/${fn:substring(f.dt_admissao, 5, 7)}/${fn:substring(f.dt_admissao, 0, 4)}</c:if>
+                <c:if test="${not empty f.dtAdmissao}">${fn:substring(f.dtAdmissao, 8, 10)}/${fn:substring(f.dtAdmissao, 5, 7)}/${fn:substring(f.dtAdmissao, 0, 4)}</c:if>
               </td>
               <td>${f.admin ? 'Sim' : 'Não'}</td>
               <td>
@@ -182,7 +182,7 @@
                   <button type="button" class="botao-cartao botao-cartao-editar" aria-label="Editar" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg></button>
               <form action="${ctx}/funcionario" method="post" class="form-excluir">
                 <input type="hidden" name="acao" value="excluir">
-                <input type="hidden" name="id" value="${f.id_funcionario}">
+                <input type="hidden" name="id" value="${f.idFuncionario}">
                 <button type="submit" class="botao-cartao botao-cartao-excluir" aria-label="Excluir" title="Excluir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/></svg></button>
               </form>
                 </div>
@@ -257,12 +257,12 @@
 
       <ul class="notificacoes-lista">
         <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
-          <c:if test="${not empty l.dt_validade}">
-            <li class="notificacao" data-validade="${l.dt_validade}">
+          <c:if test="${not empty l.dtValidade}">
+            <li class="notificacao" data-validade="${l.dtValidade}">
               <div class="notificacao-texto">
                 <strong><c:out value="${l.produto}"/></strong>
-                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
-                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+                <span>Lote <c:out value="${l.numeroLote}"/> &middot; <c:out value="${l.qtdAtual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</span>
               </div>
               <span class="notificacao-prazo"></span>
             </li>

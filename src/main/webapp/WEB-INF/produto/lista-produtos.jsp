@@ -122,9 +122,6 @@
           <option value="az" ${filtroSelecionado eq 'az' ? 'selected' : ''}>Nome (A - Z)</option>
           <option value="za" ${filtroSelecionado eq 'za' ? 'selected' : ''}>Nome (Z - A)</option>
           <option value="marca" ${filtroSelecionado eq 'marca' ? 'selected' : ''}>Marca (A - Z)</option>
-          <option value="quantidade" ${filtroSelecionado eq 'quantidade' ? 'selected' : ''}>Quantidade</option>
-          <option value="validade_proxima" ${filtroSelecionado eq 'validade_proxima' ? 'selected' : ''}>Validade: mais próxima</option>
-          <option value="validade_distante" ${filtroSelecionado eq 'validade_distante' ? 'selected' : ''}>Validade: mais distante</option>
         </select>
       </form>
 
@@ -164,9 +161,9 @@
           <c:forEach var="p" items="${requestScope.produtos}">
             <tr data-id="${fn:escapeXml(p.idProduto)}"
                 data-nome="${fn:escapeXml(p.nome)}"
-                data-marca="${p.fk_marca gt 0 ? p.fk_marca : ''}"
-                data-categoria="${p.fk_categoria gt 0 ? p.fk_categoria : ''}"
-                data-fornecedor="${p.fk_fornecedor gt 0 ? p.fk_fornecedor : ''}"
+                data-marca="${p.fkMarca gt 0 ? p.fkMarca : ''}"
+                data-categoria="${p.fkCategoria gt 0 ? p.fkCategoria : ''}"
+                data-fornecedor="${p.fkFornecedor gt 0 ? p.fkFornecedor : ''}"
                 data-unidade="${fn:escapeXml(p.unidadeMedida)}"
                 data-minimo="${fn:escapeXml(p.estoqueMin)}"
                 data-maximo="${fn:escapeXml(p.estoqueMax)}"
@@ -276,12 +273,12 @@
 
       <ul class="notificacoes-lista">
         <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
-          <c:if test="${not empty l.dt_validade}">
-            <li class="notificacao" data-validade="${l.dt_validade}">
+          <c:if test="${not empty l.dtValidade}">
+            <li class="notificacao" data-validade="${l.dtValidade}">
               <div class="notificacao-texto">
                 <strong><c:out value="${l.produto}"/></strong>
-                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
-                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+                <span>Lote <c:out value="${l.numeroLote}"/> &middot; <c:out value="${l.qtdAtual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</span>
               </div>
               <span class="notificacao-prazo"></span>
             </li>

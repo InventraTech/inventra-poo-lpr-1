@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FuncionarioDAO;
 import org.inventra.model.FuncionarioMolde;
-import org.inventra.utils.FuncionarioREGEX;
 import org.inventra.utils.NotificacaoLotes;
 
 import java.io.PrintWriter;
@@ -16,6 +15,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.inventra.utils.ParametrosHttp;
+import org.inventra.validation.FuncionarioValidador;
+import java.util.ArrayList;
+import java.util.Locale;
+/**
+ * Controla a tela de funcionários: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo FuncionarioValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "FuncionarioServlet", value = "/funcionario")
 public class FuncionarioServlet extends HttpServlet {
 
@@ -27,6 +34,10 @@ public class FuncionarioServlet extends HttpServlet {
     }
 
 
+    /**
+     * Exibe a lista de funcionários. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -65,12 +76,12 @@ public class FuncionarioServlet extends HttpServlet {
                     writer.println("ID;Nome;Email;Telefone;CPF;Data Admissão;Status;Setor;Admin");
 
                     for (FuncionarioMolde f : funcionarios) {
-                        writer.print(f.getId_funcionario() + ";");
+                        writer.print(f.getIdFuncionario() + ";");
                         writer.print(f.getNome() + ";");
                         writer.print(f.getEmail() + ";");
                         writer.print(f.getTelefone() + ";");
                         writer.print(f.getCpf() + ";");
-                        writer.print(f.getDt_admissao() + ";");
+                        writer.print(f.getDtAdmissao() + ";");
                         writer.print(f.getStatus() + ";");
                         writer.print(f.getSetor() + ";");
                         writer.println(f.isAdmin());
@@ -108,7 +119,7 @@ public class FuncionarioServlet extends HttpServlet {
             }
 
             int totalRegistros = funcionarioDAO.contarFuncionariosPadrao();
-            int totalAdmins = funcionarioDAO.contarFuncionáriosAdmins();
+            int totalAdmins = funcionarioDAO.contarFuncionariosAdmins();
             int totalSetores = funcionarioDAO.contarSetores();
             int totalAtivos = funcionarioDAO.contarAtivos();
 
@@ -145,6 +156,12 @@ public class FuncionarioServlet extends HttpServlet {
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
+    /**
+     * Trata o formulário de funcionários. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -153,12 +170,14 @@ public class FuncionarioServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String acao = request.getParameter("acao");
-        boolean valoresValidos;
 
         //Validando ação para evitar erro por ser NULL
         if (acao == null){
             acao = "";
         }
+
+        //Mensagens específicas para o usuário: erros de leitura dos parâmetros + lista devolvida pelo validador
+        List<String> erros = new ArrayList<>();
 
         try {
             if (acao.equals("excluir")) {
@@ -172,37 +191,23 @@ public class FuncionarioServlet extends HttpServlet {
                 return;
             }
 
-//        Atualiza apenas UMA coluna, chamando o método
-            if (acao.equals("atualizar_coluna")) {
-                int id = Integer.parseInt(request.getParameter("id"));
+            //Atualiza apenas UMA coluna, chamando o método
+            else if (acao.equals("atualizar_coluna")) {
+                int id = ParametrosHttp.lerInt(request.getParameter("id"), "ID do funcionário", erros);
                 String coluna = request.getParameter("coluna");
                 String novoValor = request.getParameter("novoValor");
 
                 if (coluna == null || coluna.isBlank() || novoValor == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Coluna ou valor não informado");
-                    return;
+                    erros.add("Coluna ou valor não informado.");
                 }
 
-                boolean valorValido;
-
-                switch (coluna) {
-                    case "cpf" -> {
-                        valorValido = FuncionarioREGEX.validarCpf(novoValor);
-                    }
-                    case "telefone" -> {
-                        valorValido = FuncionarioREGEX.validarTelefone(novoValor);
-                    }
-                    case "email" -> {
-                        valorValido = FuncionarioREGEX.validarEmail(novoValor);
-                    }
-                    default -> {
-                        //Caso passe uma coluna que não precisa de validação ela passa TRUE (ex: nome)
-                        valorValido = true;
-                    }
+                //Valida o novo valor (inclui o formato de CPF, e-mail e telefone) usando o FuncionarioValidador
+                if (erros.isEmpty()) {
+                    validarColuna(coluna, novoValor, erros);
                 }
 
-                if (!valorValido) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "O valor informado para " + coluna + " é inválido");
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/funcionario", erros);
                     return;
                 }
 
@@ -214,52 +219,24 @@ public class FuncionarioServlet extends HttpServlet {
                 return;
 
             }
-//        Atualizar todas as colunas de uma vez
+            //Atualizar todas as colunas de uma vez
             else if (acao.equals("atualizar_completo")) {
-                int id = Integer.parseInt(request.getParameter("id_funcionario"));
+                int id = ParametrosHttp.lerInt(request.getParameter("id_funcionario"), "ID do funcionário", erros);
 
+                //INSTANCIANDO OBJETO FUNCIONARIO
+                FuncionarioMolde atualizandoTudo = lerFuncionario(request, erros);
 
-                String nome =
-                        request.getParameter("nome");
-                String senha =
-                        request.getParameter("senha");
-                String email =
-                        request.getParameter("email");
-                String telefone =
-                        request.getParameter("telefone");
-                String cpf =
-                        request.getParameter("cpf");
-                int fk_setor =
-                        Integer.parseInt(request.getParameter("fk_setor"));
-
-                String dt_adimissao =
-                        request.getParameter("dt_admissao");
-
-                LocalDate dataAdimissao = null;
-
-                if (
-                        dt_adimissao != null &&
-                                !dt_adimissao.isBlank()
-                ) {
-                    dataAdimissao = LocalDate.parse(dt_adimissao);
+                //APLICANDO VALIDAÇÕES (nome, setor, e-mail, telefone, CPF, admissão e status)
+                if (erros.isEmpty()) {
+                    erros.addAll(FuncionarioValidador.validar(atualizandoTudo));
                 }
 
-                String status =
-                        request.getParameter("status");
-
-                boolean isAdmin =
-                        Boolean.parseBoolean(request.getParameter("is_admin"));
-
-                //APLICANDO REGEX
-                valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
-
-                if (!valoresValidos) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
+                if (!erros.isEmpty()) {
+                    ParametrosHttp.redirecionarComErros(request, response, "/funcionario", erros);
                     return;
                 }
 
-                //INSTANCIANDO OBJETO FUNCIONARIO
-                FuncionarioMolde atualizandoTudo = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
+                //Senha em branco na edição completa = mantém a senha atual (regra do DAO)
                 funcionarioDAO.atualizarFuncionarioCompleto(atualizandoTudo, id);
 
                 response.sendRedirect(request.getContextPath() + "/funcionario");
@@ -267,52 +244,22 @@ public class FuncionarioServlet extends HttpServlet {
             }
 
             //Fluxo de cadastro, só chegara aqui se não se encaixar em nenhuma das 2 de cima
+            FuncionarioMolde novoFuncionario = lerFuncionario(request, erros);
 
-            String nome =
-                    request.getParameter("nome");
-
-            String senha =
-                    request.getParameter("senha");
-
-            int fk_setor =
-                    Integer.parseInt(request.getParameter("fk_setor"));
-
-            String email =
-                    request.getParameter("email");
-
-            String telefone =
-                    request.getParameter("telefone");
-
-            String cpf =
-                    request.getParameter("cpf");
-
-            String dt_adimissao =
-                    request.getParameter("dt_admissao");
-
-            LocalDate dataAdimissao = null;
-
-            if (
-                    dt_adimissao != null &&
-                            !dt_adimissao.isBlank()
-            ) {
-                dataAdimissao = LocalDate.parse(dt_adimissao);
+            //APLICANDO VALIDAÇÕES
+            if (erros.isEmpty()) {
+                erros.addAll(FuncionarioValidador.validar(novoFuncionario));
             }
 
-            String status =
-                    request.getParameter("status");
+            //No cadastro a senha é obrigatória (o DAO gera o hash dela)
+            if (novoFuncionario.getSenha() == null || novoFuncionario.getSenha().isBlank()) {
+                erros.add("A senha é obrigatória.");
+            }
 
-            boolean isAdmin =
-                    Boolean.parseBoolean(request.getParameter("is_admin"));
-
-            //APLICANDO REGEX
-            valoresValidos = FuncionarioREGEX.validandoTodos(cpf, email, telefone);
-
-            if (!valoresValidos) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erro: CPF, Email ou Telefone com formatos inválidos");
+            if (!erros.isEmpty()) {
+                ParametrosHttp.redirecionarComErros(request, response, "/funcionario", erros);
                 return;
             }
-
-            FuncionarioMolde novoFuncionario = new FuncionarioMolde(fk_setor, nome, senha, email, telefone, cpf, dataAdimissao, status, isAdmin);
 
             funcionarioDAO.inserirFuncionario(novoFuncionario);
 
@@ -333,5 +280,68 @@ public class FuncionarioServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/funcionario");
         }
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
+    }
+
+    //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
+    private FuncionarioMolde lerFuncionario(HttpServletRequest request, List<String> erros) {
+        String nome = request.getParameter("nome");
+        String senha = request.getParameter("senha");
+        int fkSetor = ParametrosHttp.lerInt(request.getParameter("fk_setor"), "Setor", erros);
+        String email = request.getParameter("email");
+        String telefone = request.getParameter("telefone");
+        String cpf = request.getParameter("cpf");
+        LocalDate dataAdmissao = ParametrosHttp.lerData(request.getParameter("dt_admissao"), "admissão", erros);
+        String status = request.getParameter("status");
+        boolean isAdmin = Boolean.parseBoolean(request.getParameter("is_admin"));
+
+        return new FuncionarioMolde(fkSetor, nome, senha, email, telefone, cpf, dataAdmissao, status, isAdmin);
+    }
+
+    //Edição por coluna: parte de um funcionário "base" válido e troca só o campo editado, para o FuncionarioValidador
+    //avaliar apenas o novo valor. A senha não passa pelo validador (o DAO a transforma em hash e recusa vazio).
+    private void validarColuna(String coluna, String novoValor, List<String> erros) {
+        FuncionarioMolde funcionario = new FuncionarioMolde(1, "Nome", null, "valido@inventra.com", "11999999999",
+                "12345678909", LocalDate.of(2000, 1, 1), "Ativo", false);
+
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
+        switch (coluna.toLowerCase(Locale.ROOT)) {
+            case "nome" -> funcionario.setNome(novoValor);
+            case "senha" -> {
+                if (novoValor.isBlank()) {
+                    erros.add("A senha não pode ser vazia.");
+                }
+                return;
+            }
+            case "fk_setor" -> {
+                 funcionario.setFkSetor(ParametrosHttp.lerInt(novoValor, "Setor", erros));
+            }
+            case "email" -> {
+                funcionario.setEmail(novoValor);
+            }
+            case "telefone" -> {
+                funcionario.setTelefone(novoValor);
+            }
+            case "cpf" -> {
+                funcionario.setCpf(novoValor);
+            }
+            case "dt_admissao" -> {
+                funcionario.setDtAdmissao(ParametrosHttp.lerData(novoValor, "admissão", erros));
+            }
+            case "status" -> {
+                funcionario.setStatus(novoValor);
+            }
+            case "is_admin" -> {
+                funcionario.setAdmin(ParametrosHttp.lerBooleano(novoValor, "Administrador", erros));
+            }
+            default -> {
+                erros.add("A coluna informada não pode ser alterada.");
+                return;
+            }
+        }
+
+        if (erros.isEmpty()) {
+            erros.addAll(FuncionarioValidador.validar(funcionario));
+        }
     }
 }

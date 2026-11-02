@@ -7,6 +7,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Ponto único de acesso ao banco: mantém um pool de conexões (HikariCP) criado uma só vez,
+ * quando a classe é carregada. Usuário, senha e URL vêm do arquivo .env, para não ficarem no código.
+ */
 public class ConexaoBanco {
     private static Dotenv dotEnv = Dotenv.configure().directory("/").filename(".env").load();
     private static HikariDataSource dataSource;
@@ -32,11 +36,17 @@ public class ConexaoBanco {
         } catch (Exception e) {
             System.out.println("Erro ao inicializar o Pool de Conexões do HikariCP");
             e.printStackTrace();
+            // Sem o pool nenhum DAO funciona; por isso a falha interrompe o carregamento da classe em vez de seguir com dataSource nulo.
             throw new RuntimeException("Falha crítica ao iniciar o pool de conexões", e);
         }
     }
 
-    // Método que retorna uma Connection obtida do pool
+    /**
+     * Entrega uma conexão emprestada do pool. Quem chama deve usar try-with-resources:
+     * fechar a conexão a devolve ao pool, não a encerra de verdade.
+     *
+     * @throws SQLException se o pool não conseguir fornecer uma conexão dentro do tempo limite
+     */
     public static Connection conectar() throws SQLException {
         return dataSource.getConnection();
     }

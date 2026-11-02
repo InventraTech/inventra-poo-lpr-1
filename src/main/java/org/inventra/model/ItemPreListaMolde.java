@@ -1,64 +1,68 @@
 package org.inventra.model;
 
+/**
+ * Item da pré-lista de compras: produto e quantidade a comprar de um fornecedor. O construtor com nomes
+ * ({@code fornecedor} e {@code produto}) é o das leituras com JOIN.
+ */
 public class ItemPreListaMolde {
-    private int id_item_prelista;
-    private int fk_pre_lista;
-    private int fk_fornecedor;
-    private int fk_produto;
+    private int idItemPreLista;
+    private int fkPreLista;
+    private int fkFornecedor;
+    private int fkProduto;
     private int qtd;
 
     //VARIAVÉIS PARA SUBSTITUIR AS FK
     private String fornecedor;
     private String produto;
 
-    public ItemPreListaMolde(int id_item_prelista, int fk_pre_lista, int fk_fornecedor, int fk_produto, int qtd) {
-        this.id_item_prelista = id_item_prelista;
-        this.fk_pre_lista = fk_pre_lista;
-        this.fk_fornecedor = fk_fornecedor;
-        this.fk_produto = fk_produto;
+    public ItemPreListaMolde(int idItemPreLista, int fkPreLista, int fkFornecedor, int fkProduto, int qtd) {
+        this.idItemPreLista = idItemPreLista;
+        this.fkPreLista = fkPreLista;
+        this.fkFornecedor = fkFornecedor;
+        this.fkProduto = fkProduto;
         this.qtd = qtd;
     }
 
-    public ItemPreListaMolde(int fk_pre_lista, int fk_fornecedor, int fk_produto, int qtd) {
-        this.fk_pre_lista = fk_pre_lista;
-        this.fk_fornecedor = fk_fornecedor;
-        this.fk_produto = fk_produto;
+    public ItemPreListaMolde(int fkPreLista, int fkFornecedor, int fkProduto, int qtd) {
+        this.fkPreLista = fkPreLista;
+        this.fkFornecedor = fkFornecedor;
+        this.fkProduto = fkProduto;
         this.qtd = qtd;
     }
 
-    public ItemPreListaMolde(int id_item_prelista, String fornecedor, String produto, int qtd) {
-        this.id_item_prelista = id_item_prelista;
+    public ItemPreListaMolde(int idItemPreLista, String fornecedor, String produto, int qtd) {
+        this.idItemPreLista = idItemPreLista;
         this.fornecedor = fornecedor;
         this.produto = produto;
         this.qtd = qtd;
     }
 
-    public int getId_item_prelista() {
-        return id_item_prelista;
+    public int getIdItemPreLista() {
+        return idItemPreLista;
     }
 
-    public int getFk_pre_lista() {
-        return fk_pre_lista;
+    public int getFkPreLista() {
+        return fkPreLista;
     }
 
-    public void setFk_pre_lista(int fk_pre_lista) {
-        this.fk_pre_lista = fk_pre_lista;
+    public void setFkPreLista(int fkPreLista) {
+        this.fkPreLista = fkPreLista;
     }
 
-    public int getFk_fornecedor() {
-        return fk_fornecedor;
+    public int getFkFornecedor() {
+        return fkFornecedor;
     }
 
-    public void setFk_fornecedor(int fk_fornecedor) {
-        this.fk_fornecedor = fk_fornecedor;
+    public void setFkFornecedor(int fkFornecedor) {
+        this.fkFornecedor = fkFornecedor;
     }
 
-    public int getFk_produto() {
-        return fk_produto;
+    public int getFkProduto() {
+        return fkProduto;
     }
 
-    public void setFk_produto(int fk_produto) {
-        this.fk_produto = fk_produto;
+    public void setFkProduto(int fkProduto) {
+        this.fkProduto = fkProduto;
     }
 
     public int getQtd() {

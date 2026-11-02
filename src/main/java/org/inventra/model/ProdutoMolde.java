@@ -1,14 +1,18 @@
 package org.inventra.model;
 
+/**
+ * Produto do catálogo. Não guarda quantidade nem validade (isso é do lote). Os campos de texto marca, categoria
+ * e fornecedor só são preenchidos nas leituras com JOIN.
+ */
 public class ProdutoMolde {
     private int idProduto;
     private String nome;
-    private int fk_marca;
-    private int fk_categoria;
+    private int fkMarca;
+    private int fkCategoria;
     private String unidadeMedida;
     private int estoqueMin;
     private int estoqueMax;
-    private int fk_fornecedor;
+    private int fkFornecedor;
     private String descricao;
     private boolean ativo;
 
@@ -17,10 +21,10 @@ public class ProdutoMolde {
     private String categoria;
     private String fornecedor;
 
-    public ProdutoMolde (int fk_fornecedor, int fk_marca, int fk_categoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
-        this.fk_fornecedor = fk_fornecedor;
-        this.fk_marca = fk_marca;
-        this.fk_categoria = fk_categoria;
+    public ProdutoMolde (int fkFornecedor, int fkMarca, int fkCategoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
+        this.fkFornecedor = fkFornecedor;
+        this.fkMarca = fkMarca;
+        this.fkCategoria = fkCategoria;
         this.nome = nome;
         this.unidadeMedida = unidadeMedida;
         this.estoqueMin = estoqueMin;
@@ -29,11 +33,11 @@ public class ProdutoMolde {
         this.ativo = ativo;
     }
 
-    public ProdutoMolde(int idProduto, int fk_fornecedor, int fk_marca, int fk_categoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
+    public ProdutoMolde(int idProduto, int fkFornecedor, int fkMarca, int fkCategoria, String nome, String unidadeMedida, int estoqueMin, int estoqueMax, String descricao, boolean ativo) {
         this.idProduto = idProduto;
-        this.fk_fornecedor = fk_fornecedor;
-        this.fk_marca = fk_marca;
-        this.fk_categoria = fk_categoria;
+        this.fkFornecedor = fkFornecedor;
+        this.fkMarca = fkMarca;
+        this.fkCategoria = fkCategoria;
         this.nome = nome;
         this.unidadeMedida = unidadeMedida;
         this.estoqueMin = estoqueMin;
@@ -72,20 +76,20 @@ public class ProdutoMolde {
         this.nome = nome;
     }
 
-    public int getFk_marca() {
-        return fk_marca;
+    public int getFkMarca() {
+        return fkMarca;
     }
 
-    public void setFk_marca(int fk_marca) {
-        this.fk_marca = fk_marca;
+    public void setFkMarca(int fkMarca) {
+        this.fkMarca = fkMarca;
     }
 
-    public int getFk_categoria() {
-        return fk_categoria;
+    public int getFkCategoria() {
+        return fkCategoria;
     }
 
-    public void setFk_categoria(int fk_categoria) {
-        this.fk_categoria = fk_categoria;
+    public void setFkCategoria(int fkCategoria) {
+        this.fkCategoria = fkCategoria;
     }
 
     public String getUnidadeMedida() {
@@ -112,12 +116,12 @@ public class ProdutoMolde {
         this.estoqueMax = estoqueMax;
     }
 
-    public int getFk_fornecedor() {
-        return fk_fornecedor;
+    public int getFkFornecedor() {
+        return fkFornecedor;
     }
 
-    public void setFk_fornecedor(int fk_fornecedor) {
-        this.fk_fornecedor = fk_fornecedor;
+    public void setFkFornecedor(int fkFornecedor) {
+        this.fkFornecedor = fkFornecedor;
     }
 
     public String getDescricao() {
@@ -132,6 +136,7 @@ public class ProdutoMolde {
         return ativo;
     }
 
+    // Estes três getters devolvem os nomes obtidos pelo JOIN (não os ids); são eles que as telas exibem.
     public String getNomeCategoria() {
         return categoria;
     }

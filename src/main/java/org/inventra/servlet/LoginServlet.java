@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +11,10 @@ import org.inventra.model.FuncionarioMolde;
 
 import java.io.IOException;
 
+/**
+ * Processa o login. Só administradores ativos conseguem entrar (regra aplicada em FuncionarioDAO.validarLogin).
+ * Em caso de sucesso o funcionário vai para a sessão e a tela inicial é a de fornecedores.
+ */
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
 
@@ -38,6 +42,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        // O DAO devolve null tanto para e-mail inexistente quanto para senha errada, então a mensagem não revela qual dos dois falhou.
         FuncionarioMolde funcionario = funcionarioDAO.validarLogin(email, senha);
 
         if (funcionario != null){

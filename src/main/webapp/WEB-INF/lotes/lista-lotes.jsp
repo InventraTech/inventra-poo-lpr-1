@@ -142,19 +142,19 @@
     <section class="lista-cartoes" aria-label="Lista de lotes">
       <c:forEach var="l" items="${requestScope.lotes}">
         <article class="cartao"
-                 data-id="${l.id_lote}"
-                 data-rotulo="${fn:escapeXml(l.numero_lote)}"
-                 data-numero="${fn:escapeXml(l.numero_lote)}"
-                 data-qtdinicial="${l.qtd_inicial}"
-                 data-qtdatual="${l.qtd_atual}"
-                 data-entrada="${l.dt_entrada}"
-                 data-validade="${l.dt_validade}"
-                 data-valor="${l.valor_compra}"
-                 data-nota="${fn:escapeXml(l.nota_fiscal)}">
+                 data-id="${l.idLote}"
+                 data-rotulo="${fn:escapeXml(l.numeroLote)}"
+                 data-numero="${fn:escapeXml(l.numeroLote)}"
+                 data-qtdinicial="${l.qtdInicial}"
+                 data-qtdatual="${l.qtdAtual}"
+                 data-entrada="${l.dtEntrada}"
+                 data-validade="${l.dtValidade}"
+                 data-valor="${l.valorCompra}"
+                 data-nota="${fn:escapeXml(l.notaFiscal)}">
           <header class="cartao-topo">
-            <div class="cartao-logo">L<c:out value="${l.id_lote}"/></div>
+            <div class="cartao-logo">L<c:out value="${l.idLote}"/></div>
             <div class="cartao-identificacao">
-              <h2 class="cartao-nome">Lote <c:out value="${l.numero_lote}"/></h2>
+              <h2 class="cartao-nome">Lote <c:out value="${l.numeroLote}"/></h2>
               <p class="cartao-cnpj"><c:out value="${l.produto}"/></p>
             </div>
             <%-- O status (vigente / vencendo / vencido) é calculado pelo script a partir de data-validade. --%>
@@ -162,18 +162,18 @@
           </header>
 
           <ul class="cartao-itens">
-            <li><span>Quantidade inicial</span><span><c:out value="${l.qtd_inicial}"/> un</span></li>
-            <li><span>Quantidade atual</span><span><c:out value="${l.qtd_atual}"/> un</span></li>
-            <li><span>Valor de compra</span><span><fmt:formatNumber value="${l.valor_compra}" type="currency"/></span></li>
+            <li><span>Quantidade inicial</span><span><c:out value="${l.qtdInicial}"/> un</span></li>
+            <li><span>Quantidade atual</span><span><c:out value="${l.qtdAtual}"/> un</span></li>
+            <li><span>Valor de compra</span><span><fmt:formatNumber value="${l.valorCompra}" type="currency"/></span></li>
           </ul>
 
           <footer class="cartao-rodape">
             <div class="cartao-info">
-              <p class="cartao-responsavel">Nota fiscal: <c:out value="${l.nota_fiscal}"/></p>
+              <p class="cartao-responsavel">Nota fiscal: <c:out value="${l.notaFiscal}"/></p>
               <p class="cartao-produtos">
-                Entrada em <strong><c:if test="${not empty l.dt_entrada}">${fn:substring(l.dt_entrada, 8, 10)}/${fn:substring(l.dt_entrada, 5, 7)}/${fn:substring(l.dt_entrada, 0, 4)}</c:if></strong>
-                <c:if test="${not empty l.dt_validade}">
-                  | Válido até <strong>${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</strong>
+                Entrada em <strong><c:if test="${not empty l.dtEntrada}">${fn:substring(l.dtEntrada, 8, 10)}/${fn:substring(l.dtEntrada, 5, 7)}/${fn:substring(l.dtEntrada, 0, 4)}</c:if></strong>
+                <c:if test="${not empty l.dtValidade}">
+                  | Válido até <strong>${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</strong>
                 </c:if>
               </p>
             </div>
@@ -181,7 +181,7 @@
               <button type="button" class="botao-cartao botao-cartao-editar" aria-label="Editar" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg></button>
               <form action="${ctx}/lote" method="post" class="form-excluir">
                 <input type="hidden" name="acao" value="excluir">
-                <input type="hidden" name="id" value="${l.id_lote}">
+                <input type="hidden" name="id" value="${l.idLote}">
                 <button type="submit" class="botao-cartao botao-cartao-excluir" aria-label="Excluir" title="Excluir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/></svg></button>
               </form>
             </div>
@@ -249,12 +249,12 @@
 
       <ul class="notificacoes-lista">
         <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
-          <c:if test="${not empty l.dt_validade}">
-            <li class="notificacao" data-validade="${l.dt_validade}">
+          <c:if test="${not empty l.dtValidade}">
+            <li class="notificacao" data-validade="${l.dtValidade}">
               <div class="notificacao-texto">
                 <strong><c:out value="${l.produto}"/></strong>
-                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
-                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+                <span>Lote <c:out value="${l.numeroLote}"/> &middot; <c:out value="${l.qtdAtual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</span>
               </div>
               <span class="notificacao-prazo"></span>
             </li>
