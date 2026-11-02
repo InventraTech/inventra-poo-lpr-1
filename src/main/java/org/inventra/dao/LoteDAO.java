@@ -261,4 +261,34 @@ public class LoteDAO {
     public int contarLotesVencendo30dias(){
         return contarLotes(sqlBaseContador.concat("where dt_validade >= current_date and dt_validade <= current_date + interval '30 days';"));
     }
+
+    // BUSCAR POR ID (leitura apenas; usado pelo LoteServlet para validar edições por coluna)
+    public LoteMolde buscarLotePorId(int id_lote){
+        String sql = "SELECT id_lote, fk_produto, numero_lote, qtd_inicial, qtd_atual, dt_entrada, dt_validade, valor_compra, nota_fiscal FROM lote WHERE id_lote = ?";
+
+        try (Connection conexao = ConexaoBanco.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)){
+
+            stmt.setInt(1, id_lote);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new LoteMolde(
+                            rs.getInt("id_lote"),
+                            rs.getInt("fk_produto"),
+                            rs.getString("numero_lote"),
+                            rs.getInt("qtd_inicial"),
+                            rs.getInt("qtd_atual"),
+                            rs.getObject("dt_entrada", java.time.LocalDate.class),
+                            rs.getObject("dt_validade", java.time.LocalDate.class),
+                            rs.getBigDecimal("valor_compra"),
+                            rs.getString("nota_fiscal"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar lote no banco de dados", e);
+        }
+        return null;
+    }
 }

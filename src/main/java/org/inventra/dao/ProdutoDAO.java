@@ -258,4 +258,35 @@ public class ProdutoDAO {
     public int contarFornecedores(){
         return contarProdutos("select count(distinct fk_fornecedor) from produto");
     }
+
+    // BUSCAR POR ID (leitura apenas; usado pelo ProdutoServlet para validar edições por coluna)
+    public ProdutoMolde buscarProdutoPorId(int id_produto) {
+        String sql = "SELECT id_produto, fk_fornecedor, fk_marca, fk_categoria, nome, unidade_medida, estoque_min, estoque_max, descricao, ativo FROM produto WHERE id_produto = ?";
+
+        try (Connection conexao = ConexaoBanco.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, id_produto);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new ProdutoMolde(
+                            rs.getInt("id_produto"),
+                            rs.getInt("fk_fornecedor"),
+                            rs.getInt("fk_marca"),
+                            rs.getInt("fk_categoria"),
+                            rs.getString("nome"),
+                            rs.getString("unidade_medida"),
+                            rs.getInt("estoque_min"),
+                            rs.getInt("estoque_max"),
+                            rs.getString("descricao"),
+                            rs.getBoolean("ativo"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar produto no banco de dados", e);
+        }
+        return null;
+    }
 }

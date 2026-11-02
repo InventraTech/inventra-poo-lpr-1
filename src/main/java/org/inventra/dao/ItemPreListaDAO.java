@@ -229,5 +229,29 @@ public class ItemPreListaDAO {
                 """);
     }
 
+    //BUSCAR POR ID (leitura apenas; usado pelo ItemPreListaServlet para validar edições por coluna)
+    public ItemPreListaMolde buscarItemPreListaPorId(int id_itemPreLista){
+        String sql = "SELECT id_item_lista, fk_pre_lista, fk_fornecedor, fk_produto, qtd FROM item_pre_lista WHERE id_item_lista = ?";
 
+        try (Connection conexao = ConexaoBanco.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)){
+
+            stmt.setInt(1, id_itemPreLista);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new ItemPreListaMolde(
+                            rs.getInt("id_item_lista"),
+                            rs.getInt("fk_pre_lista"),
+                            rs.getInt("fk_fornecedor"),
+                            rs.getInt("fk_produto"),
+                            rs.getInt("qtd"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar item pre-lista no banco de dados", e);
+        }
+        return null;
+    }
 }

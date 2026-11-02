@@ -274,4 +274,34 @@ public class RequisicaoDAO {
             return contarRequisicoes(contadorBase.concat("where r.status = 'Pendente'"));
         }
     }
+
+    // BUSCAR POR ID (leitura apenas; usado pelo RequisicaoServlet para validar edições por coluna)
+    public RequisicaoMolde buscarRequisicaoPorId(int id_requisicao){
+        String sql = "SELECT id_requisicao, fk_tipo_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto, quantidade_prod, motivo, status, dt_requisicao FROM requisicao WHERE id_requisicao = ?";
+
+        try(Connection conexao = ConexaoBanco.conectar();
+            PreparedStatement stmt = conexao.prepareStatement(sql)){
+
+            stmt.setInt(1, id_requisicao);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new RequisicaoMolde(
+                            rs.getInt("id_requisicao"),
+                            rs.getInt("fk_tipo_requisicao"),
+                            rs.getInt("fk_funcionario_solicitante"),
+                            rs.getInt("fk_funcionario_aprovador"),
+                            rs.getInt("fk_produto"),
+                            rs.getInt("quantidade_prod"),
+                            rs.getString("motivo"),
+                            rs.getString("status"),
+                            rs.getObject("dt_requisicao", LocalDateTime.class));
+                }
+            }
+
+        } catch(SQLException e){
+            throw new RuntimeException("Erro ao buscar requisicao no banco de dados", e);
+        }
+        return null;
+    }
 }
