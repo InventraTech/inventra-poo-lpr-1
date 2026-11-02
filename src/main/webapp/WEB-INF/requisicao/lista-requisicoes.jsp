@@ -255,12 +255,12 @@
 
       <ul class="notificacoes-lista">
         <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
-          <c:if test="${not empty l.dt_validade}">
-            <li class="notificacao" data-validade="${l.dt_validade}">
+          <c:if test="${not empty l.dtValidade}">
+            <li class="notificacao" data-validade="${l.dtValidade}">
               <div class="notificacao-texto">
                 <strong><c:out value="${l.produto}"/></strong>
-                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
-                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+                <span>Lote <c:out value="${l.numeroLote}"/> &middot; <c:out value="${l.qtdAtual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</span>
               </div>
               <span class="notificacao-prazo"></span>
             </li>

@@ -6,8 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 
+/**
+ * Regras de lote: quantidade inicial positiva, quantidade atual entre zero e a inicial, validade não anterior à entrada
+ * e valor de compra não negativo.
+ */
 public class LoteValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(LoteMolde lote) {
 
         List<String> erros = new ArrayList<>();
@@ -18,53 +27,53 @@ public class LoteValidador {
         }
 
         // Produto
-        if (lote.getFk_produto() <= 0) {
+        if (lote.getFkProduto() <= 0) {
             erros.add("A FK do produto não pode ser menor que zero");
         }
 
         // Número do lote
-        if (lote.getNumero_lote() == null ||
-                lote.getNumero_lote().isBlank()) {
+        if (lote.getNumeroLote() == null ||
+                lote.getNumeroLote().isBlank()) {
             erros.add("O número do lote é obrigatório.");
         }
 
         // Quantidade inicial
-        if (lote.getQtd_inicial() <= 0) {
+        if (lote.getQtdInicial() <= 0) {
             erros.add("A quantidade inicial deve ser maior que zero.");
         }
 
         // Quantidade atual
-        if (lote.getQtd_atual() < 0) {
+        if (lote.getQtdAtual() < 0) {
             erros.add("A quantidade atual não pode ser menor que zero.");
         }
 
         // Relação entre quantidades
-        if (lote.getQtd_inicial() > 0 &&
-                lote.getQtd_atual() > lote.getQtd_inicial()) {
+        if (lote.getQtdInicial() > 0 &&
+                lote.getQtdAtual() > lote.getQtdInicial()) {
             erros.add("A quantidade atual não pode superar a inicial.");
         }
 
         // Data de entrada
-        if (lote.getDt_entrada() == null) {
+        if (lote.getDtEntrada() == null) {
             erros.add("A data de entrada é obrigatória.");
         }
 
         // Data de validade
-        if (lote.getDt_validade() == null) {
+        if (lote.getDtValidade() == null) {
             erros.add("A data de validade é obrigatória.");
         }
 
         // Comparação das datas
-        if (lote.getDt_entrada() != null &&
-                lote.getDt_validade() != null &&
-                lote.getDt_validade().isBefore(lote.getDt_entrada())) {
+        if (lote.getDtEntrada() != null &&
+                lote.getDtValidade() != null &&
+                lote.getDtValidade().isBefore(lote.getDtEntrada())) {
             erros.add("A validade não pode ser anterior à entrada.");
         }
 
         // Valor da compra
-        if (lote.getValor_compra() == null) {
+        if (lote.getValorCompra() == null) {
             erros.add("O valor da compra é obrigatório");
-        } else if (lote.getValor_compra().compareTo(BigDecimal.ZERO) < 0) {
+        } else if (lote.getValorCompra().compareTo(BigDecimal.ZERO) < 0) {
             erros.add("O valor da compra não pode ser menor que zero");
         }
 

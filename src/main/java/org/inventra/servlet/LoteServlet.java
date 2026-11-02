@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,6 +19,10 @@ import org.inventra.utils.ParametrosHttp;
 import org.inventra.validation.LoteValidador;
 import java.util.ArrayList;
 import java.util.Locale;
+/**
+ * Controla a tela de lotes: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo LoteValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "LoteServlet", value = "/lote")
 public class LoteServlet extends HttpServlet{
 
@@ -29,6 +33,10 @@ public class LoteServlet extends HttpServlet{
         loteDao = new LoteDAO();
     }
 
+    /**
+     * Exibe a lista de lotes. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -68,15 +76,15 @@ public class LoteServlet extends HttpServlet{
                     writer.println("ID;Produto;Número Lote;Qtd Inicial;Qtd Atual;Data Entrada;Data Validade;Valor Compra;Nota Fiscal");
 
                     for (LoteMolde f : lotes) {
-                        writer.print(f.getId_lote() + ";");
+                        writer.print(f.getIdLote() + ";");
                         writer.print(f.getProduto() + ";");
-                        writer.print(f.getNumero_lote() + ";");
-                        writer.print(f.getQtd_inicial() + ";");
-                        writer.print(f.getQtd_atual() + ";");
-                        writer.print(f.getDt_entrada() + ";");
-                        writer.print(f.getDt_validade() + ";");
-                        writer.print(f.getValor_compra() + ";");
-                        writer.println(f.getNota_fiscal());
+                        writer.print(f.getNumeroLote() + ";");
+                        writer.print(f.getQtdInicial() + ";");
+                        writer.print(f.getQtdAtual() + ";");
+                        writer.print(f.getDtEntrada() + ";");
+                        writer.print(f.getDtValidade() + ";");
+                        writer.print(f.getValorCompra() + ";");
+                        writer.println(f.getNotaFiscal());
                     }
                     writer.flush();
                 }
@@ -145,6 +153,12 @@ public class LoteServlet extends HttpServlet{
         //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
+    /**
+     * Trata o formulário de lotes. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -272,35 +286,37 @@ public class LoteServlet extends HttpServlet{
 
     //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
     private LoteMolde lerLote(HttpServletRequest request, List<String> erros) {
-        int fk_produto = ParametrosHttp.lerInt(request.getParameter("fk_produto"), "Produto", erros);
-        String numero_lote = request.getParameter("numero_lote");
-        int qtd_inicial = ParametrosHttp.lerInt(request.getParameter("qtd_inicial"), "Quantidade inicial", erros);
-        int qtd_atual = ParametrosHttp.lerInt(request.getParameter("qtd_atual"), "Quantidade atual", erros);
-        LocalDate data_entrada = ParametrosHttp.lerData(request.getParameter("dt_entrada"), "entrada", erros);
-        LocalDate data_validade = ParametrosHttp.lerData(request.getParameter("dt_validade"), "validade", erros);
+        int fkProduto = ParametrosHttp.lerInt(request.getParameter("fk_produto"), "Produto", erros);
+        String numeroLote = request.getParameter("numero_lote");
+        int qtdInicial = ParametrosHttp.lerInt(request.getParameter("qtd_inicial"), "Quantidade inicial", erros);
+        int qtdAtual = ParametrosHttp.lerInt(request.getParameter("qtd_atual"), "Quantidade atual", erros);
+        LocalDate dataEntrada = ParametrosHttp.lerData(request.getParameter("dt_entrada"), "entrada", erros);
+        LocalDate dataValidade = ParametrosHttp.lerData(request.getParameter("dt_validade"), "validade", erros);
 
         //Valor de compra em branco continua valendo zero (regra que já existia); vírgula ou ponto são aceitos
-        BigDecimal valor_compra = ParametrosHttp.lerDecimal(request.getParameter("valor_compra"), "compra", erros);
-        if (valor_compra == null) {
-            valor_compra = BigDecimal.ZERO;
+        BigDecimal valorCompra = ParametrosHttp.lerDecimal(request.getParameter("valor_compra"), "compra", erros);
+        if (valorCompra == null) {
+            valorCompra = BigDecimal.ZERO;
         }
 
-        String nota_fiscal = request.getParameter("nota_fiscal");
+        String notaFiscal = request.getParameter("nota_fiscal");
 
-        return new LoteMolde(fk_produto, numero_lote, qtd_inicial, qtd_atual, data_entrada, data_validade, valor_compra, nota_fiscal);
+        return new LoteMolde(fkProduto, numeroLote, qtdInicial, qtdAtual, dataEntrada, dataValidade, valorCompra, notaFiscal);
     }
 
     //Edição por coluna: troca no lote atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
     private void aplicarColuna(LoteMolde lote, String coluna, String novoValor, List<String> erros) {
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
         switch (coluna.toLowerCase(Locale.ROOT)) {
-            case "fk_produto" -> lote.setFk_produto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
-            case "numero_lote" -> lote.setNumero_lote(novoValor);
-            case "qtd_inicial" -> lote.setQtd_inicial(ParametrosHttp.lerInt(novoValor, "Quantidade inicial", erros));
-            case "qtd_atual" -> lote.setQtd_atual(ParametrosHttp.lerInt(novoValor, "Quantidade atual", erros));
-            case "dt_entrada" -> lote.setDt_entrada(ParametrosHttp.lerData(novoValor, "entrada", erros));
-            case "dt_validade" -> lote.setDt_validade(ParametrosHttp.lerData(novoValor, "validade", erros));
-            case "valor_compra" -> lote.setValor_compra(ParametrosHttp.lerDecimal(novoValor, "compra", erros));
-            case "nota_fiscal" -> lote.setNota_fiscal(novoValor);
+            case "fk_produto" -> lote.setFkProduto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
+            case "numero_lote" -> lote.setNumeroLote(novoValor);
+            case "qtd_inicial" -> lote.setQtdInicial(ParametrosHttp.lerInt(novoValor, "Quantidade inicial", erros));
+            case "qtd_atual" -> lote.setQtdAtual(ParametrosHttp.lerInt(novoValor, "Quantidade atual", erros));
+            case "dt_entrada" -> lote.setDtEntrada(ParametrosHttp.lerData(novoValor, "entrada", erros));
+            case "dt_validade" -> lote.setDtValidade(ParametrosHttp.lerData(novoValor, "validade", erros));
+            case "valor_compra" -> lote.setValorCompra(ParametrosHttp.lerDecimal(novoValor, "compra", erros));
+            case "nota_fiscal" -> lote.setNotaFiscal(novoValor);
             default -> erros.add("A coluna informada não pode ser alterada.");
         }
     }

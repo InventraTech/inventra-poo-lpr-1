@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acesso ao catálogo de produtos. Quantidade e validade não ficam aqui: pertencem ao lote.
+ */
 public class ProdutoDAO {
     // 1.CREATE
     public void inserirProduto(ProdutoMolde produto) {
@@ -21,9 +24,9 @@ public class ProdutoDAO {
 
             int index = 1;
 
-            stmt.setInt(index++, produto.getFk_fornecedor());
-            stmt.setInt(index++, produto.getFk_marca());
-            stmt.setInt(index++, produto.getFk_categoria());
+            stmt.setInt(index++, produto.getFkFornecedor());
+            stmt.setInt(index++, produto.getFkMarca());
+            stmt.setInt(index++, produto.getFkCategoria());
             stmt.setString(index++, produto.getNome());
             stmt.setString(index++, produto.getUnidadeMedida());
             stmt.setInt(index++, produto.getEstoqueMin());
@@ -41,7 +44,7 @@ public class ProdutoDAO {
     //2 SELECT
 
     //SQL base que será modificado para cada uma das filtragens posteriormente
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT p.id_produto, f.nome_juridico AS nome_fornecedor, m.nome AS nome_marca, c.nome AS nome_categoria,
                        p.nome, p.unidade_medida, p.estoque_min, p.estoque_max, p.descricao, p.ativo
                 FROM produto p
@@ -50,6 +53,10 @@ public class ProdutoDAO {
                 JOIN fornecedor f ON p.fk_fornecedor = f.id_fornecedor
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<ProdutoMolde> consultaProdutos(String sql, Integer limite, Integer offset) {
         List<ProdutoMolde> listaProdutos = new ArrayList<>();
 
@@ -94,7 +101,7 @@ public class ProdutoDAO {
 
     // 3.UPDATE
     //Metodo que recebe o molde completo com todos os atributos do produto, assim alterando tudo.
-    public void atualizarProdutoCompleto(ProdutoMolde produto, int id_produto) {
+    public void atualizarProdutoCompleto(ProdutoMolde produto, int idProduto) {
         String sql = """
                 UPDATE produto
                 SET fk_fornecedor = ?,
@@ -114,9 +121,9 @@ public class ProdutoDAO {
 
             int index = 1;
 
-            stmt.setInt(index++, produto.getFk_fornecedor());
-            stmt.setInt(index++, produto.getFk_marca());
-            stmt.setInt(index++, produto.getFk_categoria());
+            stmt.setInt(index++, produto.getFkFornecedor());
+            stmt.setInt(index++, produto.getFkMarca());
+            stmt.setInt(index++, produto.getFkCategoria());
             stmt.setString(index++, produto.getNome());
             stmt.setString(index++, produto.getUnidadeMedida());
             stmt.setInt(index++, produto.getEstoqueMin());
@@ -124,7 +131,7 @@ public class ProdutoDAO {
             stmt.setString(index++, produto.getDescricao());
             stmt.setBoolean(index++, produto.isAtivo());
 
-            stmt.setInt(index++, id_produto);
+            stmt.setInt(index++, idProduto);
 
             stmt.executeUpdate();
 
@@ -133,8 +140,11 @@ public class ProdutoDAO {
         }
     }
 
-    //Metodo que recebe uma coluna especifica e um novo valor, editando apenas uma, ideal para alterações simples.
-    public void atualizarColunaProduto(String nomeColuna, String novoValor, int id_produto) {
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     */
+    public void atualizarColunaProduto(String nomeColuna, String novoValor, int idProduto) {
 
         String sql = ("UPDATE produto SET " + nomeColuna + " = ? WHERE id_produto = ?");
 
@@ -159,7 +169,7 @@ public class ProdutoDAO {
                 stmt.setString(1, novoValor);
             }
 
-            stmt.setInt(2, id_produto);
+            stmt.setInt(2, idProduto);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -170,13 +180,13 @@ public class ProdutoDAO {
     }
 
     // 4.DELETE
-    public void deletarProduto(int id_produto) {
+    public void deletarProduto(int idProduto) {
         String sql = "DELETE FROM produto WHERE id_produto = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, id_produto);
+            stmt.setInt(1, idProduto);
 
             int linhasExecutadas = stmt.executeUpdate();
 
@@ -188,21 +198,25 @@ public class ProdutoDAO {
     //FILTROS
 
     public List<ProdutoMolde> listarProdutos(Integer limite, Integer offset) {
-        return consultaProdutos(sqlBase.concat(" ORDER BY p.id_produto asc"), limite, offset);
+        return consultaProdutos(SQL_BASE.concat(" ORDER BY p.id_produto asc"), limite, offset);
     }
 
     public List<ProdutoMolde> listarProdutosPorMarca(Integer limite, Integer offset) {
-        return consultaProdutos(sqlBase.concat(" ORDER BY m.nome, p.nome asc"), limite, offset);
+        return consultaProdutos(SQL_BASE.concat(" ORDER BY m.nome, p.nome asc"), limite, offset);
     }
 
     public List<ProdutoMolde> listarProdutosAlfabetica(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultaProdutos(sqlBase.concat(" order by p.nome ASC"), limite, offset);
+            return consultaProdutos(SQL_BASE.concat(" order by p.nome ASC"), limite, offset);
         } else {
-            return consultaProdutos(sqlBase.concat(" order by p.nome DESC"), limite, offset);
+            return consultaProdutos(SQL_BASE.concat(" order by p.nome DESC"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<ProdutoMolde> listarProdutosParaExportar(String filtragem){
         if (filtragem != null) {
             switch (filtragem) {
@@ -223,7 +237,7 @@ public class ProdutoDAO {
         return null;
     }
 
-    public static final String contarBase = """
+    public static final String CONTAR_BASE = """
             select count(*) from produto
             """;
 
@@ -244,7 +258,7 @@ public class ProdutoDAO {
     }
 
     public int contarProdutosPadrao(){
-        return contarProdutos(contarBase);
+        return contarProdutos(CONTAR_BASE);
     }
 
     public int contarCategorias(){
@@ -260,13 +274,13 @@ public class ProdutoDAO {
     }
 
     // BUSCAR POR ID (leitura apenas; usado pelo ProdutoServlet para validar edições por coluna)
-    public ProdutoMolde buscarProdutoPorId(int id_produto) {
+    public ProdutoMolde buscarProdutoPorId(int idProduto) {
         String sql = "SELECT id_produto, fk_fornecedor, fk_marca, fk_categoria, nome, unidade_medida, estoque_min, estoque_max, descricao, ativo FROM produto WHERE id_produto = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            stmt.setInt(1, id_produto);
+            stmt.setInt(1, idProduto);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

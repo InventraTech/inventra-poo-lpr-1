@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ProdutoDAO;
-import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ProdutoMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -18,6 +17,10 @@ import org.inventra.utils.ParametrosHttp;
 import org.inventra.validation.ProdutoValidador;
 import java.util.ArrayList;
 import java.util.Locale;
+/**
+ * Controla a tela de produtos: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo ProdutoValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "ProdutoServlet", value = "/produto")
 public class ProdutoServlet extends HttpServlet {
 
@@ -28,6 +31,10 @@ public class ProdutoServlet extends HttpServlet {
         produtoDAO = new ProdutoDAO();
     }
 
+    /**
+     * Exibe a lista de produtos. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -144,6 +151,12 @@ public class ProdutoServlet extends HttpServlet {
     //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
     }
 
+    /**
+     * Trata o formulário de produtos. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -263,24 +276,26 @@ public class ProdutoServlet extends HttpServlet {
     //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
     private ProdutoMolde lerProduto(HttpServletRequest request, List<String> erros) {
         String nome = request.getParameter("nome");
-        int fk_marca = ParametrosHttp.lerInt(request.getParameter("fk_marca"), "Marca", erros);
-        int fk_categoria = ParametrosHttp.lerInt(request.getParameter("fk_categoria"), "Categoria", erros);
+        int fkMarca = ParametrosHttp.lerInt(request.getParameter("fk_marca"), "Marca", erros);
+        int fkCategoria = ParametrosHttp.lerInt(request.getParameter("fk_categoria"), "Categoria", erros);
         String unidadeMedida = request.getParameter("unidadeMedida");
         int estoqueMin = ParametrosHttp.lerInt(request.getParameter("estoqueMin"), "Estoque mínimo", erros);
         int estoqueMax = ParametrosHttp.lerInt(request.getParameter("estoqueMax"), "Estoque máximo", erros);
-        int fk_fornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
+        int fkFornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
         String descricao = request.getParameter("descricao");
         boolean ativo = Boolean.parseBoolean(request.getParameter("ativo"));
 
-        return new ProdutoMolde(fk_fornecedor, fk_marca, fk_categoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
+        return new ProdutoMolde(fkFornecedor, fkMarca, fkCategoria, nome, unidadeMedida, estoqueMin, estoqueMax, descricao, ativo);
     }
 
     //Edição por coluna: troca no produto atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
     private void aplicarColuna(ProdutoMolde produto, String coluna, String novoValor, List<String> erros) {
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
         switch (coluna.toLowerCase(Locale.ROOT)) {
-            case "fk_fornecedor" -> produto.setFk_fornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
-            case "fk_marca" -> produto.setFk_marca(ParametrosHttp.lerInt(novoValor, "Marca", erros));
-            case "fk_categoria" -> produto.setFk_categoria(ParametrosHttp.lerInt(novoValor, "Categoria", erros));
+            case "fk_fornecedor" -> produto.setFkFornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
+            case "fk_marca" -> produto.setFkMarca(ParametrosHttp.lerInt(novoValor, "Marca", erros));
+            case "fk_categoria" -> produto.setFkCategoria(ParametrosHttp.lerInt(novoValor, "Categoria", erros));
             case "nome" -> produto.setNome(novoValor);
             case "unidade_medida" -> produto.setUnidadeMedida(novoValor);
             case "estoque_min" -> produto.setEstoqueMin(ParametrosHttp.lerInt(novoValor, "Estoque mínimo", erros));

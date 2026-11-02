@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acesso à tabela requisicao. A listagem junta tipo, solicitante, aprovador e produto para exibir nomes
+ * em vez das chaves estrangeiras.
+ */
 public class RequisicaoDAO {
 
     // 1. CREATE
@@ -39,7 +43,7 @@ public class RequisicaoDAO {
     // 2. READ
 
     //SQL base:
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT r.id_requisicao, t.tipo AS tipo_requisicao, fs.nome AS funcionario_solicitante, fa.nome AS funcionario_aprovador,
             p.nome AS produto, r.quantidade_prod, r.motivo, r.status, r.dt_requisicao
             FROM requisicao r
@@ -49,6 +53,10 @@ public class RequisicaoDAO {
             JOIN produto p ON r.fk_produto = p.id_produto
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<RequisicaoMolde> consultarRequisicoes(String sql, Integer limite, Integer offset){
         List<RequisicaoMolde> array = new ArrayList<>();
 
@@ -90,7 +98,7 @@ public class RequisicaoDAO {
 
     // 3. UPDATE
 
-    public void atualizarRequisicaoCompleta(RequisicaoMolde requisicao, int id_requisicao){
+    public void atualizarRequisicaoCompleta(RequisicaoMolde requisicao, int idRequisicao){
 
         String sql = """
                 UPDATE requisicao
@@ -117,7 +125,7 @@ public class RequisicaoDAO {
             stmt.setString(7, requisicao.getStatus());
             stmt.setObject(8, requisicao.getDataHora());
 
-            stmt.setInt(9, id_requisicao);
+            stmt.setInt(9, idRequisicao);
 
             stmt.executeUpdate();
 
@@ -126,8 +134,11 @@ public class RequisicaoDAO {
         }
     }
 
-    //Metodo que recebe uma coluna especifica e um novo valor, editando apenas uma, ideal para alterações simples.
-    public void atualizarColunaRequisicao(String nomeColuna, String novoValor, int id_requisicao){
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     */
+    public void atualizarColunaRequisicao(String nomeColuna, String novoValor, int idRequisicao){
         String sql = "UPDATE requisicao SET " + nomeColuna + " = ? WHERE id_requisicao = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
@@ -159,7 +170,7 @@ public class RequisicaoDAO {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
 
-            stmt.setInt(2, id_requisicao);
+            stmt.setInt(2, idRequisicao);
             stmt.executeUpdate();
             System.out.println("Requisição atualizada!");
 
@@ -169,13 +180,13 @@ public class RequisicaoDAO {
     }
 
     // 4. DELETE
-    public void deletarRequisicao(int id_requisicao){
+    public void deletarRequisicao(int idRequisicao){
         String sql = "DELETE FROM requisicao WHERE id_requisicao = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_requisicao);
+            stmt.setInt(1, idRequisicao);
             int linhasExecutadas = stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -186,29 +197,33 @@ public class RequisicaoDAO {
     //MÉTODOS DE LISTAGENS
 
     public List<RequisicaoMolde> listarRequisicoes(Integer limite, Integer offset){
-        return consultarRequisicoes(sqlBase.concat("order by r.id_requisicao"), limite, offset);
+        return consultarRequisicoes(SQL_BASE.concat("order by r.id_requisicao"), limite, offset);
     }
 
     public List<RequisicaoMolde> listarRequisicoesPorTipo(Integer limite, Integer offset){
-        return consultarRequisicoes(sqlBase.concat(" ORDER BY r.fk_tipo_requisicao"), limite, offset);
+        return consultarRequisicoes(SQL_BASE.concat(" ORDER BY r.fk_tipo_requisicao"), limite, offset);
     }
 
     public List<RequisicaoMolde> listarRequisicoesPorQuantidadeProduto(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod ASC"), limite, offset);
+            return consultarRequisicoes(SQL_BASE.concat(" ORDER BY r.quantidade_prod ASC"), limite, offset);
         } else {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.quantidade_prod DESC"), limite, offset);
+            return consultarRequisicoes(SQL_BASE.concat(" ORDER BY r.quantidade_prod DESC"), limite, offset);
         }
     }
 
     public List<RequisicaoMolde> listarRequisicoesPorData(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao ASC"), limite, offset);
+            return consultarRequisicoes(SQL_BASE.concat(" ORDER BY r.dt_requisicao ASC"), limite, offset);
         } else {
-            return consultarRequisicoes(sqlBase.concat(" ORDER BY r.dt_requisicao DESC"), limite, offset);
+            return consultarRequisicoes(SQL_BASE.concat(" ORDER BY r.dt_requisicao DESC"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<RequisicaoMolde> listarRequisicaoParaExportar(String filtragem){
         if (filtragem != null) {
             switch (filtragem) {
@@ -235,7 +250,7 @@ public class RequisicaoDAO {
         return null;
     }
 
-    public static final String contadorBase = """
+    public static final String CONTADOR_BASE = """
             select count(*) from requisicao r
             """;
 
@@ -256,33 +271,33 @@ public class RequisicaoDAO {
     }
 
     public int contarRequisicoesPadrao(){
-        return contarRequisicoes(contadorBase);
+        return contarRequisicoes(CONTADOR_BASE);
     }
 
     public int contarRequisicoesPendentes(){
-        return contarRequisicoes(contadorBase.concat("where r.status = 'Pendente'"));
+        return contarRequisicoes(CONTADOR_BASE.concat("where r.status = 'Pendente'"));
     }
 
     public int contarRequisicoesAprovadas(){
-        return contarRequisicoes(contadorBase.concat("where r.status = 'Aprovada'"));
+        return contarRequisicoes(CONTADOR_BASE.concat("where r.status = 'Aprovada'"));
     }
 
     public int contarRequisicoesFiltro(boolean status){
         if (status){
-            return contarRequisicoes(contadorBase.concat("where r.status = 'Aprovada'"));
+            return contarRequisicoes(CONTADOR_BASE.concat("where r.status = 'Aprovada'"));
         } else {
-            return contarRequisicoes(contadorBase.concat("where r.status = 'Pendente'"));
+            return contarRequisicoes(CONTADOR_BASE.concat("where r.status = 'Pendente'"));
         }
     }
 
     // BUSCAR POR ID (leitura apenas; usado pelo RequisicaoServlet para validar edições por coluna)
-    public RequisicaoMolde buscarRequisicaoPorId(int id_requisicao){
+    public RequisicaoMolde buscarRequisicaoPorId(int idRequisicao){
         String sql = "SELECT id_requisicao, fk_tipo_requisicao, fk_funcionario_solicitante, fk_funcionario_aprovador, fk_produto, quantidade_prod, motivo, status, dt_requisicao FROM requisicao WHERE id_requisicao = ?";
 
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_requisicao);
+            stmt.setInt(1, idRequisicao);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

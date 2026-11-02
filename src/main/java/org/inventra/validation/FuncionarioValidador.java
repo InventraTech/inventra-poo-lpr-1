@@ -7,8 +7,17 @@ import org.inventra.utils.FuncionarioREGEX;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Regras de cadastro e edição de funcionário: nome, setor, e-mail, telefone, CPF, admissão e status são obrigatórios.
+ * E-mail, telefone e CPF são conferidos apenas quanto ao formato (ver FuncionarioREGEX); a senha é tratada no servlet e no DAO.
+ */
 public class FuncionarioValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(FuncionarioMolde funcionario) {
 
         List<String> erros = new ArrayList<>();
@@ -25,7 +34,7 @@ public class FuncionarioValidador {
         }
 
         // Setor
-        if (funcionario.getFk_setor() <= 0) {
+        if (funcionario.getFkSetor() <= 0) {
             erros.add("Selecione um setor válido.");
         }
 
@@ -54,7 +63,7 @@ public class FuncionarioValidador {
         }
 
         // Data de admissão
-        if (funcionario.getDt_admissao() == null) {
+        if (funcionario.getDtAdmissao() == null) {
             erros.add("A data de admissão é obrigatória.");
         }
 

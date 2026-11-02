@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acesso à tabela fornecedor. A listagem junta a tabela endereco e entrega o endereço já montado como
+ * "estado | cidade", que é o que as telas e o CSV mostram no lugar da chave estrangeira.
+ */
 public class FornecedorDAO {
     public void inserirFornecedor(FornecedorMolde fornecedor){
 
@@ -20,11 +24,11 @@ public class FornecedorDAO {
 
             int index = 1;
 
-            stmt.setInt(index++, fornecedor.getFk_endereco());
-            stmt.setString(index++, fornecedor.getNome_juridico());
+            stmt.setInt(index++, fornecedor.getFkEndereco());
+            stmt.setString(index++, fornecedor.getNomeJuridico());
             stmt.setString(index++, fornecedor.getCnpj());
             stmt.setString(index++, fornecedor.getEmail());
-            stmt.setInt(index++, fornecedor.getNota_vpq());
+            stmt.setInt(index++, fornecedor.getNotaVpq());
 
             stmt.executeUpdate();
 
@@ -33,12 +37,16 @@ public class FornecedorDAO {
         }
     }
 
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT f.id_fornecedor, f.nome_juridico, f.cnpj, f.email, f.nota_vpq, CONCAT(e.estado, ' | ', e.cidade) AS endereco
             FROM fornecedor f
             JOIN endereco e ON f.fk_endereco = e.id_endereco
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<FornecedorMolde> consultarFornecedor(String sql, Integer limite, Integer offset){
         List<FornecedorMolde> listaFornecedores = new ArrayList<>();
 
@@ -59,13 +67,13 @@ public class FornecedorDAO {
             try(ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     int id = rs.getInt("id_fornecedor");
-                    String nome_juridico = rs.getString("nome_juridico");
+                    String nomeJuridico = rs.getString("nome_juridico");
                     String endereco = rs.getString("endereco");
                     String cnpj = rs.getString("cnpj");
                     String email = rs.getString("email");
-                    int nota_vpq = rs.getInt("nota_vpq");
+                    int notaVpq = rs.getInt("nota_vpq");
 
-                    FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nome_juridico, cnpj, email, nota_vpq);
+                    FornecedorMolde novoFornecedor = new FornecedorMolde(id, endereco, nomeJuridico, cnpj, email, notaVpq);
                     listaFornecedores.add(novoFornecedor);
                 }
             }
@@ -76,7 +84,7 @@ public class FornecedorDAO {
         return listaFornecedores;
     }
 
-    public void atualizarFornecedorCompleto(FornecedorMolde fornecedor, int id_fornecedor){
+    public void atualizarFornecedorCompleto(FornecedorMolde fornecedor, int idFornecedor){
 
         String sql = """
                 UPDATE fornecedor
@@ -93,13 +101,13 @@ public class FornecedorDAO {
 
             int index = 1;
 
-            stmt.setInt(index++, fornecedor.getFk_endereco());
-            stmt.setString(index++, fornecedor.getNome_juridico());
+            stmt.setInt(index++, fornecedor.getFkEndereco());
+            stmt.setString(index++, fornecedor.getNomeJuridico());
             stmt.setString(index++, fornecedor.getCnpj());
             stmt.setString(index++, fornecedor.getEmail());
-            stmt.setInt(index++, fornecedor.getNota_vpq());
+            stmt.setInt(index++, fornecedor.getNotaVpq());
 
-            stmt.setInt(index++, id_fornecedor);
+            stmt.setInt(index++, idFornecedor);
 
             stmt.executeUpdate();
 
@@ -110,31 +118,34 @@ public class FornecedorDAO {
 
     }
 
-    //Metodo que recebe uma coluna especifica e um novo valor, editando apenas uma, ideal para alterações simples.
-    public void atualizarColunaFornecedor(String NomeColuna, String novoValor, int id_fornecedor) {
-        String sql = ("UPDATE fornecedor SET " + NomeColuna + " = ? WHERE id_fornecedor = ?");
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     */
+    public void atualizarColunaFornecedor(String nomeColuna, String novoValor, int idFornecedor) {
+        String sql = ("UPDATE fornecedor SET " + nomeColuna + " = ? WHERE id_fornecedor = ?");
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
-            if (NomeColuna.equalsIgnoreCase("nome_juridico")) {
+            if (nomeColuna.equalsIgnoreCase("nome_juridico")) {
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("fk_endereco")) {
+            else if (nomeColuna.equalsIgnoreCase("fk_endereco")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("cnpj")) {
+            else if (nomeColuna.equalsIgnoreCase("cnpj")) {
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("email")) {
+            else if (nomeColuna.equalsIgnoreCase("email")) {
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("nota_vpq")) {
+            else if (nomeColuna.equalsIgnoreCase("nota_vpq")) {
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
 
             //! Passa o segundo parâmetro, o ID
-            stmt.setInt(2, id_fornecedor);
+            stmt.setInt(2, idFornecedor);
 
             stmt.executeUpdate();
 
@@ -143,13 +154,13 @@ public class FornecedorDAO {
         }
     }
 
-    public void deletarFornecedor(int id_fornecedor){
+    public void deletarFornecedor(int idFornecedor){
         String sql = "DELETE FROM fornecedor WHERE id_fornecedor = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_fornecedor);
+            stmt.setInt(1, idFornecedor);
 
             int linhasExecutadas = stmt.executeUpdate();
 
@@ -159,17 +170,21 @@ public class FornecedorDAO {
     }
 
     public List<FornecedorMolde> listarFornecedor(Integer limite, Integer offset){
-        return consultarFornecedor(sqlBase.concat("order by f.id_fornecedor"), limite, offset);
+        return consultarFornecedor(SQL_BASE.concat("order by f.id_fornecedor"), limite, offset);
     }
 
     public List<FornecedorMolde> listarFornecedorNotaVPQ(boolean ordem, Integer limite, Integer offset) {
         if (ordem) {
-            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq ASC"), limite, offset);
+            return consultarFornecedor(SQL_BASE.concat(" ORDER BY f.nota_vpq ASC"), limite, offset);
         } else {
-            return consultarFornecedor(sqlBase.concat(" ORDER BY f.nota_vpq DESC"), limite, offset);
+            return consultarFornecedor(SQL_BASE.concat(" ORDER BY f.nota_vpq DESC"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<FornecedorMolde> listarFornecedorParaExportar(String filtragem){
         if (filtragem != null) {
             switch (filtragem) {
@@ -188,6 +203,9 @@ public class FornecedorDAO {
     }
 
 
+    /**
+     * Executa uma consulta de agregação (count, média) que devolve um único número; sem resultado devolve 0.
+     */
     public double funcaoDeGrupoFornecedor(String sql){
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -207,6 +225,7 @@ public class FornecedorDAO {
         return (int) funcaoDeGrupoFornecedor("select count(*) from fornecedor");
     }
 
+    // Média arredondada em duas casas, direto no banco.
     public double mediaNotaVPQFornecedores(){
         return funcaoDeGrupoFornecedor("select round(AVG(f.nota_vpq)::numeric, 2) from fornecedor f");
     }

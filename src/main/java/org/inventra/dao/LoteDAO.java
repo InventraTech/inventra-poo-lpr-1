@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * Acesso à tabela lote, que guarda quantidade, validade e custo de cada entrada de produto.
+ * Também fornece as contagens usadas no sino de notificações (lotes vencidos e vencendo em 30 dias).
+ */
 public class LoteDAO {
 
     // 1. CREATE
@@ -19,14 +23,14 @@ public class LoteDAO {
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, lote.getFk_produto());
-            stmt.setString(2, lote.getNumero_lote());
-            stmt.setInt(3, lote.getQtd_inicial());
-            stmt.setInt(4, lote.getQtd_atual());
-            stmt.setObject(5, lote.getDt_entrada());
-            stmt.setObject(6, lote.getDt_validade());
-            stmt.setBigDecimal(7, lote.getValor_compra()); // Utilização correta do BigDecimal
-            stmt.setString(8, lote.getNota_fiscal());
+            stmt.setInt(1, lote.getFkProduto());
+            stmt.setString(2, lote.getNumeroLote());
+            stmt.setInt(3, lote.getQtdInicial());
+            stmt.setInt(4, lote.getQtdAtual());
+            stmt.setObject(5, lote.getDtEntrada());
+            stmt.setObject(6, lote.getDtValidade());
+            stmt.setBigDecimal(7, lote.getValorCompra()); // Utilização correta do BigDecimal
+            stmt.setString(8, lote.getNotaFiscal());
 
             stmt.executeUpdate();
 
@@ -37,12 +41,16 @@ public class LoteDAO {
 
     // 2. READ
 
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT l.id_lote, p.nome AS nome_produto, l.numero_lote, l.qtd_inicial, l.qtd_atual, l.dt_entrada, l.dt_validade, l.valor_compra, l.nota_fiscal
             FROM lote l
             JOIN produto p ON l.fk_produto = p.id_produto
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<LoteMolde> consultarLote(String sql, Integer limite, Integer offset){
         List<LoteMolde> array = new ArrayList<>();
 
@@ -64,15 +72,15 @@ public class LoteDAO {
                 while (rs.next()) {
                     int id = rs.getInt("id_lote");
                     String produto = rs.getString("nome_produto");
-                    String numero_lote = rs.getString("numero_lote");
-                    int qtd_inicial = rs.getInt("qtd_inicial");
-                    int qtd_atual = rs.getInt("qtd_atual");
-                    LocalDate dt_entrada = rs.getObject("dt_entrada", LocalDate.class);
-                    LocalDate dt_validade = rs.getObject("dt_validade", LocalDate.class);
-                    BigDecimal valor_custo = rs.getBigDecimal("valor_compra");
-                    String nota_fiscal = rs.getString("nota_fiscal");
+                    String numeroLote = rs.getString("numero_lote");
+                    int qtdInicial = rs.getInt("qtd_inicial");
+                    int qtdAtual = rs.getInt("qtd_atual");
+                    LocalDate dtEntrada = rs.getObject("dt_entrada", LocalDate.class);
+                    LocalDate dtValidade = rs.getObject("dt_validade", LocalDate.class);
+                    BigDecimal valorCompra = rs.getBigDecimal("valor_compra");
+                    String notaFiscal = rs.getString("nota_fiscal");
 
-                    LoteMolde lote = new LoteMolde(id, produto, numero_lote, qtd_inicial, qtd_atual, dt_entrada, dt_validade, valor_custo, nota_fiscal);
+                    LoteMolde lote = new LoteMolde(id, produto, numeroLote, qtdInicial, qtdAtual, dtEntrada, dtValidade, valorCompra, notaFiscal);
                     array.add(lote);
                 }
             }
@@ -85,7 +93,7 @@ public class LoteDAO {
 
     // 3. UPDATE
 
-    public void atualizarLoteCompleto(LoteMolde lote, int id_lote){
+    public void atualizarLoteCompleto(LoteMolde lote, int idLote){
 
         String sql = """
                 UPDATE lote
@@ -103,16 +111,16 @@ public class LoteDAO {
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, lote.getFk_produto());
-            stmt.setString(2, lote.getNumero_lote());
-            stmt.setInt(3, lote.getQtd_inicial());
-            stmt.setInt(4, lote.getQtd_atual());
-            stmt.setObject(5, lote.getDt_entrada());
-            stmt.setObject(6, lote.getDt_validade());
-            stmt.setBigDecimal(7, lote.getValor_compra());
-            stmt.setString(8, lote.getNota_fiscal());
+            stmt.setInt(1, lote.getFkProduto());
+            stmt.setString(2, lote.getNumeroLote());
+            stmt.setInt(3, lote.getQtdInicial());
+            stmt.setInt(4, lote.getQtdAtual());
+            stmt.setObject(5, lote.getDtEntrada());
+            stmt.setObject(6, lote.getDtValidade());
+            stmt.setBigDecimal(7, lote.getValorCompra());
+            stmt.setString(8, lote.getNotaFiscal());
 
-            stmt.setInt(9, id_lote);
+            stmt.setInt(9, idLote);
 
             stmt.executeUpdate();
 
@@ -121,42 +129,45 @@ public class LoteDAO {
         }
     }
 
-    //Metodo que recebe uma coluna especifica e um novo valor, editando apenas uma, ideal para alterações simples.
-    public void atualizarColunaLote(String NomeColuna, String novoValor, int id_lote){
-        String sql = ("UPDATE lote SET "+NomeColuna+" = ? WHERE id_lote = ?");
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     */
+    public void atualizarColunaLote(String nomeColuna, String novoValor, int idLote){
+        String sql = ("UPDATE lote SET "+nomeColuna+" = ? WHERE id_lote = ?");
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            if(NomeColuna.equalsIgnoreCase("fk_produto")){
+            if(nomeColuna.equalsIgnoreCase("fk_produto")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("numero_lote")){
+            else if (nomeColuna.equalsIgnoreCase("numero_lote")){
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("qtd_inicial")){
+            else if (nomeColuna.equalsIgnoreCase("qtd_inicial")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("qtd_atual")){
+            else if (nomeColuna.equalsIgnoreCase("qtd_atual")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
             }
-            else if (NomeColuna.equalsIgnoreCase("dt_entrada")){
+            else if (nomeColuna.equalsIgnoreCase("dt_entrada")){
                 LocalDate dt = LocalDate.parse(novoValor);
                 stmt.setObject(1, dt);
             }
-            else if (NomeColuna.equalsIgnoreCase("dt_validade")){
+            else if (nomeColuna.equalsIgnoreCase("dt_validade")){
                 LocalDate dt = LocalDate.parse(novoValor);
                 stmt.setObject(1, dt);
             }
-            else if (NomeColuna.equalsIgnoreCase("valor_compra")){
+            else if (nomeColuna.equalsIgnoreCase("valor_compra")){
                 BigDecimal valorBigDecimal = new BigDecimal(novoValor);
                 stmt.setBigDecimal(1, valorBigDecimal);
             }
-            else if (NomeColuna.equalsIgnoreCase("nota_fiscal")){
+            else if (nomeColuna.equalsIgnoreCase("nota_fiscal")){
                 stmt.setString(1, novoValor);
             }
 
-            stmt.setInt(2, id_lote);
+            stmt.setInt(2, idLote);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -165,13 +176,13 @@ public class LoteDAO {
     }
 
     // 4. DELETE
-    public void deletarLote(int id_lote){
+    public void deletarLote(int idLote){
         String sql = "DELETE FROM lote WHERE id_lote = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_lote);
+            stmt.setInt(1, idLote);
             int linhasExecutadas = stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -180,29 +191,33 @@ public class LoteDAO {
     }
 
     public List<LoteMolde> listarLote(Integer limite, Integer offset){
-        return consultarLote(sqlBase.concat(" ORDER BY id_lote asc"), limite, offset);
+        return consultarLote(SQL_BASE.concat(" ORDER BY id_lote asc"), limite, offset);
     }
 
     public List<LoteMolde> listarLoteQuantidadeProdutosAtual(Integer limite, Integer offset){
-        return consultarLote(sqlBase.concat(" ORDER BY qtd_atual desc"), limite, offset);
+        return consultarLote(SQL_BASE.concat(" ORDER BY qtd_atual desc"), limite, offset);
     }
 
     public List<LoteMolde> listarLoteDataEntrada(boolean ordem, Integer limite, Integer offset){
         if(ordem){
-            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada asc"), limite, offset);
+            return consultarLote(SQL_BASE.concat(" ORDER BY dt_entrada asc"), limite, offset);
         } else {
-            return consultarLote(sqlBase.concat(" ORDER BY dt_entrada desc"), limite, offset);
+            return consultarLote(SQL_BASE.concat(" ORDER BY dt_entrada desc"), limite, offset);
         }
     }
 
     public List<LoteMolde> listarLoteDataValidade(boolean ordem, Integer limite, Integer offset){
         if(ordem){
-            return consultarLote(sqlBase.concat(" ORDER BY dt_validade asc"), limite, offset);
+            return consultarLote(SQL_BASE.concat(" ORDER BY dt_validade asc"), limite, offset);
         } else {
-            return consultarLote(sqlBase.concat(" ORDER BY dt_validade desc"), limite, offset);
+            return consultarLote(SQL_BASE.concat(" ORDER BY dt_validade desc"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<LoteMolde> listarLoteParaExportar(String filtragem){
         if (filtragem != null) {
             switch (filtragem) {
@@ -229,7 +244,7 @@ public class LoteDAO {
         return null;
     }
 
-    public static final String sqlBaseContador = """
+    public static final String SQL_BASE_CONTADOR = """
             SELECT count(*)
             FROM lote l
         """;
@@ -251,25 +266,27 @@ public class LoteDAO {
     }
 
     public int contarLotesPadrao(){
-        return contarLotes(sqlBaseContador);
+        return contarLotes(SQL_BASE_CONTADOR);
     }
 
+    // Vencido é o lote cuja validade já passou (a data de hoje ainda conta como válido).
     public int contarLotesVencidos(){
-        return contarLotes(sqlBaseContador.concat("where dt_validade < current_date"));
+        return contarLotes(SQL_BASE_CONTADOR.concat("where dt_validade < current_date"));
     }
 
+    // Janela de hoje até 30 dias à frente; é o número exibido no sino de notificações.
     public int contarLotesVencendo30dias(){
-        return contarLotes(sqlBaseContador.concat("where dt_validade >= current_date and dt_validade <= current_date + interval '30 days';"));
+        return contarLotes(SQL_BASE_CONTADOR.concat("where dt_validade >= current_date and dt_validade <= current_date + interval '30 days';"));
     }
 
     // BUSCAR POR ID (leitura apenas; usado pelo LoteServlet para validar edições por coluna)
-    public LoteMolde buscarLotePorId(int id_lote){
+    public LoteMolde buscarLotePorId(int idLote){
         String sql = "SELECT id_lote, fk_produto, numero_lote, qtd_inicial, qtd_atual, dt_entrada, dt_validade, valor_compra, nota_fiscal FROM lote WHERE id_lote = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_lote);
+            stmt.setInt(1, idLote);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

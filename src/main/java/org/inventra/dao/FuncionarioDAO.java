@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Acesso à tabela funcionario, incluindo a validação de login. A senha nunca é gravada em texto puro:
+ * ela passa por SenhaUtil.gerarHash antes de ir para o banco.
+ */
 public class FuncionarioDAO {
 
     // 1.CREATE
@@ -24,13 +28,13 @@ public class FuncionarioDAO {
         try(Connection conexao = ConexaoBanco.conectar();
             PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, funcionario.getFk_setor());
+            stmt.setInt(1, funcionario.getFkSetor());
             stmt.setString(2, funcionario.getNome());
             stmt.setString(3, SenhaUtil.gerarHash(funcionario.getSenha()));
             stmt.setString(4, funcionario.getEmail());
             stmt.setString(5, funcionario.getTelefone());
             stmt.setString(6, funcionario.getCpf() );
-            stmt.setObject(7, funcionario.getDt_admissao());
+            stmt.setObject(7, funcionario.getDtAdmissao());
             stmt.setString(8, funcionario.getStatus());
             stmt.setBoolean(9, funcionario.isAdmin());
 
@@ -44,13 +48,17 @@ public class FuncionarioDAO {
     }
 
     // 2.READ
-    public static final String sqlBase = """
+    public static final String SQL_BASE = """
             SELECT f.id_funcionario, f.nome AS nome_funcionario, f. email, f.telefone, f.cpf,
             f.dt_admissao, f.status, s.nome AS setor, f.is_admin
             FROM funcionario f 
             JOIN setor s ON f.fk_setor = s.id_setor
             """;
 
+    /**
+     * Executa a consulta recebida. Com {@code limite} e {@code offset} informados, aplica a paginação da tela;
+     * com algum deles nulo, devolve todos os registros (usado na exportação para CSV).
+     */
     public List<FuncionarioMolde> consultarFuncionario(String sql, Integer limite, Integer offset){
         List<FuncionarioMolde> listaFuncionarios = new ArrayList<>();
 
@@ -75,12 +83,12 @@ public class FuncionarioDAO {
                     String email = rs.getString("email");
                     String telefone = rs.getString("telefone");
                     String cpf = rs.getString("cpf");
-                    LocalDate dt_admissao = rs.getObject("dt_admissao", LocalDate.class);
+                    LocalDate dtAdmissao = rs.getObject("dt_admissao", LocalDate.class);
                     String status = rs.getString("status");
                     String setor = rs.getString("setor");
                     boolean isAdmin = rs.getBoolean("is_admin");
 
-                    FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, telefone, cpf, dt_admissao, status, setor, isAdmin);
+                    FuncionarioMolde funcionario = new FuncionarioMolde(id, nome, email, telefone, cpf, dtAdmissao, status, setor, isAdmin);
                     listaFuncionarios.add(funcionario);
                 }
             }
@@ -95,8 +103,9 @@ public class FuncionarioDAO {
     // 3. UPDATES
 
     //Metodo que recebe o molde completo com todos os atributos do funcionario, assim alterando tudo.
-    public void atualizarFuncionarioCompleto(FuncionarioMolde funcionario, int id_funcionario){
+    public void atualizarFuncionarioCompleto(FuncionarioMolde funcionario, int idFuncionario){
 
+        // Na edição completa, senha em branco significa "manter a senha atual": nesse caso o UPDATE nem inclui a coluna.
         boolean alterarSenha = (funcionario.getSenha() != null && !funcionario.getSenha().trim().isEmpty());
 
         String sql = "";
@@ -135,7 +144,7 @@ public class FuncionarioDAO {
             //Precisaremos usar index aqui pois o indice vai variar de acordo com a String sql
             int index = 1;
 
-            stmt.setInt(index++, funcionario.getFk_setor());
+            stmt.setInt(index++, funcionario.getFkSetor());
             stmt.setString(index++, funcionario.getNome());
             if (alterarSenha) {
                 stmt.setString(index++, SenhaUtil.gerarHash(funcionario.getSenha()));
@@ -143,11 +152,11 @@ public class FuncionarioDAO {
             stmt.setString(index++, funcionario.getEmail());
             stmt.setString(index++, funcionario.getTelefone());
             stmt.setString(index++, funcionario.getCpf() );
-            stmt.setObject(index++, funcionario.getDt_admissao());
+            stmt.setObject(index++, funcionario.getDtAdmissao());
             stmt.setString(index++, funcionario.getStatus());
             stmt.setBoolean(index++, funcionario.isAdmin());
 
-            stmt.setInt(index++, id_funcionario);
+            stmt.setInt(index++, idFuncionario);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -155,12 +164,18 @@ public class FuncionarioDAO {
         }
     }
 
-    //Metodo que recebe uma coluna especifica e um novo valor, editando apenas uma, ideal para alterações simples.
-    public void atualizarColunaFuncionario(String NomeColuna, String novoValor, int id_funcionario){
+    /**
+     * Atualiza uma única coluna. O nome da coluna é concatenado ao SQL (o "?" não vale para nome de coluna),
+     * então o servlet só deve chamá-lo com colunas já conferidas. O valor chega como texto e é convertido conforme a coluna.
+     *
+     * Para a coluna {@code senha}, o novo valor é transformado em hash antes de gravar e senha vazia é recusada
+     * com {@code IllegalArgumentException}.
+     */
+    public void atualizarColunaFuncionario(String nomeColuna, String novoValor, int idFuncionario){
 
         String valorParaSalvar = "";
 
-        if ("senha".equalsIgnoreCase(NomeColuna)) {
+        if ("senha".equalsIgnoreCase(nomeColuna)) {
             if (novoValor != null && !novoValor.trim().isEmpty()) {
                 valorParaSalvar = SenhaUtil.gerarHash(novoValor);
             } else {
@@ -168,42 +183,42 @@ public class FuncionarioDAO {
             }
         }
 
-        String sql = ("UPDATE funcionario SET "+NomeColuna+" = ? WHERE id_funcionario = ?");
+        String sql = ("UPDATE funcionario SET "+nomeColuna+" = ? WHERE id_funcionario = ?");
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            if(NomeColuna.equalsIgnoreCase("nome")){
+            if(nomeColuna.equalsIgnoreCase("nome")){
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("senha")){
+            else if (nomeColuna.equalsIgnoreCase("senha")){
                 stmt.setString(1, valorParaSalvar);
             }
-            else if (NomeColuna.equalsIgnoreCase("fk_setor")){
+            else if (nomeColuna.equalsIgnoreCase("fk_setor")){
                 stmt.setInt(1, Integer.parseInt(novoValor));
                 //Transforma a STRING novoValor em um INT para o banco.
             }
-            else if (NomeColuna.equalsIgnoreCase("email")){
+            else if (nomeColuna.equalsIgnoreCase("email")){
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("telefone")){
+            else if (nomeColuna.equalsIgnoreCase("telefone")){
             stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("cpf")){
+            else if (nomeColuna.equalsIgnoreCase("cpf")){
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("dt_admissao")){
-                LocalDate dt_admissao = LocalDate.parse(novoValor); // Converte o texto para LocalDate
-                stmt.setObject(1, dt_admissao);
+            else if (nomeColuna.equalsIgnoreCase("dt_admissao")){
+                LocalDate dtAdmissao = LocalDate.parse(novoValor); // Converte o texto para LocalDate
+                stmt.setObject(1, dtAdmissao);
             }
-            else if (NomeColuna.equalsIgnoreCase("status")){
+            else if (nomeColuna.equalsIgnoreCase("status")){
                 stmt.setString(1, novoValor);
             }
-            else if (NomeColuna.equalsIgnoreCase("is_admin")){
+            else if (nomeColuna.equalsIgnoreCase("is_admin")){
                 stmt.setBoolean(1, Boolean.parseBoolean(novoValor));
             }
             //! Passa o segundo parâmetro, o ID
-            stmt.setInt(2, id_funcionario);
+            stmt.setInt(2, idFuncionario);
 
             stmt.executeUpdate();
             System.out.println("Funcionário atualizado!");
@@ -214,14 +229,14 @@ public class FuncionarioDAO {
     }
 
     // 4.DELETE
-    public void deletarFuncionario(int id_funcionario){
+    public void deletarFuncionario(int idFuncionario){
 
         String sql = "DELETE FROM funcionario WHERE id_funcionario = ?";
 
         try (Connection conexao = ConexaoBanco.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)){
 
-            stmt.setInt(1, id_funcionario);
+            stmt.setInt(1, idFuncionario);
 
             int linhasExecutadas = stmt.executeUpdate();
 
@@ -229,7 +244,7 @@ public class FuncionarioDAO {
             if(linhasExecutadas > 0){
                 System.out.println("Alteração concluída com sucesso.");
             } else {
-                System.out.println("Nenhum funcionário com o id "+id_funcionario+" foi encontrado");
+                System.out.println("Nenhum funcionário com o id "+idFuncionario+" foi encontrado");
             }
 
         } catch (SQLException erro) {
@@ -239,6 +254,12 @@ public class FuncionarioDAO {
     }
 
     //VALIDAÇÃO DE LOGIN
+    /**
+     * Confere e-mail e senha no login. Só aceita administradores com status "Ativo"; o e-mail ignora maiúsculas e minúsculas
+     * e a senha é comparada com o hash bcrypt do banco.
+     *
+     * @return o funcionário logado, sem a senha, ou {@code null} se as credenciais não forem válidas
+     */
     public FuncionarioMolde validarLogin(String emailBase, String senhaDigitada){
         FuncionarioMolde funcionario = null;
 
@@ -280,7 +301,7 @@ public class FuncionarioDAO {
                                 null, //nome do setor: o login só tem a FK
                                 rs.getBoolean("is_admin")
                         );
-                        funcionario.setFk_setor(rs.getInt("fk_setor"));
+                        funcionario.setFkSetor(rs.getInt("fk_setor"));
 
                         return funcionario;
                     }
@@ -297,29 +318,33 @@ public class FuncionarioDAO {
     //MÉTODOS DE FILTRAGEM
 
     public List<FuncionarioMolde> listarFuncionario(Integer limite, Integer offset){
-        return consultarFuncionario(sqlBase.concat("order by f.id_funcionario"), limite, offset);
+        return consultarFuncionario(SQL_BASE.concat("order by f.id_funcionario"), limite, offset);
     }
 
     public List<FuncionarioMolde> listarFuncionarioPorSetor(Integer limite, Integer offset){
-        return consultarFuncionario(sqlBase.concat("order by s.nome, f.nome"), limite, offset);
+        return consultarFuncionario(SQL_BASE.concat("order by s.nome, f.nome"), limite, offset);
     }
 
     public List<FuncionarioMolde> listarFuncionarioAlfabetico(boolean ordem, Integer limite, Integer offset){
         if (ordem) {
-            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome ASC"), limite, offset);
+            return consultarFuncionario(SQL_BASE.concat(" ORDER BY f.nome ASC"), limite, offset);
         } else {
-            return consultarFuncionario(sqlBase.concat(" ORDER BY f.nome DESC"), limite, offset);
+            return consultarFuncionario(SQL_BASE.concat(" ORDER BY f.nome DESC"), limite, offset);
         }
     }
 
     public List<FuncionarioMolde> listarFuncionarioPorData(boolean ordem, Integer limite, Integer offset){
         if (ordem) {
-            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao desc"), limite, offset);
+            return consultarFuncionario(SQL_BASE.concat(" order by f.dt_admissao desc"), limite, offset);
         } else {
-            return consultarFuncionario(sqlBase.concat(" order by f.dt_admissao asc"), limite, offset);
+            return consultarFuncionario(SQL_BASE.concat(" order by f.dt_admissao asc"), limite, offset);
         }
     }
 
+    /**
+     * Versão sem paginação das listagens, para o CSV. Cada filtro corresponde a uma ordenação da tela;
+     * um filtro desconhecido usa a ordem padrão e um filtro nulo devolve {@code null}.
+     */
     public List<FuncionarioMolde> listarFuncionarioParaExportar(String filtragem){
         if (filtragem != null){
             switch (filtragem){
@@ -342,7 +367,7 @@ public class FuncionarioDAO {
         return null;
     }
 
-    public static final String contadorBase = """
+    public static final String CONTADOR_BASE = """
             select count(*) from funcionario
             """;
 
@@ -363,11 +388,11 @@ public class FuncionarioDAO {
     }
 
     public int contarFuncionariosPadrao(){
-        return contarFuncionarios(contadorBase);
+        return contarFuncionarios(CONTADOR_BASE);
     }
 
-    public int contarFuncionáriosAdmins(){
-        return contarFuncionarios(contadorBase.concat(" where is_admin = true"));
+    public int contarFuncionariosAdmins(){
+        return contarFuncionarios(CONTADOR_BASE.concat(" where is_admin = true"));
     }
 
     public int contarSetores(){

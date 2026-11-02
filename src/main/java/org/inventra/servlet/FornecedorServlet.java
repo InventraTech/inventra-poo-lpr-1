@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.FornecedorDAO;
 import org.inventra.model.FornecedorMolde;
-import org.inventra.model.FuncionarioMolde;
 import org.inventra.utils.NotificacaoLotes;
 
 import java.io.IOException;
@@ -18,6 +17,10 @@ import org.inventra.utils.ParametrosHttp;
 import org.inventra.validation.FornecedorValidador;
 import java.util.ArrayList;
 import java.util.Locale;
+/**
+ * Controla a tela de fornecedores: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo FornecedorValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "FornecedorServlet", value = "/fornecedor")
 public class FornecedorServlet extends HttpServlet{
 
@@ -28,6 +31,10 @@ public class FornecedorServlet extends HttpServlet{
         fornecedorDAO = new FornecedorDAO();
     }
 
+    /**
+     * Exibe a lista de fornecedores. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -67,12 +74,12 @@ public class FornecedorServlet extends HttpServlet{
                     writer.println("ID;Nome;Endereço;CNPJ;email;nota_vpq");
 
                     for (FornecedorMolde f : fornecedores) {
-                        writer.print(f.getId_fornecedor() + ";");
-                        writer.print(f.getNome_juridico() + ";");
+                        writer.print(f.getIdFornecedor() + ";");
+                        writer.print(f.getNomeJuridico() + ";");
                         writer.print(f.getEndereco() + ";");
                         writer.print(f.getCnpj() + ";");
                         writer.print(f.getEmail() + ";");
-                        writer.println(f.getNota_vpq());
+                        writer.println(f.getNotaVpq());
                     }
                     writer.flush();
                 }
@@ -133,6 +140,12 @@ public class FornecedorServlet extends HttpServlet{
     //Erros vindos do DAO, erros internos do servidor sobem direto pro tomcat que intercepta e lança a tela de erro 500
 }
 
+    /**
+     * Trata o formulário de fornecedores. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -245,10 +258,10 @@ public class FornecedorServlet extends HttpServlet{
         String nome = request.getParameter("nome");
         String cnpj = request.getParameter("cnpj");
         String email = request.getParameter("email");
-        int nota_vpq = ParametrosHttp.lerInt(request.getParameter("nota_vpq"), "Nota VPQ", erros);
-        int fk_endereco = ParametrosHttp.lerInt(request.getParameter("fk_endereco"), "Endereço", erros);
+        int notaVpq = ParametrosHttp.lerInt(request.getParameter("nota_vpq"), "Nota VPQ", erros);
+        int fkEndereco = ParametrosHttp.lerInt(request.getParameter("fk_endereco"), "Endereço", erros);
 
-        return new FornecedorMolde(fk_endereco, nome, cnpj, email, nota_vpq);
+        return new FornecedorMolde(fkEndereco, nome, cnpj, email, notaVpq);
     }
 
     //Edição por coluna: parte de um fornecedor "base" válido e troca só o campo editado, para o FornecedorValidador
@@ -256,12 +269,14 @@ public class FornecedorServlet extends HttpServlet{
     private void validarColuna(String coluna, String novoValor, List<String> erros) {
         FornecedorMolde candidato = new FornecedorMolde(1, "Fornecedor", "11222333000181", "valido@inventra.com", 0);
 
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
         switch (coluna.toLowerCase(Locale.ROOT)) {
             case "nome_juridico" -> {
-                candidato.setNome_juridico(novoValor);
+                candidato.setNomeJuridico(novoValor);
             }
             case "fk_endereco" -> {
-                candidato.setFk_endereco(ParametrosHttp.lerInt(novoValor, "Endereço", erros));
+                candidato.setFkEndereco(ParametrosHttp.lerInt(novoValor, "Endereço", erros));
             }
             case "cnpj" -> {
                 candidato.setCnpj(novoValor);
@@ -270,7 +285,7 @@ public class FornecedorServlet extends HttpServlet{
                 candidato.setEmail(novoValor);
             }
             case "nota_vpq" -> {
-                candidato.setNota_vpq(ParametrosHttp.lerInt(novoValor, "Nota VPQ", erros));
+                candidato.setNotaVpq(ParametrosHttp.lerInt(novoValor, "Nota VPQ", erros));
             }
             default -> {
                 erros.add("A coluna informada não pode ser alterada.");

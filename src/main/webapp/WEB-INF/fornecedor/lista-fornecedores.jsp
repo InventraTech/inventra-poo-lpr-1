@@ -137,16 +137,16 @@
     <section class="lista-cartoes" aria-label="Lista de fornecedores">
       <c:forEach var="f" items="${requestScope.fornecedores}">
         <article class="cartao"
-                 data-id="${f.id_fornecedor}"
-                 data-rotulo="${fn:escapeXml(f.nome_juridico)}"
-                 data-nome="${fn:escapeXml(f.nome_juridico)}"
+                 data-id="${f.idFornecedor}"
+                 data-rotulo="${fn:escapeXml(f.nomeJuridico)}"
+                 data-nome="${fn:escapeXml(f.nomeJuridico)}"
                  data-cnpj="${fn:escapeXml(f.cnpj)}"
                  data-email="${fn:escapeXml(f.email)}"
-                 data-nota="${f.nota_vpq}">
+                 data-nota="${f.notaVpq}">
           <header class="cartao-topo">
-            <div class="cartao-logo"><c:out value="${fn:toUpperCase(fn:substring(f.nome_juridico, 0, 2))}"/></div>
+            <div class="cartao-logo"><c:out value="${fn:toUpperCase(fn:substring(f.nomeJuridico, 0, 2))}"/></div>
             <div class="cartao-identificacao">
-              <h2 class="cartao-nome"><c:out value="${f.nome_juridico}"/></h2>
+              <h2 class="cartao-nome"><c:out value="${f.nomeJuridico}"/></h2>
               <p class="cartao-cnpj"><c:out value="${f.cnpj}"/></p>
             </div>
           </header>
@@ -164,13 +164,13 @@
           <footer class="cartao-rodape">
             <div class="cartao-info">
               <p class="cartao-responsavel"><c:out value="${f.endereco}"/></p>
-              <p class="cartao-produtos">Nota VPQ: <c:out value="${f.nota_vpq}"/></p>
+              <p class="cartao-produtos">Nota VPQ: <c:out value="${f.notaVpq}"/></p>
             </div>
             <div class="cartao-acoes">
               <button type="button" class="botao-cartao botao-cartao-editar" aria-label="Editar" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg></button>
               <form action="${ctx}/fornecedor" method="post" class="form-excluir">
                 <input type="hidden" name="acao" value="excluir">
-                <input type="hidden" name="id" value="${f.id_fornecedor}">
+                <input type="hidden" name="id" value="${f.idFornecedor}">
                 <button type="submit" class="botao-cartao botao-cartao-excluir" aria-label="Excluir" title="Excluir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9zm4 2v8h1.5v-8H10zm3 0v8h1.5v-8H13z"/></svg></button>
               </form>
             </div>
@@ -238,12 +238,12 @@
 
       <ul class="notificacoes-lista">
         <c:forEach var="l" items="${requestScope.lotesProximosValidade}">
-          <c:if test="${not empty l.dt_validade}">
-            <li class="notificacao" data-validade="${l.dt_validade}">
+          <c:if test="${not empty l.dtValidade}">
+            <li class="notificacao" data-validade="${l.dtValidade}">
               <div class="notificacao-texto">
                 <strong><c:out value="${l.produto}"/></strong>
-                <span>Lote <c:out value="${l.numero_lote}"/> &middot; <c:out value="${l.qtd_atual}"/> un.</span>
-                <span>Válido até ${fn:substring(l.dt_validade, 8, 10)}/${fn:substring(l.dt_validade, 5, 7)}/${fn:substring(l.dt_validade, 0, 4)}</span>
+                <span>Lote <c:out value="${l.numeroLote}"/> &middot; <c:out value="${l.qtdAtual}"/> un.</span>
+                <span>Válido até ${fn:substring(l.dtValidade, 8, 10)}/${fn:substring(l.dtValidade, 5, 7)}/${fn:substring(l.dtValidade, 0, 4)}</span>
               </div>
               <span class="notificacao-prazo"></span>
             </li>

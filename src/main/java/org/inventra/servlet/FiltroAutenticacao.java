@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
@@ -10,11 +10,16 @@ import org.inventra.model.FuncionarioMolde;
 import java.io.IOException;
 import java.util.Set;
 
-//O padrão "/*" signfica que ele vai interceptar todas as requisições
+/**
+ * Barreira de autenticação e autorização de todo o sistema. Libera só as rotas públicas (login, página de erro 403
+ * e arquivos estáticos); as demais exigem um funcionário logado na sessão e com perfil de administrador.
+ */
+//O padrão "/*" significa que ele vai interceptar todas as requisições
 @WebFilter("/*")
 //Classe para autenticar o funcionário logado para garantir que seja ADMIN
 public class FiltroAutenticacao implements Filter {
 
+    // Rotas liberadas sem login: a raiz, a tela de login, o servlet que a processa e a página de erro 403.
     private static final Set<String> PUBLICAS =
             Set.of("", "/", "/index.html", "/login", "/login.jsp", "/erro-403.jsp");
 
@@ -32,6 +37,7 @@ public class FiltroAutenticacao implements Filter {
         // Caminho sem o contexto e sem parâmetros tipo ";login", o que impede o bypass pela URL
         String caminho = httpRequest.getServletPath();
 
+        // Recursos estáticos e páginas públicas também passam sem login; senão a própria tela de login ficaria sem estilo.
         boolean paginasPublicas = PUBLICAS.contains(caminho) ||
                 caminho.startsWith("/css/") ||
                 caminho.startsWith("/js/") ||

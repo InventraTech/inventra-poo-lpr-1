@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+/**
+ * Leitura defensiva de parâmetros HTTP para os servlets. Em vez de lançar exceção, cada método registra uma mensagem
+ * na lista {@code erros} e devolve um valor neutro, de modo que o usuário veja todos os problemas de uma vez.
+ */
 public final class ParametrosHttp {
 
     private ParametrosHttp() {

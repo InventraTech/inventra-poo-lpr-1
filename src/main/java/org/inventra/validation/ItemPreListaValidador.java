@@ -5,8 +5,16 @@ import org.inventra.model.ItemPreListaMolde;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Regras para os itens da pré-lista: pré-lista, fornecedor e produto precisam estar selecionados e a quantidade deve ser positiva.
+ */
 public class ItemPreListaValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(ItemPreListaMolde item) {
 
         List<String> erros = new ArrayList<>();
@@ -17,17 +25,17 @@ public class ItemPreListaValidador {
         }
 
         // Pré-lista
-        if (item.getFk_pre_lista() <= 0) {
+        if (item.getFkPreLista() <= 0) {
             erros.add("Selecione uma pré-lista válida.");
         }
 
         // Fornecedor
-        if (item.getFk_fornecedor() <= 0) {
+        if (item.getFkFornecedor() <= 0) {
             erros.add("Selecione um fornecedor válido.");
         }
 
         // Produto
-        if (item.getFk_produto() <= 0) {
+        if (item.getFkProduto() <= 0) {
             erros.add("Selecione um produto válido");
         }
 

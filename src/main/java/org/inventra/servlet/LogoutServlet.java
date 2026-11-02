@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +21,7 @@ public class LogoutServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
     }
 
+    // Delega ao doGet para o logout funcionar tanto por link quanto por formulário.
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         doGet(request, response);

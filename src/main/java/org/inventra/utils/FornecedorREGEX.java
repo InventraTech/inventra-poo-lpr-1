@@ -4,6 +4,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.regex.Pattern;
 
+/**
+ * Validação de formato para os dados do fornecedor. Confere apenas o padrão do texto: o CNPJ não tem os dígitos
+ * verificadores calculados, e o e-mail não é verificado quanto à existência.
+ */
 public class FornecedorREGEX {
 
     //REGEX CNPJ: Aceita o formato padrão: (00.000.000/0000-00) ou 00000000000000
@@ -25,6 +29,9 @@ public class FornecedorREGEX {
         return telefone != null && TELEFONE_REGEX.matcher(telefone).matches();
     }
 
+    /**
+     * Atalho que confere CNPJ, e-mail e telefone de uma vez; só é verdadeiro se os três tiverem formato válido.
+     */
     public static boolean validandoTodos(String cnpj, String email, String telefone){
         boolean emailValido = FornecedorREGEX.validarEmail(email);
         boolean telefoneValido = FornecedorREGEX.validarTelefone(telefone);

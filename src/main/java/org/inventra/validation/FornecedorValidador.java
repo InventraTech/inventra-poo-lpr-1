@@ -7,8 +7,18 @@ import org.inventra.utils.FornecedorREGEX;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Regras de cadastro e edição de fornecedor. CNPJ, e-mail e telefone são conferidos apenas quanto ao formato
+ * (ver FornecedorREGEX); a nota VPQ não pode ser negativa.
+ */
 public class FornecedorValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     * O telefone é recebido à parte porque o modelo do fornecedor não o guarda.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(
             FornecedorMolde fornecedor,
             String telefone) {
@@ -21,13 +31,13 @@ public class FornecedorValidador {
         }
 
         // Nome jurídico
-        if (fornecedor.getNome_juridico() == null ||
-                fornecedor.getNome_juridico().isBlank()) {
+        if (fornecedor.getNomeJuridico() == null ||
+                fornecedor.getNomeJuridico().isBlank()) {
             erros.add("O nome jurídico do fornecedor é obrigatório.");
         }
 
         // Endereço
-        if (fornecedor.getFk_endereco() <= 0) {
+        if (fornecedor.getFkEndereco() <= 0) {
             erros.add("Selecione um endereço válido.");
         }
 
@@ -60,7 +70,7 @@ public class FornecedorValidador {
         }
 
         // Nota VPQ
-        if (fornecedor.getNota_vpq() < 0) {
+        if (fornecedor.getNotaVpq() < 0) {
             erros.add("A nota VPQ não pode ser negativa.");
         }
 

@@ -4,8 +4,17 @@ import org.inventra.model.ProdutoMolde;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Regras de cadastro e edição de produto do catálogo: nome, unidade, marca, categoria e fornecedor obrigatórios
+ * e estoque mínimo não superior ao máximo.
+ */
 public class ProdutoValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(ProdutoMolde produto) {
 
         List<String> erros = new ArrayList<>();
@@ -22,17 +31,17 @@ public class ProdutoValidador {
         }
 
         // Marca
-        if (produto.getFk_marca() <= 0) {
+        if (produto.getFkMarca() <= 0) {
             erros.add("Selecione uma marca válida.");
         }
 
         // Categoria
-        if (produto.getFk_categoria() <= 0) {
+        if (produto.getFkCategoria() <= 0) {
             erros.add("Selecione uma categoria válida.");
         }
 
         // Fornecedor
-        if (produto.getFk_fornecedor() <= 0) {
+        if (produto.getFkFornecedor() <= 0) {
             erros.add("Selecione um fornecedor válido.");
         }
 

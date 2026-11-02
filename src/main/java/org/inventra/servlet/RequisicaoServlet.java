@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.RequisicaoDAO;
-import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.RequisicaoMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -19,6 +18,10 @@ import org.inventra.utils.ParametrosHttp;
 import org.inventra.validation.RequisicaoValidador;
 import java.util.ArrayList;
 import java.util.Locale;
+/**
+ * Controla a tela de requisições: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo RequisicaoValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "RequisicaoServlet", value = "/requisicao")
 public class RequisicaoServlet extends HttpServlet{
 
@@ -29,6 +32,10 @@ public class RequisicaoServlet extends HttpServlet{
         requisicaoDAO = new RequisicaoDAO();
     }
 
+    /**
+     * Exibe a lista de requisições. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -146,6 +153,12 @@ public class RequisicaoServlet extends HttpServlet{
 
     }
 
+    /**
+     * Trata o formulário de requisições. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -281,6 +294,8 @@ public class RequisicaoServlet extends HttpServlet{
 
     //Edição por coluna: troca na requisição atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
     private void aplicarColuna(RequisicaoMolde requisicao, String coluna, String novoValor, List<String> erros) {
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
         switch (coluna.toLowerCase(Locale.ROOT)) {
             case "fk_tipo_requisicao" -> requisicao.setIdTipoRequisicao(ParametrosHttp.lerInt(novoValor, "Tipo de requisição", erros));
             case "quantidade_prod" -> requisicao.setQuantidadeProduto(ParametrosHttp.lerInt(novoValor, "Quantidade", erros));

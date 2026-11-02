@@ -5,8 +5,17 @@ import org.inventra.model.RequisicaoMolde;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Regras de requisição: tipo, produto, quantidade, motivo, status e solicitante obrigatórios.
+ * O aprovador é opcional (zero), mas, quando informado, não pode ser o próprio solicitante.
+ */
 public class RequisicaoValidador {
 
+    /**
+     * Confere os dados já montados a partir dos parâmetros HTTP e devolve as inconsistências encontradas.
+     *
+     * @return mensagens de erro prontas para exibir ao usuário; lista vazia quando os dados são válidos
+     */
     public static List<String> validar(RequisicaoMolde requisicao) {
 
         List<String> erros = new ArrayList<>();

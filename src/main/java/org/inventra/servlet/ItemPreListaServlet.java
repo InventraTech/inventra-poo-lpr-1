@@ -1,4 +1,4 @@
-package org.inventra.controller;
+package org.inventra.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.inventra.dao.ItemPreListaDAO;
-import org.inventra.model.FuncionarioMolde;
 import org.inventra.model.ItemPreListaMolde;
 import org.inventra.utils.NotificacaoLotes;
 
@@ -18,6 +17,10 @@ import org.inventra.utils.ParametrosHttp;
 import org.inventra.validation.ItemPreListaValidador;
 import java.util.ArrayList;
 import java.util.Locale;
+/**
+ * Controla a tela de itens da pré-lista: listagem com paginação, filtros de ordenação, exportação em CSV e as ações
+ * de cadastrar, editar (completo ou por coluna) e excluir. Os dados do formulário passam pelo ItemPreListaValidador antes de chegar ao DAO.
+ */
 @WebServlet(name = "ItemPreListaServlet", value = "/itemprelista")
 public class ItemPreListaServlet extends HttpServlet {
 
@@ -28,6 +31,10 @@ public class ItemPreListaServlet extends HttpServlet {
         itemPreListaDAO = new ItemPreListaDAO();
     }
 
+    /**
+     * Exibe a lista de itens da pré-lista. Parâmetros: {@code filtro} (ordenação), {@code pagina} e {@code acao=exportar}.
+     * Na exportação o CSV sai completo, sem paginação, respeitando o mesmo filtro da tela.
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -67,7 +74,7 @@ public class ItemPreListaServlet extends HttpServlet {
                     writer.println("ID;Fornecedor;Produto;Quantidade");
 
                     for (ItemPreListaMolde f : itensPreLista) {
-                        writer.print(f.getId_item_prelista() + ";");
+                        writer.print(f.getIdItemPreLista() + ";");
                         writer.print(f.getFornecedor() + ";");
                         writer.print(f.getProduto() + ";");
                         writer.println(f.getQtd());
@@ -137,6 +144,12 @@ public class ItemPreListaServlet extends HttpServlet {
 
 }
 
+    /**
+     * Trata o formulário de itens da pré-lista. A ação vem em {@code acao}: {@code excluir}, {@code atualizar_coluna} ou
+     * {@code atualizar_completo}; qualquer outro valor (ou ausência) é tratado como cadastro.
+     * Se houver erro de leitura ou de validação, as mensagens vão para a sessão ({@code mensagemErro}) e o usuário
+     * volta para a lista, sem nada ser gravado.
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -256,28 +269,30 @@ public class ItemPreListaServlet extends HttpServlet {
 
     //Lê os campos do formulário (cadastro e edição completa). Parâmetros ausentes ou malformados viram mensagens em "erros".
     private ItemPreListaMolde lerItemPreLista(HttpServletRequest request, List<String> erros) {
-        int fk_pre_lista = ParametrosHttp.lerInt(request.getParameter("fk_pre_lista"), "Pré-lista", erros);
+        int fkPreLista = ParametrosHttp.lerInt(request.getParameter("fk_pre_lista"), "Pré-lista", erros);
 
-        int fk_fornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
+        int fkFornecedor = ParametrosHttp.lerInt(request.getParameter("fk_fornecedor"), "Fornecedor", erros);
 
-        int fk_produto = ParametrosHttp.lerInt(request.getParameter("fk_prduto"), "Produto", erros);
+        int fkProduto = ParametrosHttp.lerInt(request.getParameter("fk_prduto"), "Produto", erros);
 
         int qtd = ParametrosHttp.lerInt(request.getParameter("quantidade"), "Quantidade", erros);
 
-        return new ItemPreListaMolde(fk_pre_lista, fk_fornecedor, fk_produto, qtd);
+        return new ItemPreListaMolde(fkPreLista, fkFornecedor, fkProduto, qtd);
     }
 
     //Edição por coluna: troca no item atual só o campo escolhido. Só aceita as colunas que o DAO sabe atualizar.
     private void aplicarColuna(ItemPreListaMolde item, String coluna, String novoValor, List<String> erros) {
+        // Lista fechada de colunas editáveis: o DAO concatena o nome da coluna no UPDATE (o "?" não vale para nome de coluna),
+        // então qualquer nome fora daqui é recusado antes de chegar ao banco.
         switch (coluna.toLowerCase(Locale.ROOT)) {
             case "fk_pre_lista" -> {
-                item.setFk_pre_lista(ParametrosHttp.lerInt(novoValor, "Pré-lista", erros));
+                item.setFkPreLista(ParametrosHttp.lerInt(novoValor, "Pré-lista", erros));
             }
             case "fk_fornecedor" -> {
-                item.setFk_fornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
+                item.setFkFornecedor(ParametrosHttp.lerInt(novoValor, "Fornecedor", erros));
             }
             case "fk_produto" -> {
-                item.setFk_produto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
+                item.setFkProduto(ParametrosHttp.lerInt(novoValor, "Produto", erros));
             }
             case "qtd" -> {
                 item.setQtd(ParametrosHttp.lerInt(novoValor, "Quantidade", erros));
