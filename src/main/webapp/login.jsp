@@ -58,5 +58,7 @@
     </form>
 </div>
 
+<%-- Pop-up de carregamento: aparece ao clicar em Entrar e some quando a resposta do login chega (entrada ou erro). --%>
+<script src="${pageContext.request.contextPath}/utils/js/popup_carregamento.js" data-auto="envios"></script>
 </body>
 </html>

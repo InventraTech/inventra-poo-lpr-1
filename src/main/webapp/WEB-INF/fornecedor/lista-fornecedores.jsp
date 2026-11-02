@@ -276,16 +276,11 @@
           <input type="email" name="email" id="forn-email" placeholder="contato@fornecedor.com" required>
         </label>
       </div>
-      <div class="linha-campos">
-        <label class="campo" for="forn-telefone">Telefone
-          <input type="text" name="telefone" id="forn-telefone" placeholder="(11) 99999-9999" required>
-        </label>
-        <label class="campo" for="forn-nota">Nota VPQ
+      <label class="campo" for="forn-nota">Nota VPQ
           <input type="number" name="nota_vpq" id="forn-nota" placeholder="Ex: 8" min="0" max="10" required>
         </label>
-      </div>
       <label class="campo" for="forn-endereco">ID Endereço (fk_endereco)
-          <input type="number" name="fk_regiao" id="forn-endereco" placeholder="Ex: 1" min="1" required>
+          <input type="number" name="fk_endereco" id="forn-endereco" placeholder="Ex: 1" min="1" required>
         </label>
 
       <div class="acoes-formulario">
@@ -301,7 +296,7 @@
       <a href="#" class="modal-fechar" aria-label="Fechar">✕</a>
       <h2 class="modal-titulo" id="titulo-edicao">Editar Fornecedor</h2>
       <%-- A consulta da listagem (JOIN) não devolve os IDs das chaves estrangeiras: esses campos exigem preenchimento manual. --%>
-      <p>Preencha o ID do endereço e o telefone para salvar a edição completa.</p>
+      <p>Preencha o ID do endereço para salvar a edição completa.</p>
 
       <input type="hidden" name="acao" value="atualizar_completo">
       <input type="hidden" name="id_fornecedor" id="edicao-id">
@@ -317,14 +312,9 @@
           <input type="email" name="email" id="edicao-email" required>
         </label>
       </div>
-      <div class="linha-campos">
-        <label class="campo" for="edicao-telefone">Telefone
-          <input type="text" name="telefone" id="edicao-telefone" placeholder="Informe o telefone" required>
-        </label>
-        <label class="campo" for="edicao-nota">Nota VPQ
+      <label class="campo" for="edicao-nota">Nota VPQ
           <input type="number" name="nota_vpq" id="edicao-nota" min="0" max="10" required>
         </label>
-      </div>
       <label class="campo" for="edicao-endereco">ID Endereço (fk_endereco)
           <input type="number" name="fk_endereco" id="edicao-endereco" placeholder="Informe o ID" min="1" required>
         </label>
@@ -532,5 +522,6 @@
       foco();
     })();
   </script>
+  <script src="${ctx}/utils/js/popup_carregamento.js" data-auto="envios"></script>
 </body>
 </html>

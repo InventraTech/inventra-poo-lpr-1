@@ -207,9 +207,8 @@ public class FornecedorServlet extends HttpServlet{
 
                 FornecedorMolde atualizarFornecedor = lerFornecedor(request, erros);
 
-                //O telefone não é gravado no modelo, mas continua sendo validado como antes
                 if (erros.isEmpty()) {
-                    erros.addAll(FornecedorValidador.validar(atualizarFornecedor, request.getParameter("telefone")));
+                    erros.addAll(FornecedorValidador.validar(atualizarFornecedor));
                 }
 
                 if (!erros.isEmpty()) {
@@ -228,7 +227,7 @@ public class FornecedorServlet extends HttpServlet{
             FornecedorMolde novoFornecedor = lerFornecedor(request, erros);
 
             if (erros.isEmpty()) {
-                erros.addAll(FornecedorValidador.validar(novoFornecedor, request.getParameter("telefone")));
+                erros.addAll(FornecedorValidador.validar(novoFornecedor));
             }
 
             if (!erros.isEmpty()) {
@@ -293,7 +292,7 @@ public class FornecedorServlet extends HttpServlet{
         }
 
         if (erros.isEmpty()) {
-            erros.addAll(FornecedorValidador.validar(candidato, "11999999999"));
+            erros.addAll(FornecedorValidador.validar(candidato));
         }
     }
 }

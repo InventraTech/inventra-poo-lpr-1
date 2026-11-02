@@ -597,5 +597,6 @@
       foco();
     })();
   </script>
+  <script src="${ctx}/utils/js/popup_carregamento.js" data-auto="envios"></script>
 </body>
 </html>

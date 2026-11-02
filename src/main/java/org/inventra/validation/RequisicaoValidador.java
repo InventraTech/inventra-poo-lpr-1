@@ -45,9 +45,19 @@ public class RequisicaoValidador {
             erros.add("O motivo da requisição é obrigatório.");
         }
 
-        // Status
+        // Status (apenas os valores oferecidos no formulário)
         if (requisicao.getStatus() == null || requisicao.getStatus().isBlank()) {
             erros.add("O status da requisição é obrigatório.");
+
+        } else if (!requisicao.getStatus().equals("Pendente")
+                && !requisicao.getStatus().equals("Aprovada")
+                && !requisicao.getStatus().equals("Recusada")) {
+            erros.add("O status da requisição deve ser Pendente, Aprovada ou Recusada.");
+        }
+
+        // Data e hora
+        if (requisicao.getDataHora() == null) {
+            erros.add("A data e hora da requisição são obrigatórias.");
         }
 
         // Funcionário solicitante

@@ -34,7 +34,7 @@
 <body>
   <%-- Atributos enviados pelo ItemPreListaServlet: itensprelista, paginaAtual, totalPaginas, filtroSelecionado.
        Propriedades do ItemPreListaMolde (getters): id_item_prelista, fornecedor, produto, qtd.
-       ATENÇÃO: o servlet lê os parâmetros "fk_prduto" (sem o "o") e, na edição completa, o ID do item em "id_fornecedor". --%>
+       O servlet lê os parâmetros "fk_produto" e, na edição completa, o ID do item em "id_item_lista". --%>
 
   <header class="barra-topo barra-inventra">
     <div class="topo-marca">
@@ -270,7 +270,7 @@
       </div>
       <div class="linha-campos">
         <label class="campo" for="item-produto">ID do Produto (fk_produto)
-          <input type="number" name="fk_prduto" id="item-produto" placeholder="Ex: 1" min="1" required>
+          <input type="number" name="fk_produto" id="item-produto" placeholder="Ex: 1" min="1" required>
         </label>
         <label class="campo" for="item-quantidade">Quantidade a repor
           <input type="number" name="quantidade" id="item-quantidade" placeholder="0" min="1" required>
@@ -293,7 +293,7 @@
       <p>Preencha os IDs de pré-lista, fornecedor e produto para salvar a edição completa.</p>
 
       <input type="hidden" name="acao" value="atualizar_completo">
-      <input type="hidden" name="id_fornecedor" id="edicao-id">
+      <input type="hidden" name="id_item_lista" id="edicao-id">
 
       <div class="linha-campos">
         <label class="campo" for="edicao-prelista">ID da Pré-lista (fk_pre_lista)
@@ -305,7 +305,7 @@
       </div>
       <div class="linha-campos">
         <label class="campo" for="edicao-produto">ID do Produto (fk_produto)
-          <input type="number" name="fk_prduto" id="edicao-produto" placeholder="Informe o ID" min="1" required>
+          <input type="number" name="fk_produto" id="edicao-produto" placeholder="Informe o ID" min="1" required>
         </label>
         <label class="campo" for="edicao-qtd">Quantidade a repor
           <input type="number" name="quantidade" id="edicao-qtd" min="1" required>
@@ -509,5 +509,6 @@
       foco();
     })();
   </script>
+  <script src="${ctx}/utils/js/popup_carregamento.js" data-auto="envios"></script>
 </body>
 </html>
