@@ -96,6 +96,7 @@ Os modelos (`*Molde`) têm construtores sobrecarregados para cada situação: ca
 
 ```
 Inventra-POO/
+├── .env                         # Credenciais do banco (NÃO é versionado; modelo em .env.example)
 ├── pom.xml
 ├── mvnw / mvnw.cmd                  # Maven Wrapper
 └── src/main/
@@ -106,8 +107,6 @@ Inventra-POO/
     │   ├── servlet/                 # Servlets, login/logout e FiltroAutenticacao
     │   ├── utils/                   # ParametrosHttp, SenhaUtil, NotificacaoLotes, REGEX
     │   └── validation/              # Validadores por entidade
-    ├── resources/
-    │   └── .env                     # Credenciais do banco (NÃO é versionado)
     └── webapp/
         ├── index.html               # Página inicial pública
         ├── login.jsp                # Tela de login
@@ -140,7 +139,7 @@ cd inventra-poo-lpr-1
 
 Crie as tabelas descritas em [Modelo de dados](#modelo-de-dados) no seu banco PostgreSQL.
 
-Depois crie o arquivo `src/main/resources/.env` (ele está no `.gitignore`, então suas credenciais não vão para o GitHub):
+Depois copie o arquivo `.env.example` para `.env`, na **raiz do projeto** (ao lado do `pom.xml`), e preencha com os seus dados. O `.env` está no `.gitignore`, então suas credenciais não vão para o GitHub:
 
 ```env
 DB_URL=jdbc:postgresql://localhost:5432/NOME_DO_BANCO

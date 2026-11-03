@@ -3,7 +3,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
-src/main/resources/.env
+.env
+# Arquivo de credenciais na raiz do projeto (o modelo é o .env.example)
+.env
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
